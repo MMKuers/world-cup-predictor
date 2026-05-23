@@ -12,9 +12,11 @@ export default function HomePage() {
     (match) => {
 
       const prediction =
-        localStorage.getItem(
-          `${match.home}-${match.away}`
-        )
+  typeof window !== "undefined"
+    ? localStorage.getItem(
+        `${match.home}-${match.away}`
+      )
+    : null
 
       if (
         prediction &&
