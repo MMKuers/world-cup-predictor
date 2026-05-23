@@ -147,7 +147,7 @@ totalPoints +=
 
       </div>
 
-      <div className="mt-8">
+    
 <div className="mt-8">
 
   <h2 className="mb-4 text-2xl font-bold text-[#102348]">
