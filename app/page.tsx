@@ -1,71 +1,88 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import MatchCard from "@/components/MatchCard"
 import BottomNav from "@/components/BottomNav"
-
-type Match = {
-  id: number
-
-  utcDate: string
-
-  status: string
-
-  score: {
-    fullTime: {
-      home: number | null
-      away: number | null
-    }
-  }
-
-  homeTeam: {
-    name: string
-  }
-
-  awayTeam: {
-    name: string
-  }
-}
+import { groupStageMatches } from "@/data/matches"
 
 export default function HomePage() {
-  const [matches, setMatches] = useState<Match[]>([])
 
-  useEffect(() => {
-    async function fetchMatches() {
-      const response = await fetch(
-        "/api/football",
-        
-      )
+  const groupedMatches =
+    groupStageMatches.reduce((acc, match) => {
 
-      const data = await response.json()
+      if (!acc[match.date]) {
+        acc[match.date] = []
+      }
 
-      setMatches(data.matches.slice(0, 10))
-    }
+      acc[match.date].push(match)
 
-    fetchMatches()
-  }, [])
+      return acc
+
+    }, {} as Record<string, typeof groupStageMatches>)
 
   return (
-    <main className="min-h-screen bg-black p-6 pb-24 text-white">
-      <h1 className="mb-6 text-4xl font-bold">
-        World Cup Predictor
-      </h1>
+    <main className="min-h-screen bg-[#f3f7ff] p-6 pb-24">
 
-      <div className="space-y-4">
-        {matches.map((match) => (
-         <MatchCard
-  key={match.id}
-  home={match.homeTeam.name}
-  away={match.awayTeam.name}
-  group="World Cup"
-  status={match.status}
-  kickoff={match.utcDate}
-  homeScore={match.score.fullTime.home}
-  awayScore={match.score.fullTime.away}
-/>
-        ))}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-[#102348]">
+          World Cup Predictor
+        </h1>
+
+        <p className="mt-2 text-[#6f7f9d]">
+          FIFA World Cup 2026
+        </p>
       </div>
+
+      <div className="space-y-10">
+
+        {Object.entries(groupedMatches).map(
+          ([date, matches]) => {
+
+            const formattedDate =
+              new Date(date).toLocaleDateString(
+                "en-US",
+                {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                }
+              )
+
+            return (
+              <div key={date}>
+
+                <div className="mb-4">
+                  <h2 className="text-xl font-bold text-[#102348]">
+                    {formattedDate}
+                  </h2>
+                </div>
+
+                <div className="space-y-4">
+
+                  {matches.map((match) => (
+                    <MatchCard
+                      key={match.id}
+                      home={match.home}
+                      away={match.away}
+                      group={match.group}
+                      stadium={match.stadium}
+                      status="Scheduled"
+                      kickoff={match.kickoff}
+                      homeScore={null}
+                      awayScore={null}
+                    />
+                  ))}
+
+                </div>
+
+              </div>
+            )
+          }
+        )}
+
+      </div>
+
       <BottomNav />
+
     </main>
   )
 }
