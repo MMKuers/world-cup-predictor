@@ -6,6 +6,26 @@ import { groupStageMatches } from "@/data/matches"
 
 export default function HomePage() {
 
+  let totalPoints = 0
+
+  groupStageMatches.forEach(
+    (match) => {
+
+      const prediction =
+        localStorage.getItem(
+          `${match.home}-${match.away}`
+        )
+
+      if (
+        prediction &&
+        prediction === match.winner
+      ) {
+        totalPoints += 3
+      }
+
+    }
+  )
+
   const groupedMatches =
     groupStageMatches.reduce((acc, match) => {
 
@@ -55,7 +75,17 @@ export default function HomePage() {
                     {formattedDate}
                   </h2>
                 </div>
+<div className="mb-6 rounded-3xl bg-[#102348] px-6 py-5 text-white shadow-sm">
 
+  <div className="text-sm text-white/70">
+    Your Fantasy Score
+  </div>
+
+  <div className="mt-1 text-4xl font-bold">
+    {totalPoints} pts
+  </div>
+
+</div>
                 <div className="space-y-4">
 
                   {matches.map((match) => (

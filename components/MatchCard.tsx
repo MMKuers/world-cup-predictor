@@ -1,4 +1,5 @@
 "use client"
+import { useState } from "react"
 
 type Props = {
   home: string
@@ -73,6 +74,34 @@ export default function MatchCard({
   const homeCode = countryCodes[home]
   const awayCode = countryCodes[away]
 
+  const [expanded, setExpanded] =
+    useState(false)
+
+  const storageKey =
+    `${home}-${away}`
+
+  const [prediction, setPrediction] =
+    useState(() => {
+
+      if (
+        typeof window !== "undefined"
+      ) {
+        return (
+          localStorage.getItem(
+            storageKey
+          ) || ""
+        )
+      }
+
+      return ""
+    })
+
+  const kickoffDate =
+    new Date(kickoff)
+
+  const isLocked =
+    new Date() > kickoffDate
+
   const formattedDate = new Date(
     kickoff
   ).toLocaleDateString("en-US", {
@@ -88,7 +117,12 @@ export default function MatchCard({
   })
 
   return (
-    <button className="w-full rounded-[28px] bg-[#dfe9ff] px-5 py-4 text-left shadow-sm transition duration-200 hover:-translate-y-[2px] hover:shadow-md active:scale-[0.99]">
+    <div
+      onClick={() =>
+        setExpanded(!expanded)
+      }
+      className="w-full cursor-pointer rounded-[28px] bg-[#dfe9ff] px-5 py-4 text-left shadow-sm transition duration-200 hover:-translate-y-[2px] hover:shadow-md active:scale-[0.99]"
+    >
 
       <div className="flex items-start justify-between">
 
@@ -164,6 +198,112 @@ export default function MatchCard({
 
       </div>
 
-    </button>
+      {expanded && (
+
+        <div className="mt-6 border-t border-[#cad7f2] pt-5">
+
+          <div className="mb-3 text-sm font-semibold text-[#5c6b8a]">
+            Predict Winner
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+
+            <button
+              disabled={isLocked}
+              onClick={(e) => {
+                e.stopPropagation()
+
+                setPrediction(home)
+
+                localStorage.setItem(
+                  storageKey,
+                  home
+                )
+              }}
+              className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
+                isLocked
+                  ? "cursor-not-allowed opacity-50"
+                  : ""
+              } ${
+                prediction === home
+                  ? "bg-[#102348] text-white"
+                  : "bg-white text-[#102348]"
+              }`}
+            >
+              {home}
+            </button>
+
+            <button
+              disabled={isLocked}
+              onClick={(e) => {
+                e.stopPropagation()
+
+                setPrediction("Draw")
+
+                localStorage.setItem(
+                  storageKey,
+                  "Draw"
+                )
+              }}
+              className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
+                isLocked
+                  ? "cursor-not-allowed opacity-50"
+                  : ""
+              } ${
+                prediction === "Draw"
+                  ? "bg-[#102348] text-white"
+                  : "bg-white text-[#102348]"
+              }`}
+            >
+              Draw
+            </button>
+
+            <button
+              disabled={isLocked}
+              onClick={(e) => {
+                e.stopPropagation()
+
+                setPrediction(away)
+
+                localStorage.setItem(
+                  storageKey,
+                  away
+                )
+              }}
+              className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
+                isLocked
+                  ? "cursor-not-allowed opacity-50"
+                  : ""
+              } ${
+                prediction === away
+                  ? "bg-[#102348] text-white"
+                  : "bg-white text-[#102348]"
+              }`}
+            >
+              {away}
+            </button>
+
+          </div>
+
+          {prediction && (
+            <div className="mt-4 text-sm text-[#4564a8]">
+              Your prediction:{" "}
+              <span className="font-semibold">
+                {prediction}
+              </span>
+            </div>
+          )}
+
+          {isLocked && (
+            <div className="mt-2 text-xs font-medium text-red-500">
+              Predictions locked
+            </div>
+          )}
+
+        </div>
+
+      )}
+
+    </div>
   )
 }

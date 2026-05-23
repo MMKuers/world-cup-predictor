@@ -1,23 +1,49 @@
+"use client"
+
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+
 export default function BottomNav() {
+
+  const pathname =
+    usePathname()
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-zinc-900">
-      <div className="flex justify-around p-4 text-sm">
-        <button className="text-green-400">
-          Home
-        </button>
 
-        <button className="text-zinc-400">
-          Predictions
-        </button>
+    <div className="fixed bottom-0 left-0 right-0 border-t border-[#dbe5f6] bg-white px-6 py-4">
 
-        <button className="text-zinc-400">
-          Leaderboard
-        </button>
+      <div className="mx-auto flex max-w-md items-center justify-around">
 
-        <button className="text-zinc-400">
-          Profile
-        </button>
+        <Link
+          href="/"
+          className={`flex flex-col items-center text-sm font-medium transition ${
+            pathname === "/"
+              ? "text-[#102348]"
+              : "text-[#7b8baa]"
+          }`}
+        >
+          <span>⚽</span>
+          <span className="mt-1">
+            Matches
+          </span>
+        </Link>
+
+        <Link
+          href="/predictions"
+          className={`flex flex-col items-center text-sm font-medium transition ${
+            pathname === "/predictions"
+              ? "text-[#102348]"
+              : "text-[#7b8baa]"
+          }`}
+        >
+          <span>🏆</span>
+          <span className="mt-1">
+            Predictions
+          </span>
+        </Link>
+
       </div>
+
     </div>
   )
 }

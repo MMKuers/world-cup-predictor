@@ -2,6 +2,9 @@ export const groupStageMatches = [
   {
     id: 1,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-11",
     kickoff: "2026-06-11T19:00:00",
     home: "Mexico",
@@ -13,6 +16,9 @@ export const groupStageMatches = [
   {
     id: 2,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-11",
     kickoff: "2026-06-11T22:00:00",
     home: "Korea Republic",
@@ -24,6 +30,9 @@ export const groupStageMatches = [
   {
     id: 3,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-12",
     kickoff: "2026-06-12T19:00:00",
     home: "Canada",
@@ -35,6 +44,9 @@ export const groupStageMatches = [
   {
     id: 4,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-12",
     kickoff: "2026-06-12T22:00:00",
     home: "USA",
@@ -46,6 +58,9 @@ export const groupStageMatches = [
   {
     id: 5,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-13",
     kickoff: "2026-06-13T16:00:00",
     home: "Haiti",
@@ -57,6 +72,9 @@ export const groupStageMatches = [
   {
     id: 6,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-13",
     kickoff: "2026-06-13T19:00:00",
     home: "Australia",
@@ -68,6 +86,9 @@ export const groupStageMatches = [
   {
     id: 7,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-13",
     kickoff: "2026-06-13T22:00:00",
     home: "Brazil",
@@ -79,6 +100,9 @@ export const groupStageMatches = [
   {
     id: 8,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-13",
     kickoff: "2026-06-13T23:00:00",
     home: "Qatar",
@@ -89,6 +113,9 @@ export const groupStageMatches = [
     {
     id: 9,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-14",
     kickoff: "2026-06-14T16:00:00",
     home: "Côte d'Ivoire",
@@ -100,6 +127,9 @@ export const groupStageMatches = [
   {
     id: 10,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-14",
     kickoff: "2026-06-14T19:00:00",
     home: "Germany",
@@ -111,6 +141,9 @@ export const groupStageMatches = [
   {
     id: 11,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-14",
     kickoff: "2026-06-14T22:00:00",
     home: "Netherlands",
@@ -122,6 +155,9 @@ export const groupStageMatches = [
   {
     id: 12,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-14",
     kickoff: "2026-06-14T23:00:00",
     home: "Sweden",
@@ -133,6 +169,9 @@ export const groupStageMatches = [
   {
     id: 13,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-15",
     kickoff: "2026-06-15T16:00:00",
     home: "Saudi Arabia",
@@ -144,6 +183,9 @@ export const groupStageMatches = [
   {
     id: 14,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-15",
     kickoff: "2026-06-15T19:00:00",
     home: "Spain",
@@ -155,6 +197,9 @@ export const groupStageMatches = [
   {
     id: 15,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-15",
     kickoff: "2026-06-15T22:00:00",
     home: "Iran",
@@ -166,6 +211,9 @@ export const groupStageMatches = [
   {
     id: 16,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-15",
     kickoff: "2026-06-15T23:00:00",
     home: "Belgium",
@@ -177,6 +225,9 @@ export const groupStageMatches = [
   {
     id: 17,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-16",
     kickoff: "2026-06-16T16:00:00",
     home: "France",
@@ -188,6 +239,9 @@ export const groupStageMatches = [
   {
     id: 18,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-16",
     kickoff: "2026-06-16T19:00:00",
     home: "Iraq",
@@ -199,6 +253,9 @@ export const groupStageMatches = [
   {
     id: 19,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-16",
     kickoff: "2026-06-16T22:00:00",
     home: "Argentina",
@@ -210,6 +267,9 @@ export const groupStageMatches = [
   {
     id: 20,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-16",
     kickoff: "2026-06-16T23:00:00",
     home: "Austria",
@@ -220,6 +280,9 @@ export const groupStageMatches = [
     {
     id: 21,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-17",
     kickoff: "2026-06-17T16:00:00",
     home: "Ghana",
@@ -231,6 +294,9 @@ export const groupStageMatches = [
   {
     id: 22,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-17",
     kickoff: "2026-06-17T19:00:00",
     home: "England",
@@ -242,6 +308,9 @@ export const groupStageMatches = [
   {
     id: 23,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-17",
     kickoff: "2026-06-17T22:00:00",
     home: "Portugal",
@@ -253,6 +322,9 @@ export const groupStageMatches = [
   {
     id: 24,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-17",
     kickoff: "2026-06-17T23:00:00",
     home: "Uzbekistan",
@@ -264,6 +336,9 @@ export const groupStageMatches = [
   {
     id: 25,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-18",
     kickoff: "2026-06-18T16:00:00",
     home: "Czechia",
@@ -275,6 +350,9 @@ export const groupStageMatches = [
   {
     id: 26,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-18",
     kickoff: "2026-06-18T19:00:00",
     home: "Switzerland",
@@ -286,6 +364,9 @@ export const groupStageMatches = [
   {
     id: 27,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-18",
     kickoff: "2026-06-18T22:00:00",
     home: "Canada",
@@ -297,6 +378,9 @@ export const groupStageMatches = [
   {
     id: 28,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-18",
     kickoff: "2026-06-18T23:00:00",
     home: "Mexico",
@@ -308,6 +392,9 @@ export const groupStageMatches = [
   {
     id: 29,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-19",
     kickoff: "2026-06-19T16:00:00",
     home: "Brazil",
@@ -319,7 +406,10 @@ export const groupStageMatches = [
   {
     id: 30,
     stage: "Group Stage",
-    date: "2026-06-19T19:00:00",
+    homeScore: null,
+awayScore: null,
+winner: null,
+    date: "2026-06-19",
     kickoff: "2026-06-19T19:00:00",
     home: "Scotland",
     away: "Morocco",
@@ -330,6 +420,9 @@ export const groupStageMatches = [
   {
     id: 31,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-19",
     kickoff: "2026-06-19T22:00:00",
     home: "Turkey",
@@ -341,6 +434,9 @@ export const groupStageMatches = [
   {
     id: 32,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-19",
     kickoff: "2026-06-19T23:00:00",
     home: "USA",
@@ -351,6 +447,9 @@ export const groupStageMatches = [
     {
     id: 33,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-20",
     kickoff: "2026-06-20T16:00:00",
     home: "Germany",
@@ -362,6 +461,9 @@ export const groupStageMatches = [
   {
     id: 34,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-20",
     kickoff: "2026-06-20T19:00:00",
     home: "Ecuador",
@@ -373,6 +475,9 @@ export const groupStageMatches = [
   {
     id: 35,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-20",
     kickoff: "2026-06-20T22:00:00",
     home: "Netherlands",
@@ -384,6 +489,9 @@ export const groupStageMatches = [
   {
     id: 36,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-20",
     kickoff: "2026-06-20T23:00:00",
     home: "Tunisia",
@@ -395,6 +503,9 @@ export const groupStageMatches = [
   {
     id: 37,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-21",
     kickoff: "2026-06-21T16:00:00",
     home: "Uruguay",
@@ -406,6 +517,9 @@ export const groupStageMatches = [
   {
     id: 38,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-21",
     kickoff: "2026-06-21T19:00:00",
     home: "Spain",
@@ -417,6 +531,9 @@ export const groupStageMatches = [
   {
     id: 39,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-21",
     kickoff: "2026-06-21T22:00:00",
     home: "Belgium",
@@ -428,6 +545,9 @@ export const groupStageMatches = [
   {
     id: 40,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-21",
     kickoff: "2026-06-21T23:00:00",
     home: "New Zealand",
@@ -439,6 +559,9 @@ export const groupStageMatches = [
   {
     id: 41,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-22",
     kickoff: "2026-06-22T16:00:00",
     home: "Norway",
@@ -450,6 +573,9 @@ export const groupStageMatches = [
   {
     id: 42,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-22",
     kickoff: "2026-06-22T19:00:00",
     home: "France",
@@ -461,6 +587,9 @@ export const groupStageMatches = [
   {
     id: 43,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-22",
     kickoff: "2026-06-22T22:00:00",
     home: "Argentina",
@@ -472,6 +601,9 @@ export const groupStageMatches = [
   {
     id: 44,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-22",
     kickoff: "2026-06-22T23:00:00",
     home: "Jordan",
@@ -483,6 +615,9 @@ export const groupStageMatches = [
   {
     id: 45,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-23",
     kickoff: "2026-06-23T16:00:00",
     home: "England",
@@ -494,6 +629,9 @@ export const groupStageMatches = [
   {
     id: 46,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-23",
     kickoff: "2026-06-23T19:00:00",
     home: "Panama",
@@ -505,6 +643,9 @@ export const groupStageMatches = [
   {
     id: 47,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-23",
     kickoff: "2026-06-23T22:00:00",
     home: "Portugal",
@@ -516,6 +657,9 @@ export const groupStageMatches = [
   {
     id: 48,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-23",
     kickoff: "2026-06-23T23:00:00",
     home: "Colombia",
@@ -526,6 +670,9 @@ export const groupStageMatches = [
     {
     id: 49,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-24",
     kickoff: "2026-06-24T16:00:00",
     home: "Scotland",
@@ -537,6 +684,9 @@ export const groupStageMatches = [
   {
     id: 50,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-24",
     kickoff: "2026-06-24T17:00:00",
     home: "Morocco",
@@ -548,6 +698,9 @@ export const groupStageMatches = [
   {
     id: 51,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-24",
     kickoff: "2026-06-24T18:00:00",
     home: "Switzerland",
@@ -559,6 +712,9 @@ export const groupStageMatches = [
   {
     id: 52,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-24",
     kickoff: "2026-06-24T19:00:00",
     home: "Bosnia and Herzegovina",
@@ -570,6 +726,9 @@ export const groupStageMatches = [
   {
     id: 53,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-24",
     kickoff: "2026-06-24T20:00:00",
     home: "Czechia",
@@ -581,6 +740,9 @@ export const groupStageMatches = [
   {
     id: 54,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-24",
     kickoff: "2026-06-24T21:00:00",
     home: "South Africa",
@@ -592,6 +754,9 @@ export const groupStageMatches = [
   {
     id: 55,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-25",
     kickoff: "2026-06-25T16:00:00",
     home: "Curaçao",
@@ -603,6 +768,9 @@ export const groupStageMatches = [
   {
     id: 56,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-25",
     kickoff: "2026-06-25T17:00:00",
     home: "Ecuador",
@@ -614,6 +782,9 @@ export const groupStageMatches = [
   {
     id: 57,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-25",
     kickoff: "2026-06-25T18:00:00",
     home: "Japan",
@@ -625,6 +796,9 @@ export const groupStageMatches = [
   {
     id: 58,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-25",
     kickoff: "2026-06-25T19:00:00",
     home: "Tunisia",
@@ -636,6 +810,9 @@ export const groupStageMatches = [
   {
     id: 59,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-25",
     kickoff: "2026-06-25T20:00:00",
     home: "Turkey",
@@ -647,6 +824,9 @@ export const groupStageMatches = [
   {
     id: 60,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-25",
     kickoff: "2026-06-25T21:00:00",
     home: "Paraguay",
@@ -658,6 +838,9 @@ export const groupStageMatches = [
   {
     id: 61,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-26",
     kickoff: "2026-06-26T16:00:00",
     home: "Norway",
@@ -669,6 +852,9 @@ export const groupStageMatches = [
   {
     id: 62,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-26",
     kickoff: "2026-06-26T17:00:00",
     home: "Senegal",
@@ -680,6 +866,9 @@ export const groupStageMatches = [
   {
     id: 63,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-26",
     kickoff: "2026-06-26T18:00:00",
     home: "Egypt",
@@ -691,6 +880,9 @@ export const groupStageMatches = [
   {
     id: 64,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-26",
     kickoff: "2026-06-26T19:00:00",
     home: "New Zealand",
@@ -702,6 +894,9 @@ export const groupStageMatches = [
     {
     id: 65,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-26",
     kickoff: "2026-06-26T20:00:00",
     home: "Cabo Verde",
@@ -713,6 +908,9 @@ export const groupStageMatches = [
   {
     id: 66,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-26",
     kickoff: "2026-06-26T21:00:00",
     home: "Uruguay",
@@ -724,6 +922,9 @@ export const groupStageMatches = [
   {
     id: 67,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-27",
     kickoff: "2026-06-27T16:00:00",
     home: "Panama",
@@ -735,6 +936,9 @@ export const groupStageMatches = [
   {
     id: 68,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-27",
     kickoff: "2026-06-27T17:00:00",
     home: "Croatia",
@@ -746,6 +950,9 @@ export const groupStageMatches = [
   {
     id: 69,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-27",
     kickoff: "2026-06-27T18:00:00",
     home: "Algeria",
@@ -757,6 +964,9 @@ export const groupStageMatches = [
   {
     id: 70,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-27",
     kickoff: "2026-06-27T19:00:00",
     home: "Jordan",
@@ -768,6 +978,9 @@ export const groupStageMatches = [
   {
     id: 71,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-27",
     kickoff: "2026-06-27T20:00:00",
     home: "Colombia",
@@ -779,6 +992,9 @@ export const groupStageMatches = [
   {
     id: 72,
     stage: "Group Stage",
+    homeScore: null,
+awayScore: null,
+winner: null,
     date: "2026-06-27",
     kickoff: "2026-06-27T21:00:00",
     home: "Congo DR",
