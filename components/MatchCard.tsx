@@ -190,9 +190,23 @@ export default function MatchCard({
             {stadium}
           </div>
 
-          <div className="mt-3 inline-flex rounded-full bg-white px-3 py-1 text-xs font-medium text-[#4564a8]">
-            {status}
-          </div>
+        <div
+  className={`mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${
+    status === "LIVE"
+      ? "bg-red-100 text-red-600"
+      : status === "FINAL"
+      ? "bg-green-100 text-green-600"
+      : "bg-white text-[#4564a8]"
+  }`}
+>
+
+  {status === "LIVE" && (
+    <div className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
+  )}
+
+  {status}
+
+</div>
 
         </div>
 
@@ -200,11 +214,25 @@ export default function MatchCard({
 
       {expanded && (
 
-        <div className="mt-6 border-t border-[#cad7f2] pt-5">
-
+<div className="mt-6 border-t border-[#cad7f2] pt-5 animate-in fade-in duration-300">
           <div className="mb-3 text-sm font-semibold text-[#5c6b8a]">
             Predict Winner
           </div>
+          <div className="mb-4 flex items-center justify-between">
+
+  <div className="text-xs font-medium text-[#6f7f9d]">
+    {isLocked
+      ? "Predictions Closed"
+      : "Predictions Open"}
+  </div>
+
+  {prediction && (
+    <div className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#102348]">
+      Picked: {prediction}
+    </div>
+  )}
+
+</div>
 
           <div className="grid grid-cols-3 gap-2">
 
@@ -222,7 +250,7 @@ export default function MatchCard({
               }}
               className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
                 isLocked
-                  ? "cursor-not-allowed opacity-50"
+                  ? "cursor-not-allowed opacity-40 grayscale"
                   : ""
               } ${
                 prediction === home
@@ -247,7 +275,7 @@ export default function MatchCard({
               }}
               className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
                 isLocked
-                  ? "cursor-not-allowed opacity-50"
+                  ? "cursor-not-allowed opacity-40 grayscale"
                   : ""
               } ${
                 prediction === "Draw"

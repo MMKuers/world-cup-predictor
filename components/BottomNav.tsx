@@ -29,18 +29,32 @@ export default function BottomNav() {
         </Link>
 
         <Link
-          href="/predictions"
-          className={`flex flex-col items-center text-sm font-medium transition ${
-            pathname === "/predictions"
-              ? "text-[#102348]"
-              : "text-[#7b8baa]"
-          }`}
-        >
-          <span>🏆</span>
-          <span className="mt-1">
-            Predictions
-          </span>
-        </Link>
+  href="/predictions"
+  className={`flex flex-col items-center text-sm font-medium transition ${
+    pathname === "/predictions"
+      ? "text-[#102348]"
+      : "text-[#7b8baa]"
+  }`}
+>
+  <span>🏆</span>
+  <span className="mt-1">
+    Predictions
+  </span>
+</Link>
+
+<Link
+  href="/bracket"
+  className={`flex flex-col items-center text-sm font-medium transition ${
+    pathname === "/bracket"
+      ? "text-[#102348]"
+      : "text-[#7b8baa]"
+  }`}
+>
+  <span>🥇</span>
+  <span className="mt-1">
+    Bracket
+  </span>
+</Link>
 
       </div>
 
