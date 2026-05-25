@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react"
+import { countryCodes } from "@/data/countryCodes"
 
 type Props = {
   home: string
@@ -24,55 +25,13 @@ export default function MatchCard({
   homeScore,
   awayScore,
 }: Props) {
-  const countryCodes: Record<string, string> = {
-    Brazil: "br",
-    Germany: "de",
-    Argentina: "ar",
-    France: "fr",
-    Spain: "es",
-    England: "gb",
-    Portugal: "pt",
-    Mexico: "mx",
-    Canada: "ca",
-    Japan: "jp",
-    Australia: "au",
-    Morocco: "ma",
-    Croatia: "hr",
-    Netherlands: "nl",
-    Belgium: "be",
-    Uruguay: "uy",
-    Colombia: "co",
-    Denmark: "dk",
-    Switzerland: "ch",
-    Poland: "pl",
-    Serbia: "rs",
-    Ghana: "gh",
-    Senegal: "sn",
-    Cameroon: "cm",
-    Tunisia: "tn",
-    Iran: "ir",
-    Ecuador: "ec",
-    Wales: "gb",
-    USA: "us",
-    "United States": "us",
-    "South Korea": "kr",
-    "Republic of Korea": "kr",
-    "Korea Republic": "kr",
-    "Saudi Arabia": "sa",
-    "South Africa": "za",
-    Czechia: "cz",
-    "Bosnia and Herzegovina": "ba",
-    Paraguay: "py",
-    Haiti: "ht",
-    Qatar: "qa",
-    Scotland: "gb",
-    Turkey: "tr",
-    "Curaçao": "cw",
-    "Côte d'Ivoire": "ci",
-  }
+ 
 
-  const homeCode = countryCodes[home]
-  const awayCode = countryCodes[away]
+  const homeCode =
+  countryCodes[home.trim()]
+
+const awayCode =
+  countryCodes[away.trim()]
 
   const [expanded, setExpanded] =
     useState(false)
@@ -139,13 +98,15 @@ export default function MatchCard({
             <div className="flex items-center gap-3">
 
               <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-sm">
-                {homeCode && (
-                  <img
-                    src={`https://flagcdn.com/w80/${homeCode}.png`}
-                    alt={home}
-                    className="h-6 w-6 rounded-full object-cover"
-                  />
-                )}
+               {homeCode && (
+  
+ 
+  <img
+    src={`https://flagcdn.com/w40/${homeCode}.png`}
+    alt={home}
+    className="h-8 w-8 rounded-full object-cover shadow-sm"
+  />
+)}
               </div>
 
               <div className="text-[20px] font-semibold text-[#102348]">
@@ -159,7 +120,7 @@ export default function MatchCard({
               <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-sm">
                 {awayCode && (
                   <img
-                    src={`https://flagcdn.com/w80/${awayCode}.png`}
+                    src={`https://flagcdn.com/w40/${awayCode}.png`}
                     alt={away}
                     className="h-6 w-6 rounded-full object-cover"
                   />

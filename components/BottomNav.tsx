@@ -22,7 +22,7 @@ export default function BottomNav() {
               : "text-[#7b8baa]"
           }`}
         >
-          <span>⚽</span>
+          
           <span className="mt-1">
             Matches
           </span>
@@ -36,7 +36,7 @@ export default function BottomNav() {
       : "text-[#7b8baa]"
   }`}
 >
-  <span>🏆</span>
+  
   <span className="mt-1">
     Predictions
   </span>
@@ -50,7 +50,7 @@ export default function BottomNav() {
       : "text-[#7b8baa]"
   }`}
 >
-  <span>🥇</span>
+  
   <span className="mt-1">
     Bracket
   </span>

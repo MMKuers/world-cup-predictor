@@ -85,15 +85,28 @@ totalPoints +=
 
       <div className="mb-8">
 
-        <h1 className="text-4xl font-bold text-[#102348]">
-          Predictions
-        </h1>
+  <h1 className="text-4xl font-bold text-[#102348]">
+    MK's World Cup App
+  </h1>
 
-        <p className="mt-2 text-[#6f7f9d]">
-          Your World Cup picks
-        </p>
+  {typeof window !== "undefined" &&
+  localStorage.getItem("wc-user") ? (
 
-      </div>
+    <p className="mt-2 text-[#6f7f9d]">
+
+      {localStorage.getItem("wc-user")}'s tournament predictions
+
+    </p>
+
+  ) : (
+
+    <p className="mt-2 text-[#6f7f9d]">
+      Track your World Cup predictions
+    </p>
+
+  )}
+
+</div>
 
       <div className="mb-6 rounded-[28px] bg-[#102348] p-6 text-white shadow-sm">
 

@@ -3,6 +3,9 @@
 import MatchCard from "@/components/MatchCard"
 import BottomNav from "@/components/BottomNav"
 import { groupStageMatches } from "@/data/matches"
+import UsernameModal from "@/components/UsernameModal"
+import { calculateStandings } from "@/lib/calculateStandings"
+
 
 export default function HomePage() {
 
@@ -43,16 +46,31 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-6 pb-24">
-
+<UsernameModal />
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-[#102348]">
-          World Cup Predictor
-        </h1>
 
-        <p className="mt-2 text-[#6f7f9d]">
-          FIFA World Cup 2026
-        </p>
-      </div>
+  <h1 className="text-4xl font-bold text-[#102348]">
+    MK's World Cup App
+  </h1>
+
+  {typeof window !== "undefined" &&
+  localStorage.getItem("wc-user") ? (
+
+    <p className="mt-2 text-[#6f7f9d]">
+
+      {localStorage.getItem("wc-user")}'s predictions and match picks
+
+    </p>
+
+  ) : (
+
+    <p className="mt-2 text-[#6f7f9d]">
+      Make your predictions for every match
+    </p>
+
+  )}
+
+</div>
       <div className="sticky top-4 z-40 mb-6 flex justify-end">
 
   <div className="rounded-full bg-[#102348] px-5 py-3 text-sm font-bold text-white shadow-lg">
