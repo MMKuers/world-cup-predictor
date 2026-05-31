@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
 import { countryCodes } from "@/data/countryCodes"
+import { supabase } from "@/lib/supabase"
 
 type Props = {
   home: string
@@ -57,6 +58,7 @@ const awayCode =
 
   const kickoffDate =
     new Date(kickoff)
+    
 
   const isLocked =
     new Date() > kickoffDate
@@ -77,11 +79,11 @@ const awayCode =
 
   return (
     <div
-      onClick={() =>
-        setExpanded(!expanded)
-      }
-      className="w-full cursor-pointer rounded-[28px] bg-[#dfe9ff] px-5 py-4 text-left shadow-sm transition duration-200 hover:-translate-y-[2px] hover:shadow-md active:scale-[0.99]"
-    >
+  onClick={() => {
+  setExpanded(!expanded)
+}}
+  className="w-full cursor-pointer rounded-[28px] bg-[#dfe9ff] px-5 py-4 text-left shadow-sm transition duration-200 hover:-translate-y-[2px] hover:shadow-md active:scale-[0.99]"
+>
 
       <div className="flex items-start justify-between">
 
@@ -199,16 +201,39 @@ const awayCode =
 
             <button
               disabled={isLocked}
-              onClick={(e) => {
-                e.stopPropagation()
+             onClick={async (e) => {
 
-                setPrediction(home)
+  e.stopPropagation()
 
-                localStorage.setItem(
-                  storageKey,
-                  home
-                )
-              }}
+  setPrediction(home)
+
+  localStorage.setItem(
+    storageKey,
+    home
+  )
+
+  console.log("STARTING INSERT")
+
+  const { data, error } =
+    await supabase
+  .from("predictions")
+  .upsert(
+    {
+      username: localStorage.getItem("wc-user"),
+      match_key: storageKey,
+      prediction: home,
+      points: 0,
+    },
+    {
+      onConflict: "username,match_key",
+    }
+  )
+
+  console.log("SUPABASE DATA:", data)
+  console.log("SUPABASE ERROR:", error)
+
+}}
+              
               className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
                 isLocked
                   ? "cursor-not-allowed opacity-40 grayscale"
@@ -224,16 +249,30 @@ const awayCode =
 
             <button
               disabled={isLocked}
-              onClick={(e) => {
-                e.stopPropagation()
+              onClick={async (e) => {
+  e.stopPropagation()
 
-                setPrediction("Draw")
+  setPrediction("Draw")
 
-                localStorage.setItem(
-                  storageKey,
-                  "Draw"
-                )
-              }}
+  localStorage.setItem(
+    storageKey,
+    "Draw"
+  )
+
+  await supabase
+    .from("predictions")
+    .upsert(
+      {
+        username: localStorage.getItem("wc-user"),
+        match_key: storageKey,
+        prediction: "Draw",
+        points: 0,
+      },
+      {
+        onConflict: "username,match_key",
+      }
+    )
+}}
               className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
                 isLocked
                   ? "cursor-not-allowed opacity-40 grayscale"
@@ -249,16 +288,30 @@ const awayCode =
 
             <button
               disabled={isLocked}
-              onClick={(e) => {
-                e.stopPropagation()
+              onClick={async (e) => {
+  e.stopPropagation()
 
-                setPrediction(away)
+  setPrediction(away)
 
-                localStorage.setItem(
-                  storageKey,
-                  away
-                )
-              }}
+  localStorage.setItem(
+    storageKey,
+    away
+  )
+
+  await supabase
+    .from("predictions")
+    .upsert(
+      {
+        username: localStorage.getItem("wc-user"),
+        match_key: storageKey,
+        prediction: away,
+        points: 0,
+      },
+      {
+        onConflict: "username,match_key",
+      }
+    )
+}}
               className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${
                 isLocked
                   ? "cursor-not-allowed opacity-50"

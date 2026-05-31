@@ -5,9 +5,23 @@ import BottomNav from "@/components/BottomNav"
 import { groupStageMatches } from "@/data/matches"
 import UsernameModal from "@/components/UsernameModal"
 import { calculateStandings } from "@/lib/calculateStandings"
-
+import { useState, useEffect } from "react"
 
 export default function HomePage() {
+  
+  const [username, setUsername] =
+  useState("")
+
+  useEffect(() => {
+
+  const storedUser =
+  localStorage.getItem("wc-user")
+
+  if (storedUser) {
+    setUsername(storedUser)
+  }
+
+}, [])
 
   let totalPoints = 0
 
@@ -53,22 +67,20 @@ export default function HomePage() {
     MK's World Cup App
   </h1>
 
-  {typeof window !== "undefined" &&
-  localStorage.getItem("wc-user") ? (
+  
+  {username ? (
 
-    <p className="mt-2 text-[#6f7f9d]">
+  <p className="mt-2 text-[#6f7f9d]">
+    {username}'s predictions and match picks
+  </p>
 
-      {localStorage.getItem("wc-user")}'s predictions and match picks
+) : (
 
-    </p>
+  <p className="mt-2 text-[#6f7f9d]">
+    Make your predictions for every match
+  </p>
 
-  ) : (
-
-    <p className="mt-2 text-[#6f7f9d]">
-      Make your predictions for every match
-    </p>
-
-  )}
+)}
 
 </div>
       <div className="sticky top-4 z-40 mb-6 flex justify-end">

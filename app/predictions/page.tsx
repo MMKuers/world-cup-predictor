@@ -1,9 +1,37 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import BottomNav from "@/components/BottomNav"
 import { groupStageMatches } from "@/data/matches"
+import { supabase } from "@/lib/supabase"
 
 export default function PredictionsPage() {
+
+  const [dbPredictions, setDbPredictions] =
+  useState<any[]>([])
+
+  useEffect(() => {
+
+    console.log("LOADING PREDICTIONS")
+
+    async function loadPredictions() {
+
+      const { data, error } =
+        await supabase
+          .from("predictions")
+          .select("*")
+
+      console.log("SUPABASE DATA:", data)
+      console.log("SUPABASE ERROR:", error)
+
+      setDbPredictions(data || [])
+
+    }
+
+    loadPredictions()
+
+  }, [])
+
 
   let totalPredictions = 0
   let lockedPredictions = 0
@@ -29,6 +57,7 @@ export default function PredictionsPage() {
           ? localStorage.getItem(
               `${match.home}-${match.away}`
             )
+            
           : null
 
       if (prediction) {
@@ -79,7 +108,30 @@ totalPoints +=
 
     }
   )
+const leaderboard = Object.values(
+  dbPredictions.reduce((acc: any, prediction: any) => {
+    if (!acc[prediction.username]) {
+      acc[prediction.username] = {
+        name: prediction.username,
+        points: 0,
+      }
+    }
 
+    acc[prediction.username].points +=
+      prediction.points || 0
+
+    return acc
+  }, {})
+)
+  .sort((a: any, b: any) => b.points - a.points)
+  .map((player: any, index) => ({
+    rank: index + 1,
+    name: player.name,
+    points: player.points,
+    you:
+      typeof window !== "undefined" &&
+      player.name === localStorage.getItem("wc-user"),
+  }))
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-6 pb-24">
 
@@ -182,34 +234,7 @@ totalPoints +=
 
       </div>
 
-      {[
-        {
-          rank: 1,
-          name: "Michael",
-          points: totalPoints,
-          you: true,
-        },
-        {
-          rank: 2,
-          name: "Sarah",
-          points: 21,
-        },
-        {
-          rank: 3,
-          name: "David",
-          points: 18,
-        },
-        {
-          rank: 4,
-          name: "Chris",
-          points: 15,
-        },
-        {
-          rank: 5,
-          name: "Emily",
-          points: 12,
-        },
-      ].map((player) => (
+      {leaderboard.map((player) => (
 
         <div
           key={player.rank}

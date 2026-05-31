@@ -1,120 +1,123 @@
 "use client"
 
 import { useState } from "react"
+import { ChevronDown, ChevronUp } from "lucide-react"
+
+import { getThirdPlaceTeams } from "@/lib/getThirdPlaceTeams"
+import { countryCodes } from "@/data/countryCodes"
 
 export default function ThirdPlaceTable() {
 
   const [expanded, setExpanded] =
     useState(false)
 
-  const teams = [
-    ["Portugal", 6],
-    ["Japan", 5],
-    ["Ghana", 4],
-    ["Norway", 4],
-    ["Morocco", 3],
-    ["Sweden", 3],
-    ["Qatar", 2],
-    ["Iran", 2],
-    ["Austria", 1],
-    ["Wales", 1],
-    ["Chile", 0],
-    ["Canada", 0],
-  ]
+  const thirdPlaceTeams =
+    getThirdPlaceTeams()
 
   return (
 
-    <div className="mb-8 rounded-[32px] bg-white p-6 shadow-sm">
+    <div className="mb-8 rounded-[28px] bg-white p-5 shadow-sm">
 
       <button
         onClick={() =>
           setExpanded(!expanded)
         }
-        className="flex w-full items-center justify-between text-left"
+        className="flex w-full items-center justify-between"
       >
 
         <div>
 
-          <h2 className="text-2xl font-bold text-[#102348]">
+          <div className="text-lg font-bold text-[#102348]">
             Best 3rd Place Teams
-          </h2>
+          </div>
 
-          <p className="mt-2 text-[#6f7f9d]">
-            Top 8 third-place teams advance
-            to the knockout stage.
-          </p>
+          <div className="mt-1 text-sm text-[#7b8baa]">
+            Top 8 advance to knockout stage
+          </div>
 
         </div>
 
-       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#edf3ff] text-2xl font-medium text-[#102348]">
+        <div>
 
-  {expanded ? "−" : "+"}
+          {expanded ? (
+            <ChevronUp
+              className="text-[#102348]"
+              size={22}
+            />
+          ) : (
+            <ChevronDown
+              className="text-[#102348]"
+              size={22}
+            />
+          )}
 
-</div>
+        </div>
 
       </button>
 
-    
-
-      {/* EXPANDED */}
       {expanded && (
 
-        <div className="mt-6 border-t border-[#e7eefb] pt-6">
+        <div className="mt-6 space-y-4">
 
-          <div className="grid gap-3">
-
-            {teams.map(([team, pts], index) => (
+          {thirdPlaceTeams.map(
+            (team, index) => (
 
               <div
-                key={team}
-                className="flex items-center justify-between rounded-2xl bg-[#f8fbff] px-4 py-3"
+                key={team.team}
+                className="flex items-center justify-between rounded-2xl bg-[#f3f7ff] p-4"
               >
-
-                <div className="flex items-center gap-3">
-
-                  <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
-                    index < 8
-                      ? "bg-[#dcfce7] text-[#166534]"
-                      : "bg-[#fee2e2] text-[#991b1b]"
-                  }`}>
-
-                    {index + 1}
-
-                  </div>
-
-                  <div className="font-semibold text-[#102348]">
-                    {team}
-                  </div>
-
-                </div>
 
                 <div className="flex items-center gap-4">
 
-                  <div className="text-sm font-bold text-[#102348]">
-                    {pts} pts
+                  <div className="text-lg font-bold text-[#7b8baa]">
+                    {index + 1}
                   </div>
 
-                  {index < 8 ? (
+                  {countryCodes[team.team] && (
 
-                    <span className="rounded-full bg-[#dcfce7] px-3 py-1 text-xs font-semibold text-[#166534]">
-                      Qualified
-                    </span>
-
-                  ) : (
-
-                    <span className="rounded-full bg-[#fee2e2] px-3 py-1 text-xs font-semibold text-[#991b1b]">
-                      Eliminated
-                    </span>
+                    <img
+                      src={`https://flagcdn.com/w80/${countryCodes[team.team]}.png`}
+                      alt={team.team}
+                      className="h-10 w-10 rounded-full object-cover"
+                    />
 
                   )}
 
+                  <div>
+
+                    <div className="font-bold text-[#102348]">
+                      {team.team}
+                    </div>
+
+                    <div className="text-sm text-[#7b8baa]">
+
+                      {team.points} pts •{" "}
+                      {team.goalDifference} GD
+
+                    </div>
+
+                  </div>
+
                 </div>
+
+                {index < 8 ? (
+
+                  <div className="rounded-full bg-[#dff7e8] px-3 py-1 text-xs font-bold text-[#15803d]">
+                    QUALIFIED
+                  </div>
+
+                ) : (
+
+                  <div className="rounded-full bg-[#ffe4e6] px-3 py-1 text-xs font-bold text-[#be123c]">
+                    OUT
+                  </div>
+
+                )}
 
               </div>
 
-            ))}
-
-          </div>
+            )
+          )}
 
         </div>
 
@@ -123,4 +126,5 @@ export default function ThirdPlaceTable() {
     </div>
 
   )
+
 }
