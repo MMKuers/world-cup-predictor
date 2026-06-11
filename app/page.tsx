@@ -2,62 +2,80 @@
 
 import MatchCard from "@/components/MatchCard"
 import BottomNav from "@/components/BottomNav"
-import { groupStageMatches } from "@/data/matches"
+
 import UsernameModal from "@/components/UsernameModal"
 import { calculateStandings } from "@/lib/calculateStandings"
 import { useState, useEffect } from "react"
 
 export default function HomePage() {
-  
-  const [username, setUsername] =
+ const [username, setUsername] =
   useState("")
 
-  useEffect(() => {
+const [totalPoints, setTotalPoints] =
+  useState(0)
+const [matches, setMatches] = useState<any[]>([])
+useEffect(() => {
 
-  const storedUser =
-  localStorage.getItem("wc-user")
+  async function loadMatches() {
 
-  if (storedUser) {
-    setUsername(storedUser)
+    const response =
+      await fetch("/api/football")
+
+    const data =
+      await response.json()
+
+    setMatches(data.matches)
+
   }
+
+  loadMatches()
 
 }, [])
 
-  let totalPoints = 0
+useEffect(() => {
 
-  groupStageMatches.forEach(
-    (match) => {
+  let points = 0
 
-      const prediction =
-  typeof window !== "undefined"
-    ? localStorage.getItem(
-        `${match.home}-${match.away}`
+  matches.forEach((match) => {
+
+    const prediction =
+      localStorage.getItem(
+        `${match.homeTeam?.name}-${match.awayTeam?.name}`
       )
-    : null
 
-      if (
-        prediction &&
-        prediction === match.winner
-      ) {
-        totalPoints += 3
-      }
-
+    if (
+      prediction &&
+      prediction === match.score?.winner
+    ) {
+      points += 3
     }
-  )
+
+  })
+
+  setTotalPoints(points)
+
+}, [matches])
+
 
   const groupedMatches =
-    groupStageMatches.reduce((acc, match) => {
+  matches.reduce((acc, match) => {
 
-      if (!acc[match.date]) {
-        acc[match.date] = []
-      }
+    const date =
+  new Date(match.utcDate)
+    .toLocaleDateString("en-CA", {
+      timeZone: "America/Chicago",
+    })
 
-      acc[match.date].push(match)
+    if (!acc[date]) {
+      acc[date] = []
+    }
 
-      return acc
+    acc[date].push(match)
 
-    }, {} as Record<string, typeof groupStageMatches>)
+    return acc
 
+  }, {} as Record<string, any[]>)
+console.log(matches[0])
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-6 pb-24">
 <UsernameModal />
@@ -96,7 +114,7 @@ export default function HomePage() {
         {Object.entries(groupedMatches).map(
           ([date, matches]) => {
 
-            const formattedDate =
+           /* const formattedDate =
               new Date(date).toLocaleDateString(
                 "en-US",
                 {
@@ -104,7 +122,17 @@ export default function HomePage() {
                   month: "long",
                   day: "numeric",
                 }
-              )
+              )*/
+             const formattedDate =
+  new Date(date + "T12:00:00")
+    .toLocaleDateString(
+      "en-US",
+      {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      }
+    )
 
             return (
               <div key={date}>
@@ -120,8 +148,8 @@ export default function HomePage() {
                   {matches.map((match) => (
                     <MatchCard
   key={match.id}
-  home={match.home}
-  away={match.away}
+  home={match.homeTeam?.name || ""}
+  away={match.awayTeam?.name || ""}
   group={match.group}
   stadium={match.stadium}
 
@@ -134,7 +162,7 @@ export default function HomePage() {
       : "UPCOMING"
   }
 
-  kickoff={match.kickoff}
+ kickoff={match.utcDate}
 
   homeScore={null}
   awayScore={null}

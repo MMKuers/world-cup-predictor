@@ -91,7 +91,7 @@ const awayCode =
 
           <div className="mb-5">
             <span className="rounded-full bg-[#edf3ff] px-3 py-1 text-xs font-semibold text-[#4f6ea8]">
-              Group {group}
+              Group {group?.replace("GROUP_", "") ?? ""}
             </span>
           </div>
 
@@ -142,8 +142,8 @@ const awayCode =
         <div className="ml-4 text-right">
 
           <div className="text-[11px] uppercase tracking-wide text-[#6f7f9d]">
-            {formattedDate}
-          </div>
+  {stadium}
+</div>
 
           <div className="mt-1 text-[22px] font-bold leading-none text-[#102348]">
             {formattedTime}

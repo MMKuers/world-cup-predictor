@@ -2,14 +2,25 @@
 
 import { useEffect, useState } from "react"
 import BottomNav from "@/components/BottomNav"
-import { groupStageMatches } from "@/data/matches"
 import { supabase } from "@/lib/supabase"
 
 export default function PredictionsPage() {
 
   const [dbPredictions, setDbPredictions] =
   useState<any[]>([])
+  const [matches, setMatches] =
+  useState<any[]>([])
+const [username, setUsername] =
+  useState("")
 
+console.log("MATCHES:", matches)
+
+if (matches.length > 0) {
+  console.log(
+  "FIRST MATCH:",
+  JSON.stringify(matches[0], null, 2)
+)
+}
   useEffect(() => {
 
     console.log("LOADING PREDICTIONS")
@@ -20,11 +31,23 @@ export default function PredictionsPage() {
         await supabase
           .from("predictions")
           .select("*")
+          
 
       console.log("SUPABASE DATA:", data)
       console.log("SUPABASE ERROR:", error)
 
       setDbPredictions(data || [])
+      console.log("FIRST DB PREDICTION:", data?.[0])
+const matchResponse =
+  await fetch("/api/football")
+
+const matchData =
+  await matchResponse.json()
+
+setMatches(matchData.matches)
+setUsername(
+  localStorage.getItem("wc-user") || ""
+)
 
     }
 
@@ -49,18 +72,24 @@ export default function PredictionsPage() {
     points: number
   }[] = []
 
-  groupStageMatches.forEach(
-    (match) => {
+  matches.forEach((match) => {
 
-      const prediction =
-        typeof window !== "undefined"
-          ? localStorage.getItem(
-              `${match.home}-${match.away}`
-            )
-            
-          : null
+  
 
-      if (prediction) {
+ const matchKey =
+  `${match.homeTeam.name}-${match.awayTeam.name}`
+
+const predictionRow =
+  dbPredictions.find(
+    (p) => p.match_key === matchKey
+  )
+
+
+
+const prediction =
+  predictionRow?.prediction || null
+
+  if (prediction) {
 
         totalPredictions++
 
@@ -75,33 +104,56 @@ export default function PredictionsPage() {
         } else {
           upcomingPredictions++
         }
-totalPoints +=
-  match.winner === null
-    ? 0
-    : prediction === match.winner
-    ? 3
+const earnedPoints =
+  match.status === "FINISHED"
+    ? (
+        (match.score.winner === "HOME_TEAM" &&
+          prediction === match.homeTeam.name) ||
+        (match.score.winner === "AWAY_TEAM" &&
+          prediction === match.awayTeam.name) ||
+        (match.score.winner === "DRAW" &&
+          prediction === "Draw")
+      )
+      ? 3
+      : 0
     : 0
+
+totalPoints += earnedPoints
         predictedMatches.push({
-          id: match.id,
-          home: match.home,
-          away: match.away,
-          prediction,
-          kickoff: match.kickoff,
+  id: match.id,
+  home: match.homeTeam.name,
+  away: match.awayTeam.name,
+  prediction,
+  kickoff: match.utcDate,
           locked: isLocked,
 
           status:
-            match.winner === null
-              ? "Pending"
-              : prediction === match.winner
-              ? "Correct"
-              : "Incorrect",
+  match.status === "FINISHED"
+    ? (
+        (match.score.winner === "HOME_TEAM" &&
+          prediction === match.homeTeam.name) ||
+        (match.score.winner === "AWAY_TEAM" &&
+          prediction === match.awayTeam.name) ||
+        (match.score.winner === "DRAW" &&
+          prediction === "Draw")
+      )
+      ? "Correct"
+      : "Incorrect"
+    : "Pending",
 
-          points:
-            match.winner === null
-              ? 0
-              : prediction === match.winner
-              ? 3
-              : 0,
+points:
+  match.status === "FINISHED"
+    ? (
+        (match.score.winner === "HOME_TEAM" &&
+          prediction === match.homeTeam.name) ||
+        (match.score.winner === "AWAY_TEAM" &&
+          prediction === match.awayTeam.name) ||
+        (match.score.winner === "DRAW" &&
+          prediction === "Draw")
+      )
+      ? 3
+      : 0
+    : 0,
         })
 
       }
@@ -141,16 +193,15 @@ const leaderboard = Object.values(
     MK's World Cup App
   </h1>
 
-  {typeof window !== "undefined" &&
-  localStorage.getItem("wc-user") ? (
+  {username ? (
 
-    <p className="mt-2 text-[#6f7f9d]">
+  <p className="mt-2 text-[#6f7f9d]">
 
-      {localStorage.getItem("wc-user")}'s tournament predictions
+    {username}'s tournament predictions
 
-    </p>
+  </p>
 
-  ) : (
+) : (
 
     <p className="mt-2 text-[#6f7f9d]">
       Track your World Cup predictions
