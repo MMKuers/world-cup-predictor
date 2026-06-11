@@ -24,9 +24,9 @@ export default function UsernameModal() {
     if (!name.trim()) return
 
     localStorage.setItem(
-      "wc-user",
-      name
-    )
+  "wc-user",
+  name.trim().toLowerCase()
+)
 
     setShowModal(false)
 

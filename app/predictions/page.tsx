@@ -13,13 +13,11 @@ export default function PredictionsPage() {
 const [username, setUsername] =
   useState("")
 
-console.log("MATCHES:", matches)
+
 
 if (matches.length > 0) {
-  console.log(
-  "FIRST MATCH:",
-  JSON.stringify(matches[0], null, 2)
-)
+  
+
 }
   useEffect(() => {
 
@@ -94,7 +92,7 @@ const prediction =
         totalPredictions++
 
         const kickoffDate =
-          new Date(match.kickoff)
+  new Date(match.utcDate)
 
         const isLocked =
           new Date() > kickoffDate
@@ -127,9 +125,12 @@ totalPoints += earnedPoints
   kickoff: match.utcDate,
           locked: isLocked,
 
-          status:
-  match.status === "FINISHED"
-    ? (
+     status:
+  match.status !== "FINISHED"
+    ? "Pending"
+    : match.score.winner === null
+    ? "Pending"
+    : (
         (match.score.winner === "HOME_TEAM" &&
           prediction === match.homeTeam.name) ||
         (match.score.winner === "AWAY_TEAM" &&
@@ -137,13 +138,13 @@ totalPoints += earnedPoints
         (match.score.winner === "DRAW" &&
           prediction === "Draw")
       )
-      ? "Correct"
-      : "Incorrect"
-    : "Pending",
+    ? "Correct"
+    : "Incorrect",
 
 points:
-  match.status === "FINISHED"
-    ? (
+  match.score.winner === null
+    ? 0
+    : (
         (match.score.winner === "HOME_TEAM" &&
           prediction === match.homeTeam.name) ||
         (match.score.winner === "AWAY_TEAM" &&
@@ -151,8 +152,7 @@ points:
         (match.score.winner === "DRAW" &&
           prediction === "Draw")
       )
-      ? 3
-      : 0
+    ? 3
     : 0,
         })
 

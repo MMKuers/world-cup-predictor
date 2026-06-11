@@ -15,6 +15,11 @@ const [totalPoints, setTotalPoints] =
   useState(0)
 const [matches, setMatches] = useState<any[]>([])
 useEffect(() => {
+  setUsername(
+    localStorage.getItem("wc-user") || ""
+  )
+}, [])
+useEffect(() => {
 
   async function loadMatches() {
 
@@ -24,8 +29,10 @@ useEffect(() => {
     const data =
       await response.json()
 
-    setMatches(data.matches)
+    console.log("API STATUS:", data.matches[0]?.status)
+console.log("API SCORE:", data.matches[0]?.score)
 
+setMatches(data.matches)
   }
 
   loadMatches()
@@ -36,21 +43,30 @@ useEffect(() => {
 
   let points = 0
 
-  matches.forEach((match) => {
+ matches.forEach((match) => {
 
-    const prediction =
-      localStorage.getItem(
-        `${match.homeTeam?.name}-${match.awayTeam?.name}`
-      )
+  const prediction =
+    localStorage.getItem(
+      `${match.homeTeam?.name}-${match.awayTeam?.name}`
+    )
 
-    if (
-      prediction &&
-      prediction === match.score?.winner
-    ) {
-      points += 3
-    }
+  if (!prediction) return
 
-  })
+  const correct =
+    (match.score?.winner === "HOME_TEAM" &&
+      prediction === match.homeTeam?.name) ||
+
+    (match.score?.winner === "AWAY_TEAM" &&
+      prediction === match.awayTeam?.name) ||
+
+    (match.score?.winner === "DRAW" &&
+      prediction === "Draw")
+
+  if (correct) {
+    points += 3
+  }
+
+})
 
   setTotalPoints(points)
 
@@ -75,7 +91,17 @@ useEffect(() => {
     return acc
 
   }, {} as Record<string, any[]>)
-console.log(matches[0])
+if (matches.length > 0) {
+  console.log(
+    "STATUS:",
+    matches[0].status
+  )
+
+  console.log(
+    "SCORE:",
+    matches[0].score
+  )
+}
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-6 pb-24">
 <UsernameModal />
@@ -154,10 +180,10 @@ console.log(matches[0])
   stadium={match.stadium}
 
   status={
-    match.winner
+    match.status === "FINISHED"
       ? "FINAL"
       : new Date() >
-        new Date(match.kickoff)
+        new Date(match.utcDate)
       ? "LIVE"
       : "UPCOMING"
   }
