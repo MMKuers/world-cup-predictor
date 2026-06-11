@@ -57,7 +57,7 @@ useEffect(() => {
 }, [matches])
 
 
-  const groupedMatches =
+  const groupedMatches: Record<string, any[]> =
   matches.reduce((acc, match) => {
 
     const date =
@@ -112,7 +112,7 @@ console.log(matches[0])
       <div className="space-y-10">
 
         {Object.entries(groupedMatches).map(
-          ([date, matches]) => {
+  ([date, matches]) => {
 
            /* const formattedDate =
               new Date(date).toLocaleDateString(
