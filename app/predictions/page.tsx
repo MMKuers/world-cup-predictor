@@ -13,6 +13,9 @@ export default function PredictionsPage() {
 const [username, setUsername] =
   useState("")
 
+const [userId, setUserId] =
+  useState("")
+
 
 
 if (matches.length > 0) {
@@ -33,7 +36,10 @@ if (matches.length > 0) {
 
       console.log("SUPABASE DATA:", data)
       console.log("SUPABASE ERROR:", error)
-
+console.log(
+  "LOCAL USER ID:",
+  localStorage.getItem("user-id")
+)
       setDbPredictions(data || [])
       console.log("FIRST DB PREDICTION:", data?.[0])
 const matchResponse =
@@ -43,10 +49,28 @@ const matchData =
   await matchResponse.json()
 
 setMatches(matchData.matches)
+console.log(
+  "API MATCH KEYS:",
+  matchData.matches.map(
+    (m: any) =>
+      `${m.homeTeam.name}-${m.awayTeam.name}`
+  )
+)
 setUsername(
   localStorage.getItem("wc-user") || ""
 )
 
+setUserId(
+  localStorage.getItem("user-id") || ""
+)
+console.log(
+  "USER ID:",
+  localStorage.getItem("user-id")
+)
+console.log(
+  "FIRST PREDICTION USER ID:",
+  data?.[0]?.user_id
+)
     }
 
     loadPredictions()
@@ -81,7 +105,7 @@ const predictionRow =
   dbPredictions.find(
     (p) =>
       p.match_key === matchKey &&
-      p.username === username
+      p.user_id === userId
   )
 
 

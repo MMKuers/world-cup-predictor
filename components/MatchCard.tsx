@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { countryCodes } from "@/data/countryCodes"
 import { supabase } from "@/lib/supabase"
 
@@ -34,31 +34,91 @@ export default function MatchCard({
 const awayCode =
   countryCodes[away.trim()]
 
-  const [expanded, setExpanded] =
-    useState(false)
+ const [expanded, setExpanded] =
+  useState(false)
 
-  const storageKey =
-    `${home}-${away}`
+  const [showCommunityDetails, setShowCommunityDetails] =
+  useState(false)
 
-  const [prediction, setPrediction] =
-    useState(() => {
+const storageKey =
+  `${home}-${away}`
 
-      if (
-        typeof window !== "undefined"
-      ) {
-        return (
-          localStorage.getItem(
-            storageKey
-          ) || ""
-        )
-      }
+const [prediction, setPrediction] =
+  useState(() => {
+console.log(
+  "LOCAL PREDICTION:",
+  storageKey,
+  localStorage.getItem(storageKey)
+)
+    if (
+      typeof window !== "undefined"
+    ) {
+      return (
+        localStorage.getItem(
+          storageKey
+        ) || ""
+      )
+    }
 
-      return ""
-    })
+    return ""
+  })
 
-  const kickoffDate =
-    new Date(kickoff)
-    
+const [allPredictions, setAllPredictions] =
+  useState<any[]>([])
+
+useEffect(() => {
+
+  async function loadPredictions() {
+
+    const { data, error } =
+      await supabase
+        .from("predictions")
+        .select("*")
+        .eq("match_key", storageKey)
+
+   if (error) {
+  console.error(error)
+  return
+}
+
+console.log(
+  "MATCH PREDICTIONS:",
+  storageKey,
+  data
+)
+
+setAllPredictions(data || [])
+
+  }
+
+  loadPredictions()
+
+}, [storageKey])
+
+const kickoffDate =
+  new Date(kickoff)
+    useEffect(() => {
+
+  async function loadPredictions() {
+
+    const { data, error } =
+      await supabase
+        .from("predictions")
+        .select("username,prediction")
+        .eq("match_key", storageKey)
+
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    setAllPredictions(data || [])
+
+  }
+
+  loadPredictions()
+
+}, [storageKey])
 
   const isLocked =
     new Date() > kickoffDate
@@ -363,13 +423,165 @@ const awayCode =
           </div>
 
           {prediction && (
-            <div className="mt-4 text-sm text-[#4564a8]">
-              Your prediction:{" "}
-              <span className="font-semibold">
-                {prediction}
+  <>
+    <div className="mt-4 text-sm text-[#4564a8]">
+      Your prediction:{" "}
+      <span className="font-semibold">
+        {prediction}
+      </span>
+    </div>
+
+   <div className="mt-4 rounded-2xl bg-white p-4">
+
+  <div className="mb-4 text-sm font-bold text-[#102348]">
+    Community Picks
+  </div>
+
+  {allPredictions.length === 0 ? (
+
+    <div className="text-sm text-gray-500">
+      No predictions yet
+    </div>
+
+  ) : (
+
+    <>
+      {[
+        home,
+        "Draw",
+        away,
+      ].map((option) => {
+
+        const picks =
+          allPredictions.filter(
+            (p) =>
+              p.prediction === option
+          )
+
+        const percentage =
+          Math.round(
+            (picks.length /
+              allPredictions.length) *
+              100
+          )
+
+        return (
+
+          <div
+            key={option}
+            className="mb-3"
+          >
+
+            <div className="mb-1 flex justify-between text-sm">
+
+              <span className="font-medium text-[#102348]">
+                {option}
               </span>
+
+              <span className="text-[#4564a8]">
+                {picks.length} picks
+              </span>
+
             </div>
-          )}
+
+            <div className="h-2 overflow-hidden rounded-full bg-[#edf3ff]">
+
+              <div
+                className="h-full rounded-full bg-[#102348]"
+                style={{
+                  width: `${percentage}%`,
+                }}
+              />
+
+            </div>
+
+          </div>
+
+        )
+
+      })}
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation()
+          setShowCommunityDetails(
+            !showCommunityDetails
+          )
+        }}
+        className="mt-2 text-sm font-semibold text-[#4564a8]"
+      >
+        {showCommunityDetails
+          ? "Hide Individual Picks"
+          : "View Individual Picks"}
+      </button>
+
+      {showCommunityDetails && (
+
+        <div className="mt-4 border-t border-[#edf3ff] pt-4">
+
+          {[
+            home,
+            "Draw",
+            away,
+          ].map((option) => {
+
+            const picks =
+              allPredictions.filter(
+                (p) =>
+                  p.prediction === option
+              )
+
+            if (
+              picks.length === 0
+            ) {
+              return null
+            }
+
+            return (
+
+              <div
+                key={option}
+                className="mb-4"
+              >
+
+                <div className="mb-2 font-semibold text-[#102348]">
+                  {option}
+                </div>
+
+                <div className="space-y-1">
+
+                  {picks.map(
+                    (pick) => (
+
+                      <div
+                        key={pick.id}
+                        className="text-sm text-[#4564a8]"
+                      >
+                        • {pick.username}
+                      </div>
+
+                    )
+                  )}
+
+                </div>
+
+              </div>
+
+            )
+
+          })}
+
+        </div>
+
+      )}
+
+    </>
+
+  )}
+
+</div>
+  </>
+)}
 
           {isLocked && (
             <div className="mt-2 text-xs font-medium text-red-500">
