@@ -1,5 +1,6 @@
 "use client"
 
+import { supabase } from "@/lib/supabase"
 import { useEffect, useState } from "react"
 
 export default function UsernameModal() {
@@ -19,18 +20,60 @@ export default function UsernameModal() {
 
   }, [])
 
-  const saveName = () => {
+  const saveName = async () => {
 
-    if (!name.trim()) return
+  if (!name.trim()) return
+
+  const { data: existingUser } =
+    await supabase
+      .from("users")
+      .select("*")
+      .eq("username", name.trim())
+      .maybeSingle()
+
+  if (existingUser) {
 
     localStorage.setItem(
-  "wc-user",
-  name.trim().toLowerCase()
-)
+      "wc-user",
+      existingUser.username
+    )
 
-    setShowModal(false)
+    localStorage.setItem(
+      "user-id",
+      existingUser.id
+    )
+
+  } else {
+
+    const { data: newUser, error } =
+      await supabase
+        .from("users")
+        .insert({
+          username: name.trim(),
+        })
+        .select()
+        .single()
+
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    localStorage.setItem(
+      "wc-user",
+      newUser.username
+    )
+
+    localStorage.setItem(
+      "user-id",
+      newUser.id
+    )
 
   }
+
+  setShowModal(false)
+
+}
 
   if (!showModal) {
     return null

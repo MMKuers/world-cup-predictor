@@ -239,13 +239,18 @@ const awayCode =
   .from("predictions")
   .upsert(
     {
-      username: localStorage.getItem("wc-user"),
-      match_key: storageKey,
-      prediction: home,
-      points: 0,
-    },
+  user_id:
+    localStorage.getItem("user-id"),
+
+  username:
+    localStorage.getItem("wc-user"),
+
+  match_key: storageKey,
+  prediction: home,
+  points: 0,
+},
     {
-      onConflict: "username,match_key",
+      onConflict: "user_id,match_key",
     }
   )
 
@@ -283,13 +288,18 @@ const awayCode =
     .from("predictions")
     .upsert(
       {
-        username: localStorage.getItem("wc-user"),
-        match_key: storageKey,
-        prediction: "Draw",
-        points: 0,
-      },
+  user_id:
+    localStorage.getItem("user-id"),
+
+  username:
+    localStorage.getItem("wc-user"),
+
+  match_key: storageKey,
+  prediction: "Draw",
+  points: 0,
+},
       {
-        onConflict: "username,match_key",
+        onConflict: "user_id,match_key",
       }
     )
 }}
@@ -322,13 +332,18 @@ const awayCode =
     .from("predictions")
     .upsert(
       {
-        username: localStorage.getItem("wc-user"),
-        match_key: storageKey,
-        prediction: away,
-        points: 0,
-      },
+  user_id:
+    localStorage.getItem("user-id"),
+
+  username:
+    localStorage.getItem("wc-user"),
+
+  match_key: storageKey,
+  prediction: away,
+  points: 0,
+},
       {
-        onConflict: "username,match_key",
+        onConflict: "user_id,match_key",
       }
     )
 }}
