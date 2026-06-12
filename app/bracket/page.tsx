@@ -7,30 +7,50 @@ import { calculateStandings } from "@/lib/calculateStandings"
 import { countryCodes } from "@/data/countryCodes"
 import GroupDrawer from "@/components/GroupDrawer"
 import { generateBracket } from "@/lib/generateBracket"
+import { useEffect } from "react"
+import { buildMatchesFromApi } from "@/lib/buildMatchesFromApi"
+
+export default function BracketPage() {
+  const [matches, setMatches] =
+  useState<any[]>([])
+useEffect(() => {
+
+  async function loadMatches() {
+
+    const response =
+      await fetch("/api/football")
+
+    const data =
+      await response.json()
+
+    setMatches(data.matches)
+
+  }
+
+  loadMatches()
+
+}, [])
+const apiMatches =
+  buildMatchesFromApi(matches)
+const standings =
+  calculateStandings(apiMatches)
+    
 
 
-
-
-const {
+    const knockoutMatches =
+  generateBracket(standings)
+  const {
   roundOf32,
   roundOf16,
   quarterfinals,
   semifinals,
   final,
-} = generateBracket()
+} = knockoutMatches
 
 
 
 
 
-
-
-export default function BracketPage() {
-
-  const standings =
-    calculateStandings()
-    const knockoutMatches =
-  generateBracket()
     const [
   selectedGroup,
   setSelectedGroup,

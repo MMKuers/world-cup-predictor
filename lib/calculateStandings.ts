@@ -13,11 +13,13 @@ type TeamStats = {
   points: number
 }
 
-export function calculateStandings() {
+export function calculateStandings(
+  matches = groupStageMatches
+) {
 
   const table: Record<string, TeamStats> = {}
 
-  groupStageMatches.forEach((match) => {
+matches.forEach((match) => {
 
     const {
       home,
@@ -26,7 +28,7 @@ export function calculateStandings() {
       homeScore,
       awayScore,
     } = match
-
+if (!group) return
     if (!table[home]) {
 
       table[home] = {

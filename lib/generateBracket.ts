@@ -11,10 +11,11 @@ export type KnockoutMatch = {
   winner: string | null
 }
 
-export function generateBracket() {
+export function generateBracket(
+  standings: Record<string, any[]>
+) {
 
-  const standings =
-    calculateStandings()
+
 
   const first =
     (group: string) =>
