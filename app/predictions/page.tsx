@@ -79,7 +79,9 @@ setUsername(
 
 const predictionRow =
   dbPredictions.find(
-    (p) => p.match_key === matchKey
+    (p) =>
+      p.match_key === matchKey &&
+      p.username === username
   )
 
 
