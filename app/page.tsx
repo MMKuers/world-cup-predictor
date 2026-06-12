@@ -190,8 +190,8 @@ if (matches.length > 0) {
 
  kickoff={match.utcDate}
 
-  homeScore={null}
-  awayScore={null}
+  homeScore={match.score?.fullTime?.home}
+awayScore={match.score?.fullTime?.away}
 />
                   ))}
 

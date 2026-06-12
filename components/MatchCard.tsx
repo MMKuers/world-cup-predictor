@@ -111,9 +111,19 @@ const awayCode =
 )}
               </div>
 
-              <div className="text-[20px] font-semibold text-[#102348]">
-                {home}
-              </div>
+              <div className="flex w-full items-center justify-between">
+
+  <div className="text-[20px] font-semibold text-[#102348]">
+    {home}
+  </div>
+
+  {status === "FINAL" && (
+  <div className="w-8 text-right text-3xl font-bold text-[#102348]">
+    {homeScore}
+  </div>
+)}
+
+</div>
 
             </div>
 
@@ -129,9 +139,19 @@ const awayCode =
                 )}
               </div>
 
-              <div className="text-[20px] font-semibold text-[#102348]">
-                {away}
-              </div>
+              <div className="flex w-full items-center justify-between">
+
+  <div className="text-[20px] font-semibold text-[#102348]">
+    {away}
+  </div>
+
+  {status === "FINAL" && (
+  <div className="w-8 text-right text-3xl font-bold text-[#102348]">
+    {awayScore}
+  </div>
+)}
+
+</div>
 
             </div>
 

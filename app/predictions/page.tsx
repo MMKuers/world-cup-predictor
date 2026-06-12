@@ -160,22 +160,49 @@ points:
 
     }
   )
-const leaderboard = Object.values(
-  dbPredictions.reduce((acc: any, prediction: any) => {
-    if (!acc[prediction.username]) {
-      acc[prediction.username] = {
-        name: prediction.username,
-        points: 0,
-      }
-    }
+const leaderboardMap: Record<string, number> = {}
 
-    acc[prediction.username].points +=
-      prediction.points || 0
+dbPredictions.forEach((prediction) => {
 
-    return acc
-  }, {})
+  if (!leaderboardMap[prediction.username]) {
+    leaderboardMap[prediction.username] = 0
+  }
+
+  const match = matches.find(
+    (m) =>
+      `${m.homeTeam.name}-${m.awayTeam.name}` ===
+      prediction.match_key
+  )
+
+  if (!match) return
+
+  if (match.score?.winner === null) return
+
+  const correct =
+    (match.score.winner === "HOME_TEAM" &&
+      prediction.prediction === match.homeTeam.name) ||
+
+    (match.score.winner === "AWAY_TEAM" &&
+      prediction.prediction === match.awayTeam.name) ||
+
+    (match.score.winner === "DRAW" &&
+      prediction.prediction === "Draw")
+
+  if (correct) {
+    leaderboardMap[prediction.username] += 3
+  }
+})
+
+const leaderboard = Object.entries(
+  leaderboardMap
 )
-  .sort((a: any, b: any) => b.points - a.points)
+  .map(([name, points]) => ({
+    name,
+    points,
+  }))
+  .sort(
+    (a: any, b: any) => b.points - a.points
+  )
   .map((player: any, index) => ({
     rank: index + 1,
     name: player.name,
