@@ -11,14 +11,14 @@ export default function UsernameModal() {
 
   useEffect(() => {
 
-    const existingName =
-      localStorage.getItem("wc-user")
+  const existingName =
+  localStorage.getItem("wc-user")
 
-    if (!existingName) {
-      setShowModal(true)
-    }
+if (!existingName) {
+  setShowModal(true)
+}
 
-  }, [])
+}, [])
 
   const saveName = async () => {
 

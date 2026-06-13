@@ -245,6 +245,7 @@ const leaderboard = Object.entries(
   <h1 className="text-4xl font-bold text-[#102348]">
     MK's World Cup App
   </h1>
+ 
 
   {username ? (
 
