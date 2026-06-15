@@ -101,12 +101,32 @@ console.log(
  const matchKey =
   `${match.homeTeam.name}-${match.awayTeam.name}`
 
-const predictionRow =
+  const predictionRow =
   dbPredictions.find(
     (p) =>
       p.match_key === matchKey &&
       p.user_id === userId
   )
+
+console.log("CURRENT USER ID:", userId)
+
+console.log(
+  "MATCHING PREDICTIONS:",
+  dbPredictions.filter(
+    p => p.user_id === userId
+  ).length
+)
+
+console.log("CURRENT USER ID:", userId)
+
+console.log(
+  "MATCHING PREDICTIONS:",
+  dbPredictions.filter(
+    p => p.user_id === userId
+  ).length
+)
+
+  
 
 
 

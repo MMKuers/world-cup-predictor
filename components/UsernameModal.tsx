@@ -14,7 +14,13 @@ export default function UsernameModal() {
   const existingName =
   localStorage.getItem("wc-user")
 
-if (!existingName) {
+const existingUserId =
+  localStorage.getItem("user-id")
+
+if (
+  !existingName ||
+  !existingUserId
+) {
   setShowModal(true)
 }
 
