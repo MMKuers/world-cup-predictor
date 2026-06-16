@@ -174,16 +174,16 @@ const kickoffDate =
 )}
               </div>
 
-              <div className="flex w-full items-center justify-between">
+              <div className="flex min-w-0 w-full items-center justify-between">
 
-  <div className="text-[20px] font-semibold text-[#102348]">
-    {home}
-  </div>
+ <div className="min-w-0 flex-1 truncate text-[20px] font-semibold text-[#102348]">
+  {home}
+</div>
 
   {(status === "FINAL" ||
   status === "LIVE") && (
   <div
-    className={`w-8 text-right text-3xl font-bold ${
+  className={`ml-2 w-10 flex-shrink-0 text-right text-2xl md:text-3xl font-bold ${
       status === "LIVE"
         ? "text-red-600"
         : "text-[#102348]"
@@ -209,16 +209,16 @@ const kickoffDate =
                 )}
               </div>
 
-              <div className="flex w-full items-center justify-between">
+              <div className="flex min-w-0 w-full items-center justify-between">
 
-  <div className="text-[20px] font-semibold text-[#102348]">
-    {away}
-  </div>
+  <div className="min-w-0 flex-1 truncate text-[20px] font-semibold text-[#102348]">
+  {away}
+</div>
 
   {(status === "FINAL" ||
   status === "LIVE") && (
   <div
-    className={`w-8 text-right text-3xl font-bold ${
+  className={`ml-2 w-10 flex-shrink-0 text-right text-2xl md:text-3xl font-bold ${
       status === "LIVE"
         ? "text-red-600"
         : "text-[#102348]"
@@ -236,15 +236,13 @@ const kickoffDate =
 
         </div>
 
-        <div className="ml-4 text-right">
+        <div className="ml-3 w-[90px] flex-shrink-0 text-right">
 
-          <div className="text-[11px] uppercase tracking-wide text-[#6f7f9d]">
-  {stadium}
+         
+
+          <div className="mt-1 text-[18px] md:text-[22px] font-bold leading-none text-[#102348]">
+  {formattedTime}
 </div>
-
-          <div className="mt-1 text-[22px] font-bold leading-none text-[#102348]">
-            {formattedTime}
-          </div>
 
           <div className="mt-2 text-[12px] text-[#6f7f9d]">
             {stadium}

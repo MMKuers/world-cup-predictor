@@ -5,7 +5,11 @@ import BottomNav from "@/components/BottomNav"
 
 import UsernameModal from "@/components/UsernameModal"
 import { calculateStandings } from "@/lib/calculateStandings"
-import { useState, useEffect } from "react"
+import {
+  useState,
+  useEffect,
+  useRef,
+} from "react"
 
 export default function HomePage() {
  const [username, setUsername] =
@@ -14,6 +18,10 @@ export default function HomePage() {
 const [totalPoints, setTotalPoints] =
   useState(0)
 const [matches, setMatches] = useState<any[]>([])
+const [selectedDate, setSelectedDate] =
+  useState("")
+  const dateStripRef =
+  useRef<HTMLDivElement>(null)
 useEffect(() => {
   setUsername(
     localStorage.getItem("wc-user") || ""
@@ -92,7 +100,14 @@ useEffect(() => {
 
 
   const groupedMatches: Record<string, any[]> =
-  matches.reduce((acc, match) => {
+  matches
+    .filter(
+      (match) =>
+        match.status !== "IN_PLAY" &&
+        match.status !== "PAUSED"
+    )
+    .reduce((acc, match) => {
+    
 
     const date =
   new Date(match.utcDate)
@@ -109,6 +124,70 @@ useEffect(() => {
     return acc
 
   }, {} as Record<string, any[]>)
+  const liveMatches = matches.filter(
+     
+  (match) =>
+    match.status === "IN_PLAY" ||
+    match.status === "PAUSED"
+)
+const availableDates =
+  Object.keys(groupedMatches).sort()
+  useEffect(() => {
+
+  if (
+    availableDates.length > 0 &&
+    !selectedDate
+  ) {
+
+    const today =
+      new Date()
+        .toLocaleDateString(
+          "en-CA",
+          {
+            timeZone:
+              "America/Chicago",
+          }
+        )
+
+    if (
+      availableDates.includes(today)
+    ) {
+      setSelectedDate(today)
+    } else {
+      setSelectedDate(
+        availableDates[0]
+      )
+    }
+
+  }
+
+}, [
+  availableDates,
+  selectedDate,
+])
+useEffect(() => {
+
+  if (
+    !selectedDate ||
+    !dateStripRef.current
+  ) {
+    return
+  }
+
+  const activeButton =
+    dateStripRef.current.querySelector(
+      "[data-active='true']"
+    ) as HTMLElement | null
+
+  if (!activeButton) return
+
+  activeButton.scrollIntoView({
+    behavior: "smooth",
+    inline: "center",
+    block: "nearest",
+  })
+
+}, [selectedDate])
 if (matches.length > 0) {
   console.log(
     "STATUS:",
@@ -154,8 +233,92 @@ if (matches.length > 0) {
 </div>
 
       <div className="space-y-10">
+       <div
+  ref={dateStripRef}
+  className="overflow-x-auto pb-2"
+>
 
-        {Object.entries(groupedMatches).map(
+  <div className="flex gap-3">
+
+    {availableDates.map(
+      (date) => (
+
+        <button
+  key={date}
+  data-active={
+    selectedDate === date
+  }
+          onClick={() =>
+            setSelectedDate(date)
+          }
+          className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
+            selectedDate === date
+              ? "bg-[#102348] text-white"
+              : "bg-white text-[#102348]"
+          }`}
+        >
+
+          {new Date(
+            date + "T12:00:00"
+          ).toLocaleDateString(
+            "en-US",
+            {
+              month: "short",
+              day: "numeric",
+            }
+          )}
+
+        </button>
+
+      )
+    )}
+
+  </div>
+
+</div>
+        {liveMatches.length > 0 && (
+
+  <div>
+
+    <h2 className="mb-4 text-xl font-bold text-red-600">
+      🔴 Live Now
+    </h2>
+
+    <div className="space-y-4">
+
+      {liveMatches.map((match) => (
+
+        <MatchCard
+          key={`live-${match.id}`}
+          home={match.homeTeam?.name || ""}
+          away={match.awayTeam?.name || ""}
+          group={match.group}
+          stadium={match.stadium}
+          status={
+            match.status === "PAUSED"
+              ? "HALFTIME"
+              : "LIVE"
+          }
+          kickoff={match.utcDate}
+          homeScore={match.score?.fullTime?.home}
+          awayScore={match.score?.fullTime?.away}
+          minute={match.minute}
+        />
+
+      ))}
+
+    </div>
+
+  </div>
+
+)}
+
+        {Object.entries(groupedMatches)
+  .filter(
+    ([date]) =>
+      date === selectedDate
+  )
+  .map(
   ([date, matches]) => {
 
            /* const formattedDate =
