@@ -86,7 +86,11 @@ const standings =
 
   <div className="space-y-6">
 
-    {Object.entries(standings).map(
+    {Object.entries(standings)
+  .sort(([a], [b]) =>
+    a.localeCompare(b)
+  )
+  .map(
       ([groupName, teams]) => (
 
         <div
@@ -281,7 +285,7 @@ const standings =
               </div>
 
               <div className="rounded-2xl bg-[#edf3ff] px-4 py-3 font-semibold text-[#102348]">
-                {match.home}
+                {match.away}
               </div>
 
             </div>
@@ -384,6 +388,7 @@ const standings =
       
 <GroupDrawer
   group={selectedGroup}
+  standings={standings}
   onClose={() =>
     setSelectedGroup(null)
   }

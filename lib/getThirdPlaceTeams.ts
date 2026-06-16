@@ -7,7 +7,12 @@ export function getThirdPlaceTeams() {
 
   const thirdPlaceTeams =
     Object.values(standings)
-      .map((group) => group[2])
+      .map((group, index) => ({
+  ...group[2],
+  group: String.fromCharCode(
+    65 + index
+  ),
+}))
       .filter(Boolean)
 
   thirdPlaceTeams.sort((a, b) => {

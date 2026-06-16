@@ -5,21 +5,34 @@ import { countryCodes } from "@/data/countryCodes"
 
 type Props = {
   group: string | null
+  standings: Record<string, any[]>
   onClose: () => void
 }
 
 export default function GroupDrawer({
   group,
+  standings,
   onClose,
 }: Props) {
 
   if (!group) return null
 
-  const standings =
-    calculateStandings()
+  
 
   const teams =
     standings[group] || []
+console.log(
+  "FIRST TEAM:",
+  JSON.stringify(
+    teams[0],
+    null,
+    2
+  )
+)
+    console.log(
+  "GROUP DRAWER TEAMS:",
+  teams
+)
 
   return (
 

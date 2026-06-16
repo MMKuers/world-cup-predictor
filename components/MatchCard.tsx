@@ -14,6 +14,8 @@ type Props = {
 
   homeScore: number | null
   awayScore: number | null
+
+  minute?: number
 }
 
 export default function MatchCard({
@@ -25,6 +27,7 @@ export default function MatchCard({
   kickoff,
   homeScore,
   awayScore,
+  minute,
 }: Props) {
  
 
@@ -177,8 +180,15 @@ const kickoffDate =
     {home}
   </div>
 
-  {status === "FINAL" && (
-  <div className="w-8 text-right text-3xl font-bold text-[#102348]">
+  {(status === "FINAL" ||
+  status === "LIVE") && (
+  <div
+    className={`w-8 text-right text-3xl font-bold ${
+      status === "LIVE"
+        ? "text-red-600"
+        : "text-[#102348]"
+    }`}
+  >
     {homeScore}
   </div>
 )}
@@ -205,8 +215,15 @@ const kickoffDate =
     {away}
   </div>
 
-  {status === "FINAL" && (
-  <div className="w-8 text-right text-3xl font-bold text-[#102348]">
+  {(status === "FINAL" ||
+  status === "LIVE") && (
+  <div
+    className={`w-8 text-right text-3xl font-bold ${
+      status === "LIVE"
+        ? "text-red-600"
+        : "text-[#102348]"
+    }`}
+  >
     {awayScore}
   </div>
 )}
@@ -237,6 +254,8 @@ const kickoffDate =
   className={`mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${
     status === "LIVE"
       ? "bg-red-100 text-red-600"
+      : status === "HALFTIME"
+      ? "bg-orange-100 text-orange-600"
       : status === "FINAL"
       ? "bg-green-100 text-green-600"
       : "bg-white text-[#4564a8]"
@@ -247,7 +266,13 @@ const kickoffDate =
     <div className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
   )}
 
-  {status}
+  {status === "LIVE"
+    ? minute
+      ? `${minute}'`
+      : "LIVE"
+    : status === "HALFTIME"
+    ? "HT"
+    : status}
 
 </div>
 

@@ -33,6 +33,24 @@ useEffect(() => {
 console.log("API SCORE:", data.matches[0]?.score)
 
 setMatches(data.matches)
+const nullMatch = data.matches.find(
+  (m: any) =>
+    !m.homeTeam?.name ||
+    !m.awayTeam?.name
+)
+
+console.log(
+  "FIRST NULL MATCH DETAILS",
+  {
+    id: nullMatch?.id,
+    stage: nullMatch?.stage,
+    group: nullMatch?.group,
+    matchday: nullMatch?.matchday,
+    homeTeam: nullMatch?.homeTeam,
+    awayTeam: nullMatch?.awayTeam,
+    status: nullMatch?.status
+  }
+)
   }
 
   loadMatches()
@@ -180,18 +198,20 @@ if (matches.length > 0) {
   stadium={match.stadium}
 
   status={
-    match.status === "FINISHED"
-      ? "FINAL"
-      : new Date() >
-        new Date(match.utcDate)
-      ? "LIVE"
-      : "UPCOMING"
-  }
+  match.status === "FINISHED"
+    ? "FINAL"
+    : match.status === "IN_PLAY"
+    ? "LIVE"
+    : match.status === "PAUSED"
+    ? "HALFTIME"
+    : "UPCOMING"
+}
 
  kickoff={match.utcDate}
 
   homeScore={match.score?.fullTime?.home}
 awayScore={match.score?.fullTime?.away}
+minute={match.minute}
 />
                   ))}
 
