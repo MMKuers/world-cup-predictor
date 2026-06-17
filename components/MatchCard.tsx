@@ -240,7 +240,7 @@ const kickoffDate =
 
          
 
-          <div className="mt-1 text-[18px] md:text-[22px] font-bold leading-none text-[#102348]">
+          <div className="mt-1 whitespace-nowrap text-[18px] md:text-[22px] font-bold leading-none text-[#102348]">
   {formattedTime}
 </div>
 

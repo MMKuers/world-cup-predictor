@@ -2,7 +2,7 @@
 
 import MatchCard from "@/components/MatchCard"
 import BottomNav from "@/components/BottomNav"
-
+import { supabase } from "@/lib/supabase"
 import UsernameModal from "@/components/UsernameModal"
 import { calculateStandings } from "@/lib/calculateStandings"
 import {
@@ -67,36 +67,39 @@ console.log(
 
 useEffect(() => {
 
-  let points = 0
+  async function loadPoints() {
 
- matches.forEach((match) => {
+    const userId =
+      localStorage.getItem("user-id")
 
-  const prediction =
-    localStorage.getItem(
-      `${match.homeTeam?.name}-${match.awayTeam?.name}`
-    )
+    if (!userId) return
 
-  if (!prediction) return
+    const { data, error } =
+      await supabase
+        .from("predictions")
+        .select("*")
+        .eq("user_id", userId)
 
-  const correct =
-    (match.score?.winner === "HOME_TEAM" &&
-      prediction === match.homeTeam?.name) ||
+    if (error || !data) {
+      console.error(error)
+      return
+    }
 
-    (match.score?.winner === "AWAY_TEAM" &&
-      prediction === match.awayTeam?.name) ||
+    let points = 0
 
-    (match.score?.winner === "DRAW" &&
-      prediction === "Draw")
+    data.forEach((prediction) => {
 
-  if (correct) {
-    points += 3
+      points += prediction.points || 0
+
+    })
+
+    setTotalPoints(points)
+
   }
 
-})
+  loadPoints()
 
-  setTotalPoints(points)
-
-}, [matches])
+}, [])
 
 
   const groupedMatches: Record<string, any[]> =
@@ -202,7 +205,7 @@ if (matches.length > 0) {
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-6 pb-24">
 <UsernameModal />
-      <div className="mb-8">
+      <div className="sticky top-0 z-40 -mx-6 mb-6 bg-[#f3f7ff] px-6 pt-4 pb-4">
 
   <h1 className="text-4xl font-bold text-[#102348]">
     MK's World Cup App
@@ -222,20 +225,14 @@ if (matches.length > 0) {
   </p>
 
 )}
+<div className="mt-4">
 
-</div>
-      <div className="sticky top-4 z-40 mb-6 flex justify-end">
-
-  <div className="rounded-full bg-[#102348] px-5 py-3 text-sm font-bold text-white shadow-lg">
+  <div className="inline-flex items-center rounded-full bg-[#102348] px-5 py-3 text-sm font-bold text-white shadow-sm">
     {totalPoints} pts
   </div>
-
-</div>
-
-      <div className="space-y-10">
-       <div
+<div
   ref={dateStripRef}
-  className="overflow-x-auto pb-2"
+  className="overflow-x-auto pb-2 scrollbar-hide"
 >
 
   <div className="flex gap-3">
@@ -276,6 +273,12 @@ if (matches.length > 0) {
   </div>
 
 </div>
+</div>
+</div>
+      
+
+      <div className="space-y-10">
+       
         {liveMatches.length > 0 && (
 
   <div>
