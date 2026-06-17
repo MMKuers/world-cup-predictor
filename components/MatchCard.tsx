@@ -16,6 +16,7 @@ type Props = {
   awayScore: number | null
 
   minute?: number
+  onTeamClick?: (team: string) => void
 }
 
 export default function MatchCard({
@@ -28,6 +29,7 @@ export default function MatchCard({
   homeScore,
   awayScore,
   minute,
+  onTeamClick,
 }: Props) {
   const homeCode =
     countryCodes[home.trim()]
@@ -135,6 +137,19 @@ export default function MatchCard({
       ? "HT"
       : status
 
+  const openTeamDetails = (
+    team: string,
+    event: React.MouseEvent
+  ) => {
+    event.stopPropagation()
+
+    if (!team || !onTeamClick) {
+      return
+    }
+
+    onTeamClick(team)
+  }
+
   return (
     <div
       onClick={() => {
@@ -154,7 +169,13 @@ export default function MatchCard({
 
           <div className="space-y-3">
 
-            <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={(event) =>
+                openTeamDetails(home, event)
+              }
+              className="flex w-full items-center gap-2.5 rounded-xl text-left transition hover:bg-[#f8fbff] focus:outline-none focus:ring-2 focus:ring-[#c9d8f5]"
+            >
               <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#f3f7ff]">
                 {homeCode && (
                   <img
@@ -165,8 +186,8 @@ export default function MatchCard({
                 )}
               </div>
 
-              <div className="flex min-w-0 flex-1 items-center justify-between">
-                <div className="min-w-0 flex-1 truncate text-base font-semibold text-[#102348]">
+              <div className="flex min-w-0 flex-1 items-center justify-between py-0.5">
+                <div className="min-w-0 flex-1 truncate text-base font-semibold text-[#102348] underline-offset-4 hover:underline">
                   {home}
                 </div>
 
@@ -183,9 +204,15 @@ export default function MatchCard({
                   </div>
                 )}
               </div>
-            </div>
+            </button>
 
-            <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={(event) =>
+                openTeamDetails(away, event)
+              }
+              className="flex w-full items-center gap-2.5 rounded-xl text-left transition hover:bg-[#f8fbff] focus:outline-none focus:ring-2 focus:ring-[#c9d8f5]"
+            >
               <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#f3f7ff]">
                 {awayCode && (
                   <img
@@ -196,8 +223,8 @@ export default function MatchCard({
                 )}
               </div>
 
-              <div className="flex min-w-0 flex-1 items-center justify-between">
-                <div className="min-w-0 flex-1 truncate text-base font-semibold text-[#102348]">
+              <div className="flex min-w-0 flex-1 items-center justify-between py-0.5">
+                <div className="min-w-0 flex-1 truncate text-base font-semibold text-[#102348] underline-offset-4 hover:underline">
                   {away}
                 </div>
 
@@ -214,7 +241,7 @@ export default function MatchCard({
                   </div>
                 )}
               </div>
-            </div>
+            </button>
 
           </div>
 
@@ -406,7 +433,7 @@ export default function MatchCard({
                                       key={pick.id}
                                       className="text-xs text-[#4564a8]"
                                     >
-                                      • {pick.username}
+                                      - {pick.username}
                                     </div>
                                   )
                                 )}
