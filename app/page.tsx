@@ -1,6 +1,7 @@
 "use client"
 
 import MatchCard from "@/components/MatchCard"
+import TeamDetailsSheet from "@/components/TeamDetailsSheet"
 import BottomNav from "@/components/BottomNav"
 import { supabase } from "@/lib/supabase"
 import UsernameModal from "@/components/UsernameModal"
@@ -24,6 +25,8 @@ const [totalPoints, setTotalPoints] =
   useState(0)
 const [matches, setMatches] = useState<any[]>([])
 const [selectedDate, setSelectedDate] =
+  useState("")
+const [selectedTeam, setSelectedTeam] =
   useState("")
   const dateStripRef =
   useRef<HTMLDivElement>(null)
@@ -302,7 +305,7 @@ if (matches.length > 0) {
   <div>
 
     <h2 className="mb-3 text-lg font-bold text-red-600">
-      🔴 Live Now
+      Live Now
     </h2>
 
     <div className="space-y-3">
@@ -324,6 +327,7 @@ if (matches.length > 0) {
           homeScore={match.score?.fullTime?.home}
           awayScore={match.score?.fullTime?.away}
           minute={match.minute}
+          onTeamClick={setSelectedTeam}
         />
 
       ))}
@@ -396,6 +400,7 @@ if (matches.length > 0) {
   homeScore={match.score?.fullTime?.home}
 awayScore={match.score?.fullTime?.away}
 minute={match.minute}
+onTeamClick={setSelectedTeam}
 />
                   ))}
 
@@ -407,6 +412,16 @@ minute={match.minute}
         )}
 
       </div>
+
+      {selectedTeam && (
+        <TeamDetailsSheet
+          team={selectedTeam}
+          matches={matches}
+          onClose={() =>
+            setSelectedTeam("")
+          }
+        />
+      )}
 
       <BottomNav />
 
