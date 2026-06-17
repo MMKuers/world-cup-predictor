@@ -233,18 +233,18 @@ const leaderboard =
     username
   )
   return (
-    <main className="min-h-screen bg-[#f3f7ff] p-6 pb-24">
+    <main className="min-h-screen bg-[#f3f7ff] p-4 pb-20">
 
-      <div className="mb-8">
+      <div className="mb-5">
 
-  <h1 className="text-4xl font-bold text-[#102348]">
+  <h1 className="text-2xl font-bold text-[#102348]">
     MK's World Cup App
   </h1>
  
 
   {username ? (
 
-  <p className="mt-2 text-[#6f7f9d]">
+  <p className="mt-1 truncate text-sm text-[#6f7f9d]">
 
     {username}'s tournament predictions
 
@@ -252,7 +252,7 @@ const leaderboard =
 
 ) : (
 
-    <p className="mt-2 text-[#6f7f9d]">
+    <p className="mt-1 text-sm text-[#6f7f9d]">
       Track your World Cup predictions
     </p>
 
@@ -260,53 +260,53 @@ const leaderboard =
 
 </div>
 
-      <div className="mb-6 rounded-[28px] bg-[#102348] p-6 text-white shadow-sm">
+      <div className="mb-4 rounded-2xl bg-[#102348] p-4 text-white shadow-sm">
 
-  <div className="text-sm text-white/70">
+  <div className="text-xs font-semibold uppercase text-white/70">
     Fantasy Score
   </div>
 
-  <div className="mt-2 text-5xl font-bold">
+  <div className="mt-1 text-3xl font-bold">
     {totalPoints} pts
   </div>
 
 </div>
 
-<div className="mt-8">
+<div className="mt-5">
 
-  <div className="grid grid-cols-2 gap-4">
+  <div className="grid grid-cols-3 gap-3">
 
-    <div className="rounded-[28px] bg-[#102348] p-5 text-white shadow-sm">
+    <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-[#dbe5f6]">
 
-      <div className="text-sm text-white/70">
-        Total Picks
+      <div className="text-xs font-semibold uppercase text-[#6f7f9d]">
+        Picks
       </div>
 
-      <div className="mt-2 text-4xl font-bold">
+      <div className="mt-1 text-2xl font-bold text-[#102348]">
         {totalPredictions}
       </div>
 
     </div>
 
-    <div className="rounded-[28px] bg-[#dfe9ff] p-5 shadow-sm">
+    <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-[#dbe5f6]">
 
-      <div className="text-sm text-[#6f7f9d]">
-        Locked Picks
+      <div className="text-xs font-semibold uppercase text-[#6f7f9d]">
+        Locked
       </div>
 
-      <div className="mt-2 text-4xl font-bold text-[#102348]">
+      <div className="mt-1 text-2xl font-bold text-[#102348]">
         {lockedPredictions}
       </div>
 
     </div>
 
-    <div className="col-span-2 rounded-[28px] bg-white p-5 shadow-sm">
+    <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-[#dbe5f6]">
 
-      <div className="text-sm text-[#6f7f9d]">
-        Upcoming Picks
+      <div className="text-xs font-semibold uppercase text-[#6f7f9d]">
+        Open
       </div>
 
-      <div className="mt-2 text-4xl font-bold text-[#102348]">
+      <div className="mt-1 text-2xl font-bold text-[#102348]">
         {upcomingPredictions}
       </div>
 
@@ -314,15 +314,15 @@ const leaderboard =
 
   </div>
 
-  <div className="mt-8">
+  <div className="mt-6">
 
-    <h2 className="mb-4 text-2xl font-bold text-[#102348]">
+    <h2 className="mb-3 text-xl font-bold text-[#102348]">
       Leaderboard
     </h2>
 
-    <div className="overflow-hidden rounded-[28px] bg-white shadow-sm">
+    <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-[#dbe5f6]">
 
-      <div className="grid grid-cols-3 border-b border-[#edf3ff] px-5 py-4 text-xs font-semibold uppercase tracking-wide text-[#6f7f9d]">
+      <div className="grid grid-cols-3 border-b border-[#edf3ff] px-4 py-3 text-[11px] font-semibold uppercase text-[#6f7f9d]">
 
         <div>Rank</div>
 
@@ -338,7 +338,7 @@ const leaderboard =
 
         <div
           key={player.id}
-          className={`grid grid-cols-3 items-center border-b border-[#edf3ff] px-5 py-4 last:border-b-0 ${
+          className={`grid grid-cols-3 items-center border-b border-[#edf3ff] px-4 py-3 last:border-b-0 ${
             player.you
               ? "bg-[#edf3ff]"
               : "bg-white"
@@ -346,7 +346,7 @@ const leaderboard =
         >
 
           <div
-            className={`font-bold ${
+            className={`text-sm font-bold ${
               player.you
                 ? "text-[#102348]"
                 : "text-[#6f7f9d]"
@@ -357,19 +357,19 @@ const leaderboard =
 
           <div>
 
-            <div className="font-semibold text-[#102348]">
+            <div className="truncate text-sm font-semibold text-[#102348]">
               {player.name}
             </div>
 
             {player.you && (
-              <div className="text-xs text-[#4564a8]">
+              <div className="text-[11px] text-[#4564a8]">
                 You
               </div>
             )}
 
           </div>
 
-          <div className="text-right text-lg font-bold text-[#102348]">
+          <div className="text-right text-base font-bold text-[#102348]">
             {player.points}
           </div>
 
@@ -378,7 +378,7 @@ const leaderboard =
       ))}
 
       <button
-        className="w-full border-t border-[#edf3ff] bg-white px-5 py-4 text-sm font-semibold text-[#102348] transition hover:bg-[#f8fbff]"
+        className="w-full border-t border-[#edf3ff] bg-white px-4 py-3 text-xs font-semibold text-[#102348] transition hover:bg-[#f8fbff]"
       >
         Show Full Leaderboard
       </button>
@@ -387,20 +387,20 @@ const leaderboard =
 
   </div>
 
-  <div className="mt-8">
+  <div className="mt-6">
 
-    <h2 className="mb-4 text-2xl font-bold text-[#102348]">
+    <h2 className="mb-3 text-xl font-bold text-[#102348]">
       Your Picks
     </h2>
 
-    <div className="space-y-4">
+    <div className="space-y-3">
 
       {predictedMatches.map(
         (match) => (
 
           <div
             key={match.id}
-            className={`rounded-[28px] p-5 shadow-sm ${
+            className={`rounded-2xl p-4 shadow-sm ring-1 ring-[#dbe5f6] ${
               match.status === "Correct"
                 ? "bg-green-50"
                 : match.status === "Incorrect"
@@ -409,15 +409,15 @@ const leaderboard =
             }`}
           >
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3">
 
-              <div>
+              <div className="min-w-0">
 
-                <div className="text-lg font-semibold text-[#102348]">
+                <div className="truncate text-base font-semibold text-[#102348]">
                   {match.home} vs {match.away}
                 </div>
 
-                <div className="text-sm text-[#6f7f9d]">
+                <div className="text-xs text-[#6f7f9d]">
                   {new Date(match.kickoff).toLocaleDateString(
                     "en-US",
                     {
@@ -427,21 +427,21 @@ const leaderboard =
                   )}
                 </div>
 
-                <div className="mt-2 text-sm text-[#6f7f9d]">
-                  Your pick:
+                <div className="mt-1 text-xs text-[#6f7f9d]">
+                  Pick:
                   <span className="ml-1 font-semibold text-[#102348]">
                     {match.prediction}
                   </span>
                 </div>
 
-                <div className="mt-2 text-sm font-semibold text-[#102348]">
+                <div className="mt-1 text-xs font-semibold text-[#102348]">
                   {match.points} pts
                 </div>
 
               </div>
 
               <div
-                className={`rounded-full px-3 py-1 text-xs font-medium ${
+                className={`flex-shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
                   match.status === "Correct"
                     ? "bg-green-100 text-green-600"
                     : match.status === "Incorrect"
