@@ -8,6 +8,8 @@ export default function PredictionsPage() {
 
   const [dbPredictions, setDbPredictions] =
   useState<any[]>([])
+  const [dbUsers, setDbUsers] =
+  useState<any[]>([])
   const [matches, setMatches] =
   useState<any[]>([])
 const [username, setUsername] =
@@ -32,6 +34,11 @@ if (matches.length > 0) {
         await supabase
           .from("predictions")
           .select("*")
+
+      const { data: users } =
+        await supabase
+          .from("users")
+          .select("*")
           
 
       console.log("SUPABASE DATA:", data)
@@ -41,6 +48,7 @@ console.log(
   localStorage.getItem("user-id")
 )
       setDbPredictions(data || [])
+      setDbUsers(users || [])
       console.log("FIRST DB PREDICTION:", data?.[0])
 const matchResponse =
   await fetch("/api/football")
@@ -206,12 +214,35 @@ points:
 
     }
   )
-const leaderboardMap: Record<string, number> = {}
+const usersById: Record<string, string> = {}
+
+dbUsers.forEach((user) => {
+  usersById[user.id] = user.username
+})
+
+const leaderboardMap: Record<
+  string,
+  {
+    name: string
+    points: number
+  }
+> = {}
 
 dbPredictions.forEach((prediction) => {
 
-  if (!leaderboardMap[prediction.username]) {
-    leaderboardMap[prediction.username] = 0
+  const leaderboardKey =
+    prediction.user_id || prediction.username
+
+  if (!leaderboardKey) return
+
+  if (!leaderboardMap[leaderboardKey]) {
+    leaderboardMap[leaderboardKey] = {
+      name:
+        prediction.user_id === userId
+          ? username || usersById[prediction.user_id] || prediction.username
+          : usersById[prediction.user_id] || prediction.username,
+      points: 0,
+    }
   }
 
   const match = matches.find(
@@ -235,27 +266,27 @@ dbPredictions.forEach((prediction) => {
       prediction.prediction === "Draw")
 
   if (correct) {
-    leaderboardMap[prediction.username] += 3
+    leaderboardMap[leaderboardKey].points += 3
   }
 })
 
 const leaderboard = Object.entries(
   leaderboardMap
 )
-  .map(([name, points]) => ({
-    name,
-    points,
+  .map(([id, player]) => ({
+    id,
+    name: player.name,
+    points: player.points,
   }))
   .sort(
     (a: any, b: any) => b.points - a.points
   )
   .map((player: any, index) => ({
     rank: index + 1,
+    id: player.id,
     name: player.name,
     points: player.points,
-    you:
-      typeof window !== "undefined" &&
-      player.name === localStorage.getItem("wc-user"),
+    you: player.id === userId,
   }))
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-6 pb-24">
@@ -362,7 +393,7 @@ const leaderboard = Object.entries(
       {leaderboard.map((player) => (
 
         <div
-          key={player.rank}
+          key={player.id}
           className={`grid grid-cols-3 items-center border-b border-[#edf3ff] px-5 py-4 last:border-b-0 ${
             player.you
               ? "bg-[#edf3ff]"
