@@ -228,6 +228,7 @@ const normalizeLeaderboardName =
       .replace(/[^a-z0-9]/g, "")
 
 const leaderboardAliases: Record<string, string> = {
+  mileaminitemarv: "MileAMinuteMarv",
   mileaminutemarv: "MileAMinuteMarv",
   mileaminutemarvs: "MileAMinuteMarv",
 }
