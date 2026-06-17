@@ -10,48 +10,48 @@ export default function BottomNav() {
 
   return (
 
-    <div className="fixed bottom-0 left-0 right-0 border-t border-[#dbe5f6] bg-white px-6 py-4">
+    <div className="fixed bottom-0 left-0 right-0 border-t border-[#dbe5f6] bg-white/95 px-4 py-3 backdrop-blur">
 
       <div className="mx-auto flex max-w-md items-center justify-around">
 
         <Link
           href="/"
-          className={`flex flex-col items-center text-sm font-medium transition ${
+          className={`flex flex-col items-center text-xs font-semibold transition ${
             pathname === "/"
               ? "text-[#102348]"
               : "text-[#7b8baa]"
           }`}
         >
           
-          <span className="mt-1">
+          <span>
             Matches
           </span>
         </Link>
 
         <Link
   href="/predictions"
-  className={`flex flex-col items-center text-sm font-medium transition ${
+  className={`flex flex-col items-center text-xs font-semibold transition ${
     pathname === "/predictions"
       ? "text-[#102348]"
       : "text-[#7b8baa]"
   }`}
 >
   
-  <span className="mt-1">
+  <span>
     Predictions
   </span>
 </Link>
 
 <Link
   href="/bracket"
-  className={`flex flex-col items-center text-sm font-medium transition ${
+  className={`flex flex-col items-center text-xs font-semibold transition ${
     pathname === "/bracket"
       ? "text-[#102348]"
       : "text-[#7b8baa]"
   }`}
 >
   
-  <span className="mt-1">
+  <span>
     Bracket
   </span>
 </Link>
