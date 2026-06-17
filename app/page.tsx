@@ -41,6 +41,53 @@ useEffect(() => {
 console.log("API SCORE:", data.matches[0]?.score)
 
 setMatches(data.matches)
+
+const userId =
+  localStorage.getItem("user-id")
+
+if (userId) {
+
+  const { data: predictions, error } =
+    await supabase
+      .from("predictions")
+      .select("*")
+      .eq("user_id", userId)
+
+  if (error) {
+    console.error(error)
+  } else {
+    let points = 0
+
+    predictions?.forEach((prediction) => {
+
+      const match = data.matches.find(
+        (m: any) =>
+          `${m.homeTeam.name}-${m.awayTeam.name}` ===
+          prediction.match_key
+      )
+
+      if (!match) return
+
+      if (match.score?.winner === null) return
+
+      const correct =
+        (match.score.winner === "HOME_TEAM" &&
+          prediction.prediction === match.homeTeam.name) ||
+        (match.score.winner === "AWAY_TEAM" &&
+          prediction.prediction === match.awayTeam.name) ||
+        (match.score.winner === "DRAW" &&
+          prediction.prediction === "Draw")
+
+      if (correct) {
+        points += 3
+      }
+
+    })
+
+    setTotalPoints(points)
+  }
+
+}
 const nullMatch = data.matches.find(
   (m: any) =>
     !m.homeTeam?.name ||
@@ -62,42 +109,6 @@ console.log(
   }
 
   loadMatches()
-
-}, [])
-
-useEffect(() => {
-
-  async function loadPoints() {
-
-    const userId =
-      localStorage.getItem("user-id")
-
-    if (!userId) return
-
-    const { data, error } =
-      await supabase
-        .from("predictions")
-        .select("*")
-        .eq("user_id", userId)
-
-    if (error || !data) {
-      console.error(error)
-      return
-    }
-
-    let points = 0
-
-    data.forEach((prediction) => {
-
-      points += prediction.points || 0
-
-    })
-
-    setTotalPoints(points)
-
-  }
-
-  loadPoints()
 
 }, [])
 
