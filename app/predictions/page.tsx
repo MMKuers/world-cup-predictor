@@ -3,6 +3,12 @@
 import { useEffect, useState } from "react"
 import BottomNav from "@/components/BottomNav"
 import { supabase } from "@/lib/supabase"
+import {
+  buildLeaderboard,
+  buildUsersById,
+  calculatePlayerPoints,
+  getCurrentPlayerKey,
+} from "@/lib/predictionScoring"
 
 export default function PredictionsPage() {
 
@@ -89,7 +95,26 @@ console.log(
   let totalPredictions = 0
   let lockedPredictions = 0
   let upcomingPredictions = 0
-  let totalPoints = 0
+
+  const usersById =
+    buildUsersById(dbUsers)
+
+  const playerKey =
+    getCurrentPlayerKey(
+      userId,
+      username,
+      usersById
+    )
+
+  const totalPoints =
+    calculatePlayerPoints({
+      predictions: dbPredictions,
+      matches,
+      usersById,
+      playerKey,
+      currentUserId: userId,
+      currentUsername: username,
+    })
 
   const predictedMatches: {
     id: number
@@ -156,21 +181,6 @@ const prediction =
         } else {
           upcomingPredictions++
         }
-const earnedPoints =
-  match.status === "FINISHED"
-    ? (
-        (match.score.winner === "HOME_TEAM" &&
-          prediction === match.homeTeam.name) ||
-        (match.score.winner === "AWAY_TEAM" &&
-          prediction === match.awayTeam.name) ||
-        (match.score.winner === "DRAW" &&
-          prediction === "Draw")
-      )
-      ? 3
-      : 0
-    : 0
-
-totalPoints += earnedPoints
         predictedMatches.push({
   id: match.id,
   home: match.homeTeam.name,
@@ -214,123 +224,14 @@ points:
 
     }
   )
-const usersById: Record<string, string> = {}
-
-dbUsers.forEach((user) => {
-  usersById[user.id] = user.username
-})
-
-const normalizeLeaderboardName =
-  (name: string) =>
-    name
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "")
-
-const leaderboardAliases: Record<string, string> = {
-  mileaminitemarv: "MileAMinuteMarv",
-  mileaminutemarv: "MileAMinuteMarv",
-  mileaminutemarvs: "MileAMinuteMarv",
-}
-
-const leaderboardMap: Record<
-  string,
-  {
-    name: string
-    points: number
-    userIds: string[]
-  }
-> = {}
-
-dbPredictions.forEach((prediction) => {
-
-  const rawDisplayName =
-    prediction.user_id === userId
-      ? username || usersById[prediction.user_id] || prediction.username
-      : usersById[prediction.user_id] || prediction.username
-
-  if (!rawDisplayName) return
-
-  const normalizedName =
-    normalizeLeaderboardName(rawDisplayName)
-
-  const displayName =
-    leaderboardAliases[normalizedName] || rawDisplayName.trim()
-
-  // Merge duplicate accounts that share the same displayed name or alias.
-  const leaderboardKey =
-    normalizeLeaderboardName(displayName)
-
-  if (!leaderboardMap[leaderboardKey]) {
-    leaderboardMap[leaderboardKey] = {
-      name: displayName,
-      points: 0,
-      userIds: [],
-    }
-  }
-
-  if (
-    prediction.user_id &&
-    !leaderboardMap[leaderboardKey].userIds.includes(
-      prediction.user_id
-    )
-  ) {
-    leaderboardMap[leaderboardKey].userIds.push(
-      prediction.user_id
-    )
-  }
-
-  if (leaderboardAliases[normalizedName]) {
-    leaderboardMap[leaderboardKey].name =
-      leaderboardAliases[normalizedName]
-  } else if (prediction.user_id === userId && username) {
-    leaderboardMap[leaderboardKey].name = username
-  }
-
-  const match = matches.find(
-    (m) =>
-      `${m.homeTeam.name}-${m.awayTeam.name}` ===
-      prediction.match_key
+const leaderboard =
+  buildLeaderboard(
+    dbPredictions,
+    matches,
+    usersById,
+    userId,
+    username
   )
-
-  if (!match) return
-
-  if (match.score?.winner === null) return
-
-  const correct =
-    (match.score.winner === "HOME_TEAM" &&
-      prediction.prediction === match.homeTeam.name) ||
-
-    (match.score.winner === "AWAY_TEAM" &&
-      prediction.prediction === match.awayTeam.name) ||
-
-    (match.score.winner === "DRAW" &&
-      prediction.prediction === "Draw")
-
-  if (correct) {
-    leaderboardMap[leaderboardKey].points += 3
-  }
-})
-
-const leaderboard = Object.entries(
-  leaderboardMap
-)
-  .map(([id, player]) => ({
-    id,
-    name: player.name,
-    points: player.points,
-    userIds: player.userIds,
-  }))
-  .sort(
-    (a: any, b: any) => b.points - a.points
-  )
-  .map((player: any, index) => ({
-    rank: index + 1,
-    id: player.id,
-    name: player.name,
-    points: player.points,
-    you: player.userIds.includes(userId),
-  }))
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-6 pb-24">
 

@@ -6,6 +6,11 @@ import { supabase } from "@/lib/supabase"
 import UsernameModal from "@/components/UsernameModal"
 import { calculateStandings } from "@/lib/calculateStandings"
 import {
+  buildUsersById,
+  calculatePlayerPoints,
+  getCurrentPlayerKey,
+} from "@/lib/predictionScoring"
+import {
   useState,
   useEffect,
   useRef,
@@ -41,6 +46,51 @@ useEffect(() => {
 console.log("API SCORE:", data.matches[0]?.score)
 
 setMatches(data.matches)
+
+const userId =
+  localStorage.getItem("user-id") || ""
+
+const currentUsername =
+  localStorage.getItem("wc-user") || ""
+
+if (userId || currentUsername) {
+
+  const { data: predictions, error } =
+    await supabase
+      .from("predictions")
+      .select("*")
+
+  const { data: users } =
+    await supabase
+      .from("users")
+      .select("*")
+
+  if (error) {
+    console.error(error)
+  } else {
+    const usersById =
+      buildUsersById(users || [])
+
+    const playerKey =
+      getCurrentPlayerKey(
+        userId,
+        currentUsername,
+        usersById
+      )
+
+    setTotalPoints(
+      calculatePlayerPoints({
+        predictions: predictions || [],
+        matches: data.matches,
+        usersById,
+        playerKey,
+        currentUserId: userId,
+        currentUsername,
+      })
+    )
+  }
+
+}
 const nullMatch = data.matches.find(
   (m: any) =>
     !m.homeTeam?.name ||
@@ -62,42 +112,6 @@ console.log(
   }
 
   loadMatches()
-
-}, [])
-
-useEffect(() => {
-
-  async function loadPoints() {
-
-    const userId =
-      localStorage.getItem("user-id")
-
-    if (!userId) return
-
-    const { data, error } =
-      await supabase
-        .from("predictions")
-        .select("*")
-        .eq("user_id", userId)
-
-    if (error || !data) {
-      console.error(error)
-      return
-    }
-
-    let points = 0
-
-    data.forEach((prediction) => {
-
-      points += prediction.points || 0
-
-    })
-
-    setTotalPoints(points)
-
-  }
-
-  loadPoints()
 
 }, [])
 
