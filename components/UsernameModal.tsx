@@ -30,12 +30,15 @@ if (
 
   if (!name.trim()) return
 
-  const { data: existingUser } =
+  const { data: existingUsers } =
     await supabase
       .from("users")
       .select("*")
       .eq("username", name.trim())
-      .maybeSingle()
+      .limit(1)
+
+  const existingUser =
+    existingUsers?.[0]
 
   if (existingUser) {
 

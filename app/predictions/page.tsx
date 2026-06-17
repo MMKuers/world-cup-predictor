@@ -8,6 +8,8 @@ export default function PredictionsPage() {
 
   const [dbPredictions, setDbPredictions] =
   useState<any[]>([])
+  const [dbUsers, setDbUsers] =
+  useState<any[]>([])
   const [matches, setMatches] =
   useState<any[]>([])
 const [username, setUsername] =
@@ -32,6 +34,11 @@ if (matches.length > 0) {
         await supabase
           .from("predictions")
           .select("*")
+
+      const { data: users } =
+        await supabase
+          .from("users")
+          .select("*")
           
 
       console.log("SUPABASE DATA:", data)
@@ -41,6 +48,7 @@ console.log(
   localStorage.getItem("user-id")
 )
       setDbPredictions(data || [])
+      setDbUsers(users || [])
       console.log("FIRST DB PREDICTION:", data?.[0])
 const matchResponse =
   await fetch("/api/football")
@@ -206,12 +214,77 @@ points:
 
     }
   )
-const leaderboardMap: Record<string, number> = {}
+const usersById: Record<string, string> = {}
+
+dbUsers.forEach((user) => {
+  usersById[user.id] = user.username
+})
+
+const normalizeLeaderboardName =
+  (name: string) =>
+    name
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "")
+
+const leaderboardAliases: Record<string, string> = {
+  mileaminitemarv: "MileAMinuteMarv",
+  mileaminutemarv: "MileAMinuteMarv",
+  mileaminutemarvs: "MileAMinuteMarv",
+}
+
+const leaderboardMap: Record<
+  string,
+  {
+    name: string
+    points: number
+    userIds: string[]
+  }
+> = {}
 
 dbPredictions.forEach((prediction) => {
 
-  if (!leaderboardMap[prediction.username]) {
-    leaderboardMap[prediction.username] = 0
+  const rawDisplayName =
+    prediction.user_id === userId
+      ? username || usersById[prediction.user_id] || prediction.username
+      : usersById[prediction.user_id] || prediction.username
+
+  if (!rawDisplayName) return
+
+  const normalizedName =
+    normalizeLeaderboardName(rawDisplayName)
+
+  const displayName =
+    leaderboardAliases[normalizedName] || rawDisplayName.trim()
+
+  // Merge duplicate accounts that share the same displayed name or alias.
+  const leaderboardKey =
+    normalizeLeaderboardName(displayName)
+
+  if (!leaderboardMap[leaderboardKey]) {
+    leaderboardMap[leaderboardKey] = {
+      name: displayName,
+      points: 0,
+      userIds: [],
+    }
+  }
+
+  if (
+    prediction.user_id &&
+    !leaderboardMap[leaderboardKey].userIds.includes(
+      prediction.user_id
+    )
+  ) {
+    leaderboardMap[leaderboardKey].userIds.push(
+      prediction.user_id
+    )
+  }
+
+  if (leaderboardAliases[normalizedName]) {
+    leaderboardMap[leaderboardKey].name =
+      leaderboardAliases[normalizedName]
+  } else if (prediction.user_id === userId && username) {
+    leaderboardMap[leaderboardKey].name = username
   }
 
   const match = matches.find(
@@ -235,27 +308,28 @@ dbPredictions.forEach((prediction) => {
       prediction.prediction === "Draw")
 
   if (correct) {
-    leaderboardMap[prediction.username] += 3
+    leaderboardMap[leaderboardKey].points += 3
   }
 })
 
 const leaderboard = Object.entries(
   leaderboardMap
 )
-  .map(([name, points]) => ({
-    name,
-    points,
+  .map(([id, player]) => ({
+    id,
+    name: player.name,
+    points: player.points,
+    userIds: player.userIds,
   }))
   .sort(
     (a: any, b: any) => b.points - a.points
   )
   .map((player: any, index) => ({
     rank: index + 1,
+    id: player.id,
     name: player.name,
     points: player.points,
-    you:
-      typeof window !== "undefined" &&
-      player.name === localStorage.getItem("wc-user"),
+    you: player.userIds.includes(userId),
   }))
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-6 pb-24">
@@ -362,7 +436,7 @@ const leaderboard = Object.entries(
       {leaderboard.map((player) => (
 
         <div
-          key={player.rank}
+          key={player.id}
           className={`grid grid-cols-3 items-center border-b border-[#edf3ff] px-5 py-4 last:border-b-0 ${
             player.you
               ? "bg-[#edf3ff]"
