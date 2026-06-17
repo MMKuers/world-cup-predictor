@@ -220,6 +220,18 @@ dbUsers.forEach((user) => {
   usersById[user.id] = user.username
 })
 
+const normalizeLeaderboardName =
+  (name: string) =>
+    name
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "")
+
+const leaderboardAliases: Record<string, string> = {
+  mileaminutemarv: "MileAMinuteMarv",
+  mileaminutemarvs: "MileAMinuteMarv",
+}
+
 const leaderboardMap: Record<
   string,
   {
@@ -231,20 +243,26 @@ const leaderboardMap: Record<
 
 dbPredictions.forEach((prediction) => {
 
-  const displayName =
+  const rawDisplayName =
     prediction.user_id === userId
       ? username || usersById[prediction.user_id] || prediction.username
       : usersById[prediction.user_id] || prediction.username
 
-  if (!displayName) return
+  if (!rawDisplayName) return
 
-  // Merge duplicate accounts that share the same displayed name.
+  const normalizedName =
+    normalizeLeaderboardName(rawDisplayName)
+
+  const displayName =
+    leaderboardAliases[normalizedName] || rawDisplayName.trim()
+
+  // Merge duplicate accounts that share the same displayed name or alias.
   const leaderboardKey =
-    displayName.trim().toLowerCase()
+    normalizeLeaderboardName(displayName)
 
   if (!leaderboardMap[leaderboardKey]) {
     leaderboardMap[leaderboardKey] = {
-      name: displayName.trim(),
+      name: displayName,
       points: 0,
       userIds: [],
     }
@@ -261,7 +279,10 @@ dbPredictions.forEach((prediction) => {
     )
   }
 
-  if (prediction.user_id === userId && username) {
+  if (leaderboardAliases[normalizedName]) {
+    leaderboardMap[leaderboardKey].name =
+      leaderboardAliases[normalizedName]
+  } else if (prediction.user_id === userId && username) {
     leaderboardMap[leaderboardKey].name = username
   }
 
