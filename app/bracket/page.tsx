@@ -25,7 +25,7 @@ function TeamLine({
   const code =
     countryCodes[team]
   const isPlaceholder =
-    !code && team.includes("Group") ||
+    (!code && team.includes("Group")) ||
     team.includes("Winner") ||
     team.includes("Loser") ||
     team.includes("Best 3rd") ||
@@ -33,7 +33,7 @@ function TeamLine({
 
   return (
     <div
-      className={`flex min-h-9 items-center justify-between gap-2 rounded-xl px-3 py-2 ${
+      className={`flex min-h-8 items-center justify-between gap-2 rounded-xl px-2.5 py-1.5 ${
         winner
           ? "bg-[#102348] text-white"
           : "bg-[#edf3ff] text-[#102348]"
@@ -49,7 +49,7 @@ function TeamLine({
         )}
 
         <span
-          className={`truncate text-sm font-semibold ${
+          className={`truncate text-xs font-semibold ${
             isPlaceholder
               ? "text-[#6f7f9d]"
               : ""
@@ -89,7 +89,7 @@ function MatchTile({
       }`}
     >
       <div
-        className={`mb-2 flex items-center justify-between gap-2 text-[11px] font-bold uppercase ${
+        className={`mb-2 flex items-center justify-between gap-2 text-[10px] font-bold uppercase ${
           isFinal
             ? "text-white/70"
             : "text-[#7b8baa]"
@@ -101,7 +101,7 @@ function MatchTile({
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <TeamLine
           team={match.home}
           score={match.homeScore}
@@ -128,12 +128,12 @@ function RoundColumn({
   offset?: string
 }) {
   return (
-    <section className={`w-[210px] flex-shrink-0 ${offset}`}>
-      <h2 className="mb-3 text-sm font-bold uppercase text-[#6f7f9d]">
+    <section className={`w-[198px] flex-shrink-0 ${offset}`}>
+      <h2 className="mb-3 text-xs font-bold uppercase text-[#6f7f9d]">
         {title}
       </h2>
 
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {matches.map((match) => (
           <MatchTile
             key={match.id}
@@ -197,7 +197,7 @@ const standings =
 
       <UsernameModal />
 
-      <div className="mb-5">
+      <div className="mb-4">
 
         <h1 className="text-2xl font-bold text-[#102348]">
   Bracket
@@ -209,7 +209,8 @@ const standings =
 
       </div>
 
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+      <div className="mb-4 overflow-x-auto pt-1.5 pb-1.5 scrollbar-hide">
+        <div className="flex gap-2">
         {[
           "Groups",
           "3rd Place",
@@ -224,28 +225,29 @@ const standings =
             href={`#${item
               .toLowerCase()
               .replaceAll(" ", "-")}`}
-            className="whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-xs font-bold text-[#102348] ring-1 ring-[#dbe5f6]"
+            className="whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-xs font-bold text-[#102348] shadow-sm ring-1 ring-[#dbe5f6] transition active:scale-95"
           >
             {item}
           </a>
         ))}
+        </div>
       </div>
 
       <ThirdPlaceTable standings={standings} />
 
       <div className="overflow-x-auto pb-4">
 
-  <div className="flex min-w-[1680px] items-start gap-4 pb-20">
+  <div className="flex min-w-[1580px] items-start gap-3 pb-20">
 
     
 
-       <section id="groups" className="w-[270px] flex-shrink-0">
+       <section id="groups" className="w-[255px] flex-shrink-0">
 
-  <h2 className="mb-3 text-sm font-bold uppercase text-[#6f7f9d]">
+  <h2 className="mb-3 text-xs font-bold uppercase text-[#6f7f9d]">
     Groups
   </h2>
 
-  <div className="space-y-3">
+  <div className="space-y-2.5">
 
     {Object.entries(standings)
   .sort(([a], [b]) =>
@@ -259,22 +261,22 @@ const standings =
   onClick={() =>
     setSelectedGroup(groupName)
   }
-  className="cursor-pointer rounded-2xl bg-white p-4 shadow-sm ring-1 ring-[#dbe5f6] transition hover:-translate-y-[1px] hover:shadow-md"
+  className="cursor-pointer rounded-2xl bg-white p-3 shadow-sm ring-1 ring-[#dbe5f6] transition hover:-translate-y-[1px] hover:shadow-md"
 >
 
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-2.5 flex items-center justify-between">
 
-            <div className="text-base font-bold text-[#102348]">
+            <div className="text-sm font-bold text-[#102348]">
               Group {groupName}
             </div>
 
-            <div className="text-xs font-semibold text-[#7b8baa]">
+            <div className="text-[10px] font-semibold text-[#7b8baa]">
               PTS
             </div>
 
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2.5">
 
             {teams.map(
               (team, index) => (
@@ -300,11 +302,11 @@ const standings =
 
                     <div className="min-w-0">
 
-                      <div className="truncate text-sm font-semibold text-[#102348]">
+                      <div className="truncate text-xs font-semibold text-[#102348]">
                         {team.team}
                       </div>
 
-                      <div className="text-[11px] text-[#7b8baa]">
+                      <div className="text-[10px] text-[#7b8baa]">
 
                         {team.played}P • {team.wins}W • {team.draws}D • {team.losses}L • {team.goalDifference}GD
 
@@ -363,9 +365,9 @@ const standings =
       />
     </section>
 
-    <section id="final" className="w-[230px] flex-shrink-0 pt-24">
+    <section id="final" className="w-[220px] flex-shrink-0 pt-24">
 
-      <h2 className="mb-3 text-sm font-bold uppercase text-[#6f7f9d]">
+      <h2 className="mb-3 text-xs font-bold uppercase text-[#6f7f9d]">
         Final
       </h2>
 
@@ -374,12 +376,12 @@ const standings =
         tone="final"
       />
 
-      <div className="mt-4 rounded-full bg-[#fcb53a] px-4 py-2 text-center text-xs font-bold text-[#102348] shadow-sm">
+      <div className="mt-3 rounded-full bg-[#fcb53a] px-4 py-2 text-center text-xs font-bold text-[#102348] shadow-sm">
         Champion decided July 19
       </div>
 
-      <div id="3rd-place" className="mt-8">
-        <h2 className="mb-3 text-sm font-bold uppercase text-[#6f7f9d]">
+      <div id="3rd-place" className="mt-6">
+        <h2 className="mb-3 text-xs font-bold uppercase text-[#6f7f9d]">
           Third Place
         </h2>
 
