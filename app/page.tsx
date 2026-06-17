@@ -217,39 +217,43 @@ if (matches.length > 0) {
   )
 }
   return (
-    <main className="min-h-screen bg-[#f3f7ff] p-6 pb-24">
+    <main className="min-h-screen bg-[#f3f7ff] p-4 pb-20">
 <UsernameModal />
-      <div className="sticky top-0 z-40 -mx-6 mb-6 bg-[#f3f7ff] px-6 pt-4 pb-4">
+      <div className="sticky top-0 z-40 -mx-4 mb-4 bg-[#f3f7ff]/95 px-4 pt-3 pb-3 backdrop-blur">
 
-  <h1 className="text-4xl font-bold text-[#102348]">
-    MK's World Cup App
-  </h1>
+  <div className="flex items-start justify-between gap-3">
+    <div className="min-w-0">
+      <h1 className="text-2xl font-bold text-[#102348]">
+        MK's World Cup App
+      </h1>
 
-  
-  {username ? (
+      {username ? (
 
-  <p className="mt-2 text-[#6f7f9d]">
-    {username}'s predictions and match picks
-  </p>
+      <p className="mt-1 truncate text-sm text-[#6f7f9d]">
+        {username}'s predictions and match picks
+      </p>
 
-) : (
+    ) : (
 
-  <p className="mt-2 text-[#6f7f9d]">
-    Make your predictions for every match
-  </p>
+      <p className="mt-1 text-sm text-[#6f7f9d]">
+        Make your predictions for every match
+      </p>
 
-)}
-<div className="mt-4">
+    )}
+    </div>
 
-  <div className="inline-flex items-center rounded-full bg-[#102348] px-5 py-3 text-sm font-bold text-white shadow-sm">
-    {totalPoints} pts
+    <div className="mt-1 flex-shrink-0 rounded-full bg-[#102348] px-3 py-2 text-xs font-bold text-white shadow-sm">
+      {totalPoints} pts
+    </div>
   </div>
+
+<div className="mt-3">
 <div
   ref={dateStripRef}
-  className="overflow-x-auto pb-2 scrollbar-hide"
+  className="overflow-x-auto pb-1 scrollbar-hide"
 >
 
-  <div className="flex gap-3">
+  <div className="flex gap-2">
 
     {availableDates.map(
       (date) => (
@@ -262,10 +266,10 @@ if (matches.length > 0) {
           onClick={() =>
             setSelectedDate(date)
           }
-          className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
+          className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition ${
             selectedDate === date
               ? "bg-[#102348] text-white"
-              : "bg-white text-[#102348]"
+              : "bg-white text-[#102348] ring-1 ring-[#dbe5f6]"
           }`}
         >
 
@@ -291,17 +295,17 @@ if (matches.length > 0) {
 </div>
       
 
-      <div className="space-y-10">
+      <div className="space-y-6">
        
         {liveMatches.length > 0 && (
 
   <div>
 
-    <h2 className="mb-4 text-xl font-bold text-red-600">
+    <h2 className="mb-3 text-lg font-bold text-red-600">
       🔴 Live Now
     </h2>
 
-    <div className="space-y-4">
+    <div className="space-y-3">
 
       {liveMatches.map((match) => (
 
@@ -361,13 +365,13 @@ if (matches.length > 0) {
             return (
               <div key={date}>
 
-                <div className="mb-4">
-                  <h2 className="text-xl font-bold text-[#102348]">
+                <div className="mb-3">
+                  <h2 className="text-lg font-bold text-[#102348]">
                     {formattedDate}
                   </h2>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
 
                   {matches.map((match) => (
                     <MatchCard
