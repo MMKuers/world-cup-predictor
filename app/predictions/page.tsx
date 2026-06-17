@@ -225,24 +225,44 @@ const leaderboardMap: Record<
   {
     name: string
     points: number
+    userIds: string[]
   }
 > = {}
 
 dbPredictions.forEach((prediction) => {
 
-  const leaderboardKey =
-    prediction.user_id || prediction.username
+  const displayName =
+    prediction.user_id === userId
+      ? username || usersById[prediction.user_id] || prediction.username
+      : usersById[prediction.user_id] || prediction.username
 
-  if (!leaderboardKey) return
+  if (!displayName) return
+
+  // Merge duplicate accounts that share the same displayed name.
+  const leaderboardKey =
+    displayName.trim().toLowerCase()
 
   if (!leaderboardMap[leaderboardKey]) {
     leaderboardMap[leaderboardKey] = {
-      name:
-        prediction.user_id === userId
-          ? username || usersById[prediction.user_id] || prediction.username
-          : usersById[prediction.user_id] || prediction.username,
+      name: displayName.trim(),
       points: 0,
+      userIds: [],
     }
+  }
+
+  if (
+    prediction.user_id &&
+    !leaderboardMap[leaderboardKey].userIds.includes(
+      prediction.user_id
+    )
+  ) {
+    leaderboardMap[leaderboardKey].userIds.push(
+      prediction.user_id
+    )
+  }
+
+  if (prediction.user_id === userId && username) {
+    leaderboardMap[leaderboardKey].name = username
   }
 
   const match = matches.find(
@@ -277,6 +297,7 @@ const leaderboard = Object.entries(
     id,
     name: player.name,
     points: player.points,
+    userIds: player.userIds,
   }))
   .sort(
     (a: any, b: any) => b.points - a.points
@@ -286,7 +307,7 @@ const leaderboard = Object.entries(
     id: player.id,
     name: player.name,
     points: player.points,
-    you: player.id === userId,
+    you: player.userIds.includes(userId),
   }))
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-6 pb-24">
