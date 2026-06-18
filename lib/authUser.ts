@@ -10,35 +10,17 @@ function getDisplayName(user: any) {
   )
 }
 
-export async function syncAuthUser() {
-  const existingLocalId =
-    localStorage.getItem("user-id") || ""
-
+async function getAuthUser() {
   const { data } =
     await supabase.auth.getUser()
 
-  const authUser = data.user
+  return data.user
+}
 
-  if (!authUser) {
-    return null
-  }
-
-  const username = getDisplayName(authUser)
-
-  if (
-    existingLocalId &&
-    existingLocalId !== authUser.id
-  ) {
-    const { error } = await supabase
-      .from("predictions")
-      .update({ user_id: authUser.id })
-      .eq("user_id", existingLocalId)
-
-    if (error) {
-      console.error(error)
-    }
-  }
-
+async function saveAuthUserRow(
+  authUser: any,
+  username: string
+) {
   const { data: existingUser } =
     await supabase
       .from("users")
@@ -69,6 +51,106 @@ export async function syncAuthUser() {
       console.error(error)
     }
   }
+}
+
+export async function linkNicknameToAuthUser(
+  nickname: string
+) {
+  const authUser = await getAuthUser()
+
+  if (!authUser) {
+    return null
+  }
+
+  const username = nickname.trim()
+
+  if (!username) {
+    return null
+  }
+
+  const { data: matchingUsers } =
+    await supabase
+      .from("users")
+      .select("*")
+      .eq("username", username)
+      .limit(1)
+
+  const matchingUser =
+    matchingUsers?.[0]
+
+  if (
+    matchingUser &&
+    matchingUser.id !== authUser.id
+  ) {
+    const { error } = await supabase
+      .from("predictions")
+      .update({ user_id: authUser.id })
+      .eq("user_id", matchingUser.id)
+
+    if (error) {
+      console.error(error)
+    }
+  }
+
+  await saveAuthUserRow(
+    authUser,
+    username
+  )
+
+  localStorage.setItem("wc-user", username)
+  localStorage.setItem("user-id", authUser.id)
+  localStorage.setItem("wc-nickname-confirmed", authUser.id)
+
+  return {
+    id: authUser.id,
+    username,
+    email: authUser.email || "",
+  }
+}
+
+export async function syncAuthUser() {
+  const existingLocalId =
+    localStorage.getItem("user-id") || ""
+
+  const existingLocalName =
+    localStorage.getItem("wc-user") || ""
+
+  const authUser = await getAuthUser()
+
+  if (!authUser) {
+    return null
+  }
+
+  const { data: existingAuthUser } =
+    await supabase
+      .from("users")
+      .select("*")
+      .eq("id", authUser.id)
+      .maybeSingle()
+
+  const username =
+    existingAuthUser?.username ||
+    existingLocalName ||
+    getDisplayName(authUser)
+
+  if (
+    existingLocalId &&
+    existingLocalId !== authUser.id
+  ) {
+    const { error } = await supabase
+      .from("predictions")
+      .update({ user_id: authUser.id })
+      .eq("user_id", existingLocalId)
+
+    if (error) {
+      console.error(error)
+    }
+  }
+
+  await saveAuthUserRow(
+    authUser,
+    username
+  )
 
   localStorage.setItem("wc-user", username)
   localStorage.setItem("user-id", authUser.id)
