@@ -13,11 +13,33 @@ export default function AuthCallbackPage() {
         window.location.search
       )
 
+      const hashParams = new URLSearchParams(
+        window.location.hash.replace("#", "")
+      )
+
       const code = params.get("code")
+      const accessToken =
+        hashParams.get("access_token")
+      const refreshToken =
+        hashParams.get("refresh_token")
 
       if (code) {
         const { error } =
           await supabase.auth.exchangeCodeForSession(code)
+
+        if (error) {
+          console.error(error)
+          setMessage(
+            "Google sign-in could not finish. Please try signing in again."
+          )
+          return
+        }
+      } else if (accessToken && refreshToken) {
+        const { error } =
+          await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          })
 
         if (error) {
           console.error(error)
