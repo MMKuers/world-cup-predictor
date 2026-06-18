@@ -82,37 +82,17 @@ export async function linkNicknameToAuthUser(
   const matchingUser =
     matchingUsers?.[0]
 
-  if (
-    matchingUser &&
-    matchingUser.id !== authUser.id
-  ) {
-    const { error: predictionError } = await supabase
-      .from("predictions")
-      .update({ user_id: authUser.id })
-      .eq("user_id", matchingUser.id)
+  if (matchingUser) {
+    localStorage.setItem("wc-user", matchingUser.username)
+    localStorage.setItem("user-id", matchingUser.id)
+    localStorage.setItem("wc-google-user", authUser.id)
+    localStorage.setItem("wc-nickname-linked", authUser.id)
+    localStorage.removeItem("wc-nickname-confirmed")
 
-    if (predictionError) {
-      console.error(predictionError)
-      return null
-    }
-
-    const { error: authUserDeleteError } = await supabase
-      .from("users")
-      .delete()
-      .eq("id", authUser.id)
-
-    if (authUserDeleteError) {
-      console.error(authUserDeleteError)
-    }
-
-    const { error: matchingUserDeleteError } = await supabase
-      .from("users")
-      .delete()
-      .eq("id", matchingUser.id)
-
-    if (matchingUserDeleteError) {
-      console.error(matchingUserDeleteError)
-      return null
+    return {
+      id: matchingUser.id,
+      username: matchingUser.username,
+      email: authUser.email || "",
     }
   }
 
@@ -127,6 +107,7 @@ export async function linkNicknameToAuthUser(
 
   localStorage.setItem("wc-user", username)
   localStorage.setItem("user-id", authUser.id)
+  localStorage.setItem("wc-google-user", authUser.id)
   localStorage.setItem("wc-nickname-linked", authUser.id)
   localStorage.removeItem("wc-nickname-confirmed")
 
@@ -144,6 +125,27 @@ export async function syncAuthUser() {
     return null
   }
 
+  const linkedNickname =
+    localStorage.getItem("wc-nickname-linked") === authUser.id
+
+  const localUserId =
+    localStorage.getItem("user-id") || ""
+
+  const localUsername =
+    localStorage.getItem("wc-user") || ""
+
+  if (
+    linkedNickname &&
+    localUserId &&
+    localUsername
+  ) {
+    return {
+      id: localUserId,
+      username: localUsername,
+      email: authUser.email || "",
+    }
+  }
+
   const { data: existingAuthUser } =
     await supabase
       .from("users")
@@ -151,22 +153,20 @@ export async function syncAuthUser() {
       .eq("id", authUser.id)
       .maybeSingle()
 
-  const linkedNickname =
-    localStorage.getItem("wc-nickname-linked") === authUser.id
+  if (existingAuthUser) {
+    localStorage.setItem("wc-user", existingAuthUser.username)
+    localStorage.setItem("user-id", existingAuthUser.id)
 
-  const username =
-    existingAuthUser?.username ||
-    localStorage.getItem("wc-user") ||
-    getDisplayName(authUser)
-
-  if (existingAuthUser || linkedNickname) {
-    localStorage.setItem("wc-user", username)
-    localStorage.setItem("user-id", authUser.id)
+    return {
+      id: existingAuthUser.id,
+      username: existingAuthUser.username,
+      email: authUser.email || "",
+    }
   }
 
   return {
     id: authUser.id,
-    username,
+    username: getDisplayName(authUser),
     email: authUser.email || "",
   }
 }
