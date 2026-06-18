@@ -5,6 +5,7 @@ import {
   linkNicknameToAuthUser,
   syncAuthUser,
 } from "@/lib/authUser"
+import { startGoogleSignIn } from "@/lib/googleSignIn"
 import { useEffect, useState } from "react"
 
 type AuthUser = {
@@ -94,17 +95,16 @@ if (
 
   const signInWithGoogle = async () => {
     setIsSigningIn(true)
+    setLinkError("")
 
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: window.location.origin,
-      },
-    })
-
-    if (error) {
+    try {
+      await startGoogleSignIn()
+    } catch (error) {
       console.error(error)
       setIsSigningIn(false)
+      setLinkError(
+        "Google sign-in could not open. Refresh and try again."
+      )
     }
   }
 
