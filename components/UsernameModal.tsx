@@ -1,21 +1,65 @@
 "use client"
 
 import { supabase } from "@/lib/supabase"
+import {
+  linkNicknameToAuthUser,
+  syncAuthUser,
+} from "@/lib/authUser"
+import { startGoogleSignIn } from "@/lib/googleSignIn"
 import { useEffect, useState } from "react"
+
+type AuthUser = {
+  id: string
+  username: string
+  email: string
+}
 
 export default function UsernameModal() {
 
   const [name, setName] = useState("")
   const [showModal, setShowModal] =
     useState(false)
+  const [authUser, setAuthUser] =
+    useState<AuthUser | null>(null)
+  const [isSigningIn, setIsSigningIn] =
+    useState(false)
+  const [linkError, setLinkError] =
+    useState("")
+
+  function shouldConfirmNickname(
+    user: AuthUser | null
+  ) {
+    const linkedGoogleUser =
+      localStorage.getItem("wc-google-user")
+
+    const linkedNickname =
+      localStorage.getItem("wc-nickname-linked")
+
+    return !!(
+      user &&
+      (!linkedGoogleUser ||
+        linkedNickname !== linkedGoogleUser)
+    )
+  }
 
   useEffect(() => {
 
-  const existingName =
+  async function checkIdentity() {
+    const user = await syncAuthUser()
+
+    setAuthUser(user)
+
+    const existingName =
   localStorage.getItem("wc-user")
 
 const existingUserId =
   localStorage.getItem("user-id")
+
+if (user) {
+  setName(existingName || user.username)
+  setShowModal(!!shouldConfirmNickname(user))
+  return
+}
 
 if (
   !existingName ||
@@ -23,12 +67,71 @@ if (
 ) {
   setShowModal(true)
 }
+  }
+
+  checkIdentity()
+
+  const { data } =
+    supabase.auth.onAuthStateChange(
+      async () => {
+        const user = await syncAuthUser()
+        setAuthUser(user)
+
+        if (user) {
+          setName(
+            localStorage.getItem("wc-user") ||
+            user.username
+          )
+          setShowModal(!!shouldConfirmNickname(user))
+        }
+      }
+    )
+
+  return () => {
+    data.subscription.unsubscribe()
+  }
 
 }, [])
+
+  const signInWithGoogle = async () => {
+    setIsSigningIn(true)
+    setLinkError("")
+
+    try {
+      await startGoogleSignIn()
+    } catch (error) {
+      console.error(error)
+      setIsSigningIn(false)
+      setLinkError(
+        "Google sign-in could not open. Refresh and try again."
+      )
+    }
+  }
 
   const saveName = async () => {
 
   if (!name.trim()) return
+
+  setLinkError("")
+
+  if (authUser) {
+    const linkedUser =
+      await linkNicknameToAuthUser(
+        name.trim()
+      )
+
+    if (!linkedUser) {
+      setLinkError(
+        "That nickname could not be linked yet. Try the exact leaderboard nickname, or tell Michael and we can connect it manually."
+      )
+      return
+    }
+
+    setAuthUser(linkedUser)
+    setShowModal(false)
+    window.location.reload()
+    return
+  }
 
   const { data: existingUsers } =
     await supabase
@@ -92,31 +195,64 @@ if (
 
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6">
 
-      <div className="w-full max-w-md rounded-[32px] bg-white p-8 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-[#dbe5f6]">
 
-        <h2 className="text-3xl font-bold text-[#102348]">
-          Welcome
+        <h2 className="text-2xl font-bold text-[#102348]">
+          {authUser
+            ? "Choose your app nickname"
+            : "Welcome"}
         </h2>
 
-        <p className="mt-3 text-[#6f7f9d]">
-          Enter your name to start making
-          your World Cup predictions.
+        <p className="mt-2 text-sm text-[#6f7f9d]">
+          {authUser
+            ? "Use the nickname already on the leaderboard so your existing picks connect to this Google login."
+            : "Sign in with Google or enter your name to start making World Cup predictions."}
         </p>
+
+        {!authUser && (
+          <>
+            <button
+              onClick={signInWithGoogle}
+              disabled={isSigningIn}
+              className="mt-5 w-full rounded-2xl bg-[#102348] py-3 text-sm font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSigningIn
+                ? "Opening Google..."
+                : "Continue with Google"}
+            </button>
+
+            <div className="my-5 flex items-center gap-3">
+              <div className="h-px flex-1 bg-[#edf3ff]" />
+              <div className="text-xs font-semibold uppercase text-[#7b8baa]">
+                or
+              </div>
+              <div className="h-px flex-1 bg-[#edf3ff]" />
+            </div>
+          </>
+        )}
 
         <input
   value={name}
   onChange={(e) =>
     setName(e.target.value)
   }
-  placeholder="Your name"
-  className="mt-6 w-full rounded-2xl border border-[#dbe5f6] px-5 py-4 text-lg text-black placeholder:text-gray-400 outline-none"
+  placeholder="Your nickname"
+  className="w-full rounded-2xl border border-[#dbe5f6] px-4 py-3 text-base text-black placeholder:text-gray-400 outline-none"
 />
+
+        {linkError && (
+          <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs font-semibold text-red-600">
+            {linkError}
+          </p>
+        )}
 
         <button
           onClick={saveName}
-          className="mt-5 w-full rounded-2xl bg-[#102348] py-4 text-lg font-semibold text-white transition hover:opacity-90"
+          className="mt-3 w-full rounded-2xl bg-[#edf3ff] py-3 text-sm font-bold text-[#102348] transition hover:bg-[#dbe5f6]"
         >
-          Continue
+          {authUser
+            ? "Link nickname"
+            : "Continue without Google"}
         </button>
 
       </div>

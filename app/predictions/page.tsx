@@ -2,12 +2,16 @@
 
 import { useEffect, useState } from "react"
 import BottomNav from "@/components/BottomNav"
+import AuthButton from "@/components/AuthButton"
+import UsernameModal from "@/components/UsernameModal"
 import { supabase } from "@/lib/supabase"
+import { syncAuthUser } from "@/lib/authUser"
 import {
   buildLeaderboard,
   buildUsersById,
   calculatePlayerPoints,
   getCurrentPlayerKey,
+  getPlayerKeyFromName,
 } from "@/lib/predictionScoring"
 
 export default function PredictionsPage() {
@@ -36,6 +40,17 @@ if (matches.length > 0) {
 
     async function loadPredictions() {
 
+      const authUser =
+        await syncAuthUser()
+
+      const currentUsername =
+        authUser?.username ||
+        localStorage.getItem("wc-user") || ""
+
+      const currentUserId =
+        authUser?.id ||
+        localStorage.getItem("user-id") || ""
+
       const { data, error } =
         await supabase
           .from("predictions")
@@ -51,7 +66,7 @@ if (matches.length > 0) {
       console.log("SUPABASE ERROR:", error)
 console.log(
   "LOCAL USER ID:",
-  localStorage.getItem("user-id")
+  currentUserId
 )
       setDbPredictions(data || [])
       setDbUsers(users || [])
@@ -70,16 +85,12 @@ console.log(
       `${m.homeTeam.name}-${m.awayTeam.name}`
   )
 )
-setUsername(
-  localStorage.getItem("wc-user") || ""
-)
+setUsername(currentUsername)
 
-setUserId(
-  localStorage.getItem("user-id") || ""
-)
+setUserId(currentUserId)
 console.log(
   "USER ID:",
-  localStorage.getItem("user-id")
+  currentUserId
 )
 console.log(
   "FIRST PREDICTION USER ID:",
@@ -127,6 +138,25 @@ console.log(
     points: number
   }[] = []
 
+  function predictionBelongsToCurrentPlayer(
+    prediction: any
+  ) {
+    if (prediction.user_id === userId) {
+      return true
+    }
+
+    const displayName =
+      usersById[prediction.user_id || ""] ||
+      prediction.username ||
+      ""
+
+    if (!displayName || !playerKey) {
+      return false
+    }
+
+    return getPlayerKeyFromName(displayName) === playerKey
+  }
+
   matches.forEach((match) => {
 
   
@@ -138,7 +168,7 @@ console.log(
   dbPredictions.find(
     (p) =>
       p.match_key === matchKey &&
-      p.user_id === userId
+      predictionBelongsToCurrentPlayer(p)
   )
 
 console.log("CURRENT USER ID:", userId)
@@ -146,7 +176,7 @@ console.log("CURRENT USER ID:", userId)
 console.log(
   "MATCHING PREDICTIONS:",
   dbPredictions.filter(
-    p => p.user_id === userId
+    p => predictionBelongsToCurrentPlayer(p)
   ).length
 )
 
@@ -155,7 +185,7 @@ console.log("CURRENT USER ID:", userId)
 console.log(
   "MATCHING PREDICTIONS:",
   dbPredictions.filter(
-    p => p.user_id === userId
+    p => predictionBelongsToCurrentPlayer(p)
   ).length
 )
 
@@ -235,7 +265,11 @@ const leaderboard =
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-4 pb-20">
 
-      <div className="mb-5">
+<UsernameModal />
+
+      <div className="mb-5 flex items-start justify-between gap-3">
+
+        <div className="min-w-0">
 
   <h1 className="text-2xl font-bold text-[#102348]">
     MK's World Cup App
@@ -257,6 +291,12 @@ const leaderboard =
     </p>
 
   )}
+
+        </div>
+
+        <div className="flex-shrink-0">
+          <AuthButton />
+        </div>
 
 </div>
 

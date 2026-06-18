@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
 import BottomNav from "@/components/BottomNav"
+import AuthButton from "@/components/AuthButton"
 import UsernameModal from "@/components/UsernameModal"
 import ThirdPlaceTable from "@/components/ThirdPlaceTable"
 import { calculateStandings } from "@/lib/calculateStandings"
@@ -197,7 +198,9 @@ const standings =
 
       <UsernameModal />
 
-      <div className="mb-4">
+      <div className="mb-4 flex items-start justify-between gap-3">
+
+        <div className="min-w-0">
 
         <h1 className="text-2xl font-bold text-[#102348]">
   Bracket
@@ -206,6 +209,12 @@ const standings =
        <p className="mt-1 text-sm text-[#6f7f9d]">
   Groups, qualifiers, and knockout path
 </p>
+
+        </div>
+
+        <div className="flex-shrink-0">
+          <AuthButton />
+        </div>
 
       </div>
 
