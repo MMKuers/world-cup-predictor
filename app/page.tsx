@@ -3,8 +3,10 @@
 import MatchCard from "@/components/MatchCard"
 import TeamDetailsSheet from "@/components/TeamDetailsSheet"
 import BottomNav from "@/components/BottomNav"
+import AuthButton from "@/components/AuthButton"
 import { supabase } from "@/lib/supabase"
 import UsernameModal from "@/components/UsernameModal"
+import { syncAuthUser } from "@/lib/authUser"
 import { calculateStandings } from "@/lib/calculateStandings"
 import {
   buildUsersById,
@@ -70,6 +72,13 @@ useEffect(() => {
 
   async function loadMatches() {
 
+    const authUser =
+      await syncAuthUser()
+
+    if (authUser) {
+      setUsername(authUser.username)
+    }
+
     const response =
       await fetch("/api/football")
 
@@ -82,9 +91,11 @@ console.log("API SCORE:", data.matches[0]?.score)
 setMatches(data.matches)
 
 const userId =
+  authUser?.id ||
   localStorage.getItem("user-id") || ""
 
 const currentUsername =
+  authUser?.username ||
   localStorage.getItem("wc-user") || ""
 
 if (userId || currentUsername) {
@@ -276,8 +287,12 @@ if (matches.length > 0) {
     )}
     </div>
 
-    <div className="mt-1 flex-shrink-0 rounded-full bg-[#102348] px-3 py-2 text-xs font-bold text-white shadow-sm">
-      {totalPoints} pts
+    <div className="flex flex-shrink-0 flex-col items-end gap-2">
+      <AuthButton />
+
+      <div className="rounded-full bg-[#102348] px-3 py-2 text-xs font-bold text-white shadow-sm">
+        {totalPoints} pts
+      </div>
     </div>
   </div>
 
