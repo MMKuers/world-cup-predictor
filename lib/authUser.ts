@@ -127,7 +127,8 @@ export async function linkNicknameToAuthUser(
 
   localStorage.setItem("wc-user", username)
   localStorage.setItem("user-id", authUser.id)
-  localStorage.setItem("wc-nickname-confirmed", authUser.id)
+  localStorage.setItem("wc-nickname-linked", authUser.id)
+  localStorage.removeItem("wc-nickname-confirmed")
 
   return {
     id: authUser.id,
@@ -150,15 +151,15 @@ export async function syncAuthUser() {
       .eq("id", authUser.id)
       .maybeSingle()
 
-  const confirmedNickname =
-    localStorage.getItem("wc-nickname-confirmed") === authUser.id
+  const linkedNickname =
+    localStorage.getItem("wc-nickname-linked") === authUser.id
 
   const username =
     existingAuthUser?.username ||
     localStorage.getItem("wc-user") ||
     getDisplayName(authUser)
 
-  if (existingAuthUser || confirmedNickname) {
+  if (existingAuthUser || linkedNickname) {
     localStorage.setItem("wc-user", username)
     localStorage.setItem("user-id", authUser.id)
   }
