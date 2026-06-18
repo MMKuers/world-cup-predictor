@@ -188,7 +188,7 @@ export default function MatchCard({
                   onClick={(event) =>
                     openTeamDetails(home, event)
                   }
-                  className="min-w-0 flex-1 truncate text-left text-base font-semibold text-[#102348] underline-offset-4 hover:underline focus:outline-none focus:underline"
+                  className="max-w-full truncate text-left text-base font-semibold text-[#102348] underline-offset-4 hover:underline focus:outline-none focus:underline"
                 >
                   {home}
                 </button>
@@ -225,7 +225,7 @@ export default function MatchCard({
                   onClick={(event) =>
                     openTeamDetails(away, event)
                   }
-                  className="min-w-0 flex-1 truncate text-left text-base font-semibold text-[#102348] underline-offset-4 hover:underline focus:outline-none focus:underline"
+                  className="max-w-full truncate text-left text-base font-semibold text-[#102348] underline-offset-4 hover:underline focus:outline-none focus:underline"
                 >
                   {away}
                 </button>
