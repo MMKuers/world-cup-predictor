@@ -11,6 +11,9 @@ function getDisplayName(user: any) {
 }
 
 export async function syncAuthUser() {
+  const existingLocalId =
+    localStorage.getItem("user-id") || ""
+
   const { data } =
     await supabase.auth.getUser()
 
@@ -21,6 +24,20 @@ export async function syncAuthUser() {
   }
 
   const username = getDisplayName(authUser)
+
+  if (
+    existingLocalId &&
+    existingLocalId !== authUser.id
+  ) {
+    const { error } = await supabase
+      .from("predictions")
+      .update({ user_id: authUser.id })
+      .eq("user_id", existingLocalId)
+
+    if (error) {
+      console.error(error)
+    }
+  }
 
   const { data: existingUser } =
     await supabase
