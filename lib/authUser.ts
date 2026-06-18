@@ -38,6 +38,7 @@ async function saveAuthUserRow(
 
     if (error) {
       console.error(error)
+      return false
     }
   } else if (
     existingUser.username !== username
@@ -49,8 +50,11 @@ async function saveAuthUserRow(
 
     if (error) {
       console.error(error)
+      return false
     }
   }
+
+  return true
 }
 
 export async function linkNicknameToAuthUser(
@@ -82,20 +86,44 @@ export async function linkNicknameToAuthUser(
     matchingUser &&
     matchingUser.id !== authUser.id
   ) {
-    const { error } = await supabase
+    const { error: predictionError } = await supabase
       .from("predictions")
       .update({ user_id: authUser.id })
       .eq("user_id", matchingUser.id)
 
-    if (error) {
-      console.error(error)
+    if (predictionError) {
+      console.error(predictionError)
+      return null
+    }
+
+    const { error: authUserDeleteError } = await supabase
+      .from("users")
+      .delete()
+      .eq("id", authUser.id)
+
+    if (authUserDeleteError) {
+      console.error(authUserDeleteError)
+    }
+
+    const { error: matchingUserDeleteError } = await supabase
+      .from("users")
+      .delete()
+      .eq("id", matchingUser.id)
+
+    if (matchingUserDeleteError) {
+      console.error(matchingUserDeleteError)
+      return null
     }
   }
 
-  await saveAuthUserRow(
+  const savedUser = await saveAuthUserRow(
     authUser,
     username
   )
+
+  if (!savedUser) {
+    return null
+  }
 
   localStorage.setItem("wc-user", username)
   localStorage.setItem("user-id", authUser.id)
@@ -109,12 +137,6 @@ export async function linkNicknameToAuthUser(
 }
 
 export async function syncAuthUser() {
-  const existingLocalId =
-    localStorage.getItem("user-id") || ""
-
-  const existingLocalName =
-    localStorage.getItem("wc-user") || ""
-
   const authUser = await getAuthUser()
 
   if (!authUser) {
@@ -128,32 +150,18 @@ export async function syncAuthUser() {
       .eq("id", authUser.id)
       .maybeSingle()
 
+  const confirmedNickname =
+    localStorage.getItem("wc-nickname-confirmed") === authUser.id
+
   const username =
     existingAuthUser?.username ||
-    existingLocalName ||
+    localStorage.getItem("wc-user") ||
     getDisplayName(authUser)
 
-  if (
-    existingLocalId &&
-    existingLocalId !== authUser.id
-  ) {
-    const { error } = await supabase
-      .from("predictions")
-      .update({ user_id: authUser.id })
-      .eq("user_id", existingLocalId)
-
-    if (error) {
-      console.error(error)
-    }
+  if (existingAuthUser || confirmedNickname) {
+    localStorage.setItem("wc-user", username)
+    localStorage.setItem("user-id", authUser.id)
   }
-
-  await saveAuthUserRow(
-    authUser,
-    username
-  )
-
-  localStorage.setItem("wc-user", username)
-  localStorage.setItem("user-id", authUser.id)
 
   return {
     id: authUser.id,
