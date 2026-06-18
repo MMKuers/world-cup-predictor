@@ -10,6 +10,32 @@ function getDisplayName(user: any) {
   )
 }
 
+function getStoredLinkedUser(email = "") {
+  const linkedGoogleUser =
+    localStorage.getItem("wc-google-user") || ""
+  const linkedNickname =
+    localStorage.getItem("wc-nickname-linked") || ""
+  const localUserId =
+    localStorage.getItem("user-id") || ""
+  const localUsername =
+    localStorage.getItem("wc-user") || ""
+
+  if (
+    linkedGoogleUser &&
+    linkedNickname === linkedGoogleUser &&
+    localUserId &&
+    localUsername
+  ) {
+    return {
+      id: localUserId,
+      username: localUsername,
+      email,
+    }
+  }
+
+  return null
+}
+
 async function getAuthUser() {
   const { data } =
     await supabase.auth.getUser()
@@ -119,10 +145,11 @@ export async function linkNicknameToAuthUser(
 }
 
 export async function syncAuthUser() {
+  const storedLinkedUser = getStoredLinkedUser()
   const authUser = await getAuthUser()
 
   if (!authUser) {
-    return null
+    return storedLinkedUser
   }
 
   const linkedNickname =
