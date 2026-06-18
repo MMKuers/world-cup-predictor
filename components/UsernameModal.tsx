@@ -28,9 +28,16 @@ export default function UsernameModal() {
   function shouldConfirmNickname(
     user: AuthUser | null
   ) {
-    return (
+    const linkedGoogleUser =
+      localStorage.getItem("wc-google-user")
+
+    const linkedNickname =
+      localStorage.getItem("wc-nickname-linked")
+
+    return !!(
       user &&
-      localStorage.getItem("wc-nickname-linked") !== user.id
+      (!linkedGoogleUser ||
+        linkedNickname !== linkedGoogleUser)
     )
   }
 
