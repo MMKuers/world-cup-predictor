@@ -3,6 +3,8 @@ type Prediction = {
   username?: string | null
   match_key: string
   prediction: string
+  predicted_home_score?: number | null
+  predicted_away_score?: number | null
 }
 
 type Match = {
@@ -14,6 +16,10 @@ type Match = {
   }
   score?: {
     winner?: string | null
+    fullTime?: {
+      home?: number | null
+      away?: number | null
+    }
   }
 }
 
@@ -127,6 +133,47 @@ function isCorrectPrediction(
   )
 }
 
+function getActualScore(match: Match) {
+  const home = match.score?.fullTime?.home
+  const away = match.score?.fullTime?.away
+
+  if (
+    typeof home !== "number" ||
+    typeof away !== "number"
+  ) {
+    return null
+  }
+
+  return { home, away }
+}
+
+function isExactScore(
+  prediction: Prediction,
+  match: Match
+) {
+  const actualScore = getActualScore(match)
+
+  if (!actualScore) return false
+
+  return (
+    prediction.predicted_home_score === actualScore.home &&
+    prediction.predicted_away_score === actualScore.away
+  )
+}
+
+export function calculatePredictionPoints(
+  prediction: Prediction,
+  match: Match
+) {
+  if (!isCorrectPrediction(prediction, match)) {
+    return 0
+  }
+
+  return isExactScore(prediction, match)
+    ? 5
+    : 3
+}
+
 export function calculatePlayerPoints({
   predictions,
   matches,
@@ -135,7 +182,7 @@ export function calculatePlayerPoints({
   currentUserId,
   currentUsername,
 }: PlayerScoreInput) {
-  const correctMatchKeys = new Set<string>()
+  const pointsByMatch = new Map<string, number>()
 
   predictions.forEach((prediction) => {
     const player = getPredictionPlayer(
@@ -157,12 +204,22 @@ export function calculatePlayerPoints({
 
     if (!match) return
 
-    if (isCorrectPrediction(prediction, match)) {
-      correctMatchKeys.add(prediction.match_key)
-    }
+    const points = calculatePredictionPoints(
+      prediction,
+      match
+    )
+
+    const previousPoints =
+      pointsByMatch.get(prediction.match_key) || 0
+
+    pointsByMatch.set(
+      prediction.match_key,
+      Math.max(previousPoints, points)
+    )
   })
 
-  return correctMatchKeys.size * 3
+  return Array.from(pointsByMatch.values())
+    .reduce((total, points) => total + points, 0)
 }
 
 export function buildLeaderboard(
@@ -176,7 +233,7 @@ export function buildLeaderboard(
     string,
     {
       name: string
-      correctMatchKeys: Set<string>
+      pointsByMatch: Map<string, number>
       userIds: string[]
     }
   > = {}
@@ -194,7 +251,7 @@ export function buildLeaderboard(
     if (!leaderboardMap[player.key]) {
       leaderboardMap[player.key] = {
         name: player.name,
-        correctMatchKeys: new Set<string>(),
+        pointsByMatch: new Map<string, number>(),
         userIds: [],
       }
     }
@@ -223,18 +280,32 @@ export function buildLeaderboard(
 
     if (!match) return
 
-    if (isCorrectPrediction(prediction, match)) {
-      leaderboardMap[player.key].correctMatchKeys.add(
+    const points = calculatePredictionPoints(
+      prediction,
+      match
+    )
+
+    const previousPoints =
+      leaderboardMap[player.key].pointsByMatch.get(
         prediction.match_key
-      )
-    }
+      ) || 0
+
+    leaderboardMap[player.key].pointsByMatch.set(
+      prediction.match_key,
+      Math.max(previousPoints, points)
+    )
   })
 
   return Object.entries(leaderboardMap)
     .map(([id, player]) => ({
       id,
       name: player.name,
-      points: player.correctMatchKeys.size * 3,
+      points: Array.from(
+        player.pointsByMatch.values()
+      ).reduce(
+        (total, points) => total + points,
+        0
+      ),
       userIds: player.userIds,
     }))
     .sort(

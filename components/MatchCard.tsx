@@ -20,6 +20,40 @@ type Props = {
   onTeamClick?: (team: string) => void
 }
 
+function scoreGuessToPrediction(
+  home: string,
+  away: string,
+  homeGuess: string,
+  awayGuess: string
+) {
+  const homeScore = Number(homeGuess || "0")
+  const awayScore = Number(awayGuess || "0")
+
+  if (homeScore > awayScore) return home
+  if (awayScore > homeScore) return away
+
+  return "Draw"
+}
+
+function normalizeScoreInput(value: string) {
+  if (value === "") return ""
+
+  const numberValue = Math.max(
+    0,
+    Math.min(99, Number(value))
+  )
+
+  if (Number.isNaN(numberValue)) {
+    return ""
+  }
+
+  return String(numberValue)
+}
+
+function scoreValue(value: string) {
+  return Number(value || "0")
+}
+
 export default function MatchCard({
   home,
   away,
@@ -48,6 +82,12 @@ export default function MatchCard({
   const storageKey =
     `${home}-${away}`
 
+  const homeScoreKey =
+    `${storageKey}-home-score`
+
+  const awayScoreKey =
+    `${storageKey}-away-score`
+
   const [prediction, setPrediction] =
     useState(() => {
       if (
@@ -56,6 +96,36 @@ export default function MatchCard({
         return (
           localStorage.getItem(
             storageKey
+          ) || ""
+        )
+      }
+
+      return ""
+    })
+
+  const [homeScoreGuess, setHomeScoreGuess] =
+    useState(() => {
+      if (
+        typeof window !== "undefined"
+      ) {
+        return (
+          localStorage.getItem(
+            homeScoreKey
+          ) || ""
+        )
+      }
+
+      return ""
+    })
+
+  const [awayScoreGuess, setAwayScoreGuess] =
+    useState(() => {
+      if (
+        typeof window !== "undefined"
+      ) {
+        return (
+          localStorage.getItem(
+            awayScoreKey
           ) || ""
         )
       }
@@ -73,7 +143,7 @@ export default function MatchCard({
       const { data, error } =
         await supabase
           .from("predictions")
-          .select("id,username,prediction")
+          .select("id,user_id,username,prediction,predicted_home_score,predicted_away_score")
           .eq("match_key", storageKey)
 
       if (error) {
@@ -83,11 +153,64 @@ export default function MatchCard({
 
       setAllPredictions(data || [])
 
+      const currentUserId =
+        localStorage.getItem("user-id")
+
+      const currentPrediction =
+        data?.find(
+          (pick) =>
+            pick.user_id === currentUserId
+        )
+
+      if (currentPrediction) {
+        if (currentPrediction.prediction) {
+          setPrediction(currentPrediction.prediction)
+          localStorage.setItem(
+            storageKey,
+            currentPrediction.prediction
+          )
+        }
+
+        if (
+          currentPrediction.predicted_home_score !== null &&
+          currentPrediction.predicted_home_score !== undefined
+        ) {
+          const value = String(
+            currentPrediction.predicted_home_score
+          )
+
+          setHomeScoreGuess(value)
+          localStorage.setItem(
+            homeScoreKey,
+            value
+          )
+        }
+
+        if (
+          currentPrediction.predicted_away_score !== null &&
+          currentPrediction.predicted_away_score !== undefined
+        ) {
+          const value = String(
+            currentPrediction.predicted_away_score
+          )
+
+          setAwayScoreGuess(value)
+          localStorage.setItem(
+            awayScoreKey,
+            value
+          )
+        }
+      }
+
     }
 
     loadPredictions()
 
-  }, [storageKey])
+  }, [
+    awayScoreKey,
+    homeScoreKey,
+    storageKey,
+  ])
 
   const kickoffDate =
     new Date(kickoff)
@@ -102,8 +225,11 @@ export default function MatchCard({
     minute: "2-digit",
   })
 
-  const savePrediction = async (
-    value: string
+  const savePick = async (
+    value: string,
+    homeGuess = homeScoreGuess,
+    awayGuess = awayScoreGuess,
+    includeScoreGuess = false
   ) => {
     setPrediction(value)
 
@@ -122,12 +248,78 @@ export default function MatchCard({
             localStorage.getItem("wc-user"),
           match_key: storageKey,
           prediction: value,
+          predicted_home_score: includeScoreGuess
+            ? scoreValue(homeGuess)
+            : scoreValue(homeGuess) || null,
+          predicted_away_score: includeScoreGuess
+            ? scoreValue(awayGuess)
+            : scoreValue(awayGuess) || null,
           points: 0,
         },
         {
           onConflict: "user_id,match_key",
         }
       )
+  }
+
+  const savePrediction = async (
+    value: string
+  ) => {
+    await savePick(value)
+  }
+
+  const saveScoreGuess = async (
+    side: "home" | "away",
+    value: string
+  ) => {
+    const nextValue =
+      normalizeScoreInput(value)
+
+    const nextHomeGuess =
+      side === "home"
+        ? nextValue
+        : homeScoreGuess
+
+    const nextAwayGuess =
+      side === "away"
+        ? nextValue
+        : awayScoreGuess
+
+    setHomeScoreGuess(nextHomeGuess)
+    setAwayScoreGuess(nextAwayGuess)
+
+    if (nextHomeGuess === "") {
+      localStorage.removeItem(homeScoreKey)
+    } else {
+      localStorage.setItem(
+        homeScoreKey,
+        nextHomeGuess
+      )
+    }
+
+    if (nextAwayGuess === "") {
+      localStorage.removeItem(awayScoreKey)
+    } else {
+      localStorage.setItem(
+        awayScoreKey,
+        nextAwayGuess
+      )
+    }
+
+    const scorePrediction =
+      scoreGuessToPrediction(
+        home,
+        away,
+        nextHomeGuess,
+        nextAwayGuess
+      )
+
+    await savePick(
+      scorePrediction,
+      nextHomeGuess,
+      nextAwayGuess,
+      true
+    )
   }
 
   const statusLabel =
@@ -319,6 +511,72 @@ export default function MatchCard({
                 {option}
               </button>
             ))}
+          </div>
+
+          <div className="mt-4 rounded-xl bg-[#f8fbff] p-3 ring-1 ring-[#edf3ff]">
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <div className="text-xs font-bold uppercase text-[#6f7f9d]">
+                Score Guess
+              </div>
+
+              <div className="text-[11px] font-semibold text-[#4564a8]">
+                +2 exact bonus
+              </div>
+            </div>
+
+            <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-2">
+              <label className="min-w-0">
+                <div className="mb-1 truncate text-[11px] font-semibold text-[#6f7f9d]">
+                  {home}
+                </div>
+
+                <input
+                  type="number"
+                  min="0"
+                  max="99"
+                  inputMode="numeric"
+                  disabled={isLocked}
+                  value={homeScoreGuess}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={async (e) => {
+                    await saveScoreGuess(
+                      "home",
+                      e.target.value
+                    )
+                  }}
+                  className="w-full rounded-xl bg-white px-3 py-2 text-center text-sm font-bold text-[#102348] ring-1 ring-[#dbe5f6] focus:outline-none focus:ring-2 focus:ring-[#102348] disabled:cursor-not-allowed disabled:opacity-40"
+                  placeholder="0"
+                />
+              </label>
+
+              <div className="pb-2 text-sm font-bold text-[#7b8baa]">
+                -
+              </div>
+
+              <label className="min-w-0">
+                <div className="mb-1 truncate text-right text-[11px] font-semibold text-[#6f7f9d]">
+                  {away}
+                </div>
+
+                <input
+                  type="number"
+                  min="0"
+                  max="99"
+                  inputMode="numeric"
+                  disabled={isLocked}
+                  value={awayScoreGuess}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={async (e) => {
+                    await saveScoreGuess(
+                      "away",
+                      e.target.value
+                    )
+                  }}
+                  className="w-full rounded-xl bg-white px-3 py-2 text-center text-sm font-bold text-[#102348] ring-1 ring-[#dbe5f6] focus:outline-none focus:ring-2 focus:ring-[#102348] disabled:cursor-not-allowed disabled:opacity-40"
+                  placeholder="0"
+                />
+              </label>
+            </div>
           </div>
 
           {prediction && (
