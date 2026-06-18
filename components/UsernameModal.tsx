@@ -22,13 +22,15 @@ export default function UsernameModal() {
     useState<AuthUser | null>(null)
   const [isSigningIn, setIsSigningIn] =
     useState(false)
+  const [linkError, setLinkError] =
+    useState("")
 
   function shouldConfirmNickname(
     user: AuthUser | null
   ) {
     return (
       user &&
-      localStorage.getItem("wc-nickname-confirmed") !== user.id
+      localStorage.getItem("wc-nickname-linked") !== user.id
     )
   }
 
@@ -103,6 +105,8 @@ if (
 
   if (!name.trim()) return
 
+  setLinkError("")
+
   if (authUser) {
     const linkedUser =
       await linkNicknameToAuthUser(
@@ -110,6 +114,9 @@ if (
       )
 
     if (!linkedUser) {
+      setLinkError(
+        "That nickname could not be linked yet. Try the exact leaderboard nickname, or tell Michael and we can connect it manually."
+      )
       return
     }
 
@@ -225,6 +232,12 @@ if (
   placeholder="Your nickname"
   className="w-full rounded-2xl border border-[#dbe5f6] px-4 py-3 text-base text-black placeholder:text-gray-400 outline-none"
 />
+
+        {linkError && (
+          <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs font-semibold text-red-600">
+            {linkError}
+          </p>
+        )}
 
         <button
           onClick={saveName}
