@@ -73,7 +73,7 @@ export default function MatchCard({
       const { data, error } =
         await supabase
           .from("predictions")
-          .select("id,username,prediction")
+          .select("id,user_id,username,prediction")
           .eq("match_key", storageKey)
 
       if (error) {
@@ -82,6 +82,26 @@ export default function MatchCard({
       }
 
       setAllPredictions(data || [])
+
+      const currentUserId =
+        localStorage.getItem("user-id")
+
+      const currentPrediction =
+        data?.find(
+          (pick) =>
+            pick.user_id === currentUserId
+        )
+
+      if (currentPrediction?.prediction) {
+        setPrediction(
+          currentPrediction.prediction
+        )
+
+        localStorage.setItem(
+          storageKey,
+          currentPrediction.prediction
+        )
+      }
 
     }
 
@@ -188,7 +208,7 @@ export default function MatchCard({
                   onClick={(event) =>
                     openTeamDetails(home, event)
                   }
-                  className="max-w-full truncate text-left text-base font-semibold text-[#102348] underline-offset-4 hover:underline focus:outline-none focus:underline"
+                  className="w-fit max-w-full truncate text-left text-base font-semibold text-[#102348] underline-offset-4 hover:underline focus:outline-none focus:underline"
                 >
                   {home}
                 </button>
@@ -225,7 +245,7 @@ export default function MatchCard({
                   onClick={(event) =>
                     openTeamDetails(away, event)
                   }
-                  className="max-w-full truncate text-left text-base font-semibold text-[#102348] underline-offset-4 hover:underline focus:outline-none focus:underline"
+                  className="w-fit max-w-full truncate text-left text-base font-semibold text-[#102348] underline-offset-4 hover:underline focus:outline-none focus:underline"
                 >
                   {away}
                 </button>
@@ -298,27 +318,34 @@ export default function MatchCard({
               home,
               "Draw",
               away,
-            ].map((option) => (
-              <button
-                key={option}
-                disabled={isLocked}
-                onClick={async (e) => {
-                  e.stopPropagation()
-                  await savePrediction(option)
-                }}
-                className={`rounded-xl px-3 py-2 text-xs font-semibold transition ${
-                  isLocked
-                    ? "cursor-not-allowed opacity-40 grayscale"
-                    : ""
-                } ${
-                  prediction === option
-                    ? "bg-[#102348] text-white"
-                    : "bg-[#edf3ff] text-[#102348]"
-                }`}
-              >
-                {option}
-              </button>
-            ))}
+            ].map((option) => {
+              const isSelected =
+                prediction === option
+
+              return (
+                <button
+                  key={option}
+                  disabled={isLocked}
+                  onClick={async (e) => {
+                    e.stopPropagation()
+                    await savePrediction(option)
+                  }}
+                  className={`rounded-xl px-3 py-2 text-xs font-semibold transition ${
+                    isLocked && !isSelected
+                      ? "cursor-not-allowed opacity-40 grayscale"
+                      : ""
+                  } ${
+                    isSelected
+                      ? isLocked
+                        ? "bg-[#4b5563] text-white"
+                        : "bg-[#102348] text-white"
+                      : "bg-[#edf3ff] text-[#102348]"
+                  }`}
+                >
+                  {option}
+                </button>
+              )
+            })}
           </div>
 
           {prediction && (
