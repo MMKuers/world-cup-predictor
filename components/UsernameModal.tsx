@@ -1,6 +1,7 @@
 "use client"
 
 import { supabase } from "@/lib/supabase"
+import { syncAuthUser } from "@/lib/authUser"
 import { useEffect, useState } from "react"
 
 export default function UsernameModal() {
@@ -8,23 +9,63 @@ export default function UsernameModal() {
   const [name, setName] = useState("")
   const [showModal, setShowModal] =
     useState(false)
+  const [isSigningIn, setIsSigningIn] =
+    useState(false)
 
   useEffect(() => {
 
-  const existingName =
+  async function checkIdentity() {
+    const authUser = await syncAuthUser()
+
+    const existingName =
   localStorage.getItem("wc-user")
 
 const existingUserId =
   localStorage.getItem("user-id")
 
 if (
-  !existingName ||
-  !existingUserId
+  !authUser &&
+  (!existingName ||
+  !existingUserId)
 ) {
   setShowModal(true)
 }
+  }
+
+  checkIdentity()
+
+  const { data } =
+    supabase.auth.onAuthStateChange(
+      async () => {
+        const authUser = await syncAuthUser()
+
+        if (authUser) {
+          setShowModal(false)
+        }
+      }
+    )
+
+  return () => {
+    data.subscription.unsubscribe()
+  }
 
 }, [])
+
+  const signInWithGoogle = async () => {
+    setIsSigningIn(true)
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      },
+    })
+
+    if (error) {
+      console.error(error)
+      setIsSigningIn(false)
+    }
+  }
 
   const saveName = async () => {
 
@@ -92,16 +133,33 @@ if (
 
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6">
 
-      <div className="w-full max-w-md rounded-[32px] bg-white p-8 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-[#dbe5f6]">
 
-        <h2 className="text-3xl font-bold text-[#102348]">
+        <h2 className="text-2xl font-bold text-[#102348]">
           Welcome
         </h2>
 
-        <p className="mt-3 text-[#6f7f9d]">
-          Enter your name to start making
-          your World Cup predictions.
+        <p className="mt-2 text-sm text-[#6f7f9d]">
+          Sign in with Google or enter your name to start making World Cup predictions.
         </p>
+
+        <button
+          onClick={signInWithGoogle}
+          disabled={isSigningIn}
+          className="mt-5 w-full rounded-2xl bg-[#102348] py-3 text-sm font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isSigningIn
+            ? "Opening Google..."
+            : "Continue with Google"}
+        </button>
+
+        <div className="my-5 flex items-center gap-3">
+          <div className="h-px flex-1 bg-[#edf3ff]" />
+          <div className="text-xs font-semibold uppercase text-[#7b8baa]">
+            or
+          </div>
+          <div className="h-px flex-1 bg-[#edf3ff]" />
+        </div>
 
         <input
   value={name}
@@ -109,14 +167,14 @@ if (
     setName(e.target.value)
   }
   placeholder="Your name"
-  className="mt-6 w-full rounded-2xl border border-[#dbe5f6] px-5 py-4 text-lg text-black placeholder:text-gray-400 outline-none"
+  className="w-full rounded-2xl border border-[#dbe5f6] px-4 py-3 text-base text-black placeholder:text-gray-400 outline-none"
 />
 
         <button
           onClick={saveName}
-          className="mt-5 w-full rounded-2xl bg-[#102348] py-4 text-lg font-semibold text-white transition hover:opacity-90"
+          className="mt-3 w-full rounded-2xl bg-[#edf3ff] py-3 text-sm font-bold text-[#102348] transition hover:bg-[#dbe5f6]"
         >
-          Continue
+          Continue without Google
         </button>
 
       </div>
