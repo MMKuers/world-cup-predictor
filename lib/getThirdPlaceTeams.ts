@@ -1,28 +1,32 @@
 import { calculateStandings } from "@/lib/calculateStandings"
 
-export function getThirdPlaceTeams() {
-
-  const standings =
-    calculateStandings()
+export function getThirdPlaceTeams(
+  standings = calculateStandings()
+) {
 
   const thirdPlaceTeams =
-    Object.values(standings)
-      .map((group, index) => ({
-  ...group[2],
-  group: String.fromCharCode(
-    65 + index
-  ),
-}))
-      .filter(Boolean)
+    Object.entries(standings)
+      .sort(([a], [b]) =>
+        a.localeCompare(b)
+      )
+      .map(([groupName, group]) => {
+        const team = group[2]
+
+        if (!team) return null
+
+        return {
+          ...team,
+          group: groupName,
+        }
+      })
+      .filter(Boolean) as any[]
 
   thirdPlaceTeams.sort((a, b) => {
 
-    // Points
     if (b.points !== a.points) {
       return b.points - a.points
     }
 
-    // Goal Difference
     if (
       b.goalDifference !==
       a.goalDifference
@@ -33,7 +37,6 @@ export function getThirdPlaceTeams() {
       )
     }
 
-    // Goals For
     return (
       b.goalsFor -
       a.goalsFor

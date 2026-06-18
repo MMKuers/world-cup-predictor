@@ -16,6 +16,8 @@ type Props = {
   awayScore: number | null
 
   minute?: number
+  livePhase?: string
+  onTeamClick?: (team: string) => void
 }
 
 export default function MatchCard({
@@ -28,6 +30,8 @@ export default function MatchCard({
   homeScore,
   awayScore,
   minute,
+  livePhase,
+  onTeamClick,
 }: Props) {
   const homeCode =
     countryCodes[home.trim()]
@@ -130,10 +134,23 @@ export default function MatchCard({
     status === "LIVE"
       ? minute
         ? `${minute}'`
-        : "LIVE"
+        : livePhase || "LIVE"
       : status === "HALFTIME"
       ? "HT"
       : status
+
+  const openTeamDetails = (
+    team: string,
+    event: React.MouseEvent
+  ) => {
+    event.stopPropagation()
+
+    if (!team || !onTeamClick) {
+      return
+    }
+
+    onTeamClick(team)
+  }
 
   return (
     <div
@@ -166,9 +183,15 @@ export default function MatchCard({
               </div>
 
               <div className="flex min-w-0 flex-1 items-center justify-between">
-                <div className="min-w-0 flex-1 truncate text-base font-semibold text-[#102348]">
+                <button
+                  type="button"
+                  onClick={(event) =>
+                    openTeamDetails(home, event)
+                  }
+                  className="min-w-0 flex-1 truncate text-left text-base font-semibold text-[#102348] underline-offset-4 hover:underline focus:outline-none focus:underline"
+                >
                   {home}
-                </div>
+                </button>
 
                 {(status === "FINAL" ||
                   status === "LIVE") && (
@@ -197,9 +220,15 @@ export default function MatchCard({
               </div>
 
               <div className="flex min-w-0 flex-1 items-center justify-between">
-                <div className="min-w-0 flex-1 truncate text-base font-semibold text-[#102348]">
+                <button
+                  type="button"
+                  onClick={(event) =>
+                    openTeamDetails(away, event)
+                  }
+                  className="min-w-0 flex-1 truncate text-left text-base font-semibold text-[#102348] underline-offset-4 hover:underline focus:outline-none focus:underline"
+                >
                   {away}
-                </div>
+                </button>
 
                 {(status === "FINAL" ||
                   status === "LIVE") && (
@@ -406,7 +435,7 @@ export default function MatchCard({
                                       key={pick.id}
                                       className="text-xs text-[#4564a8]"
                                     >
-                                      • {pick.username}
+                                      - {pick.username}
                                     </div>
                                   )
                                 )}
