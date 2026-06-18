@@ -26,12 +26,8 @@ function scoreGuessToPrediction(
   homeGuess: string,
   awayGuess: string
 ) {
-  if (homeGuess === "" || awayGuess === "") {
-    return ""
-  }
-
-  const homeScore = Number(homeGuess)
-  const awayScore = Number(awayGuess)
+  const homeScore = Number(homeGuess || "0")
+  const awayScore = Number(awayGuess || "0")
 
   if (homeScore > awayScore) return home
   if (awayScore > homeScore) return away
@@ -55,7 +51,7 @@ function normalizeScoreInput(value: string) {
 }
 
 function scoreValue(value: string) {
-  return value === "" ? null : Number(value)
+  return Number(value || "0")
 }
 
 export default function MatchCard({
@@ -232,7 +228,8 @@ export default function MatchCard({
   const savePick = async (
     value: string,
     homeGuess = homeScoreGuess,
-    awayGuess = awayScoreGuess
+    awayGuess = awayScoreGuess,
+    includeScoreGuess = false
   ) => {
     setPrediction(value)
 
@@ -251,10 +248,12 @@ export default function MatchCard({
             localStorage.getItem("wc-user"),
           match_key: storageKey,
           prediction: value,
-          predicted_home_score:
-            scoreValue(homeGuess),
-          predicted_away_score:
-            scoreValue(awayGuess),
+          predicted_home_score: includeScoreGuess
+            ? scoreValue(homeGuess)
+            : scoreValue(homeGuess) || null,
+          predicted_away_score: includeScoreGuess
+            ? scoreValue(awayGuess)
+            : scoreValue(awayGuess) || null,
           points: 0,
         },
         {
@@ -316,9 +315,10 @@ export default function MatchCard({
       )
 
     await savePick(
-      scorePrediction || prediction,
+      scorePrediction,
       nextHomeGuess,
-      nextAwayGuess
+      nextAwayGuess,
+      true
     )
   }
 
