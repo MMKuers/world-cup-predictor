@@ -48,6 +48,7 @@ export default function AuthButton() {
     await supabase.auth.signOut()
     localStorage.removeItem("wc-user")
     localStorage.removeItem("user-id")
+    localStorage.removeItem("wc-google-user")
     localStorage.removeItem("wc-nickname-linked")
     localStorage.removeItem("wc-nickname-confirmed")
     setAuthUser(null)
