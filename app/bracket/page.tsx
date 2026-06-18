@@ -209,8 +209,8 @@ const standings =
 
       </div>
 
-      <div className="mb-4 overflow-x-auto pt-1.5 pb-1.5 scrollbar-hide">
-        <div className="flex gap-2">
+      <div className="mb-4 -mx-1 overflow-x-auto px-1 pt-3 pb-3 scrollbar-hide">
+        <div className="flex items-center gap-2">
         {[
           "Groups",
           "3rd Place",
@@ -225,7 +225,7 @@ const standings =
             href={`#${item
               .toLowerCase()
               .replaceAll(" ", "-")}`}
-            className="whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-xs font-bold text-[#102348] shadow-sm ring-1 ring-[#dbe5f6] transition active:scale-95"
+            className="whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-xs font-bold leading-none text-[#102348] ring-1 ring-[#dbe5f6] transition active:scale-95"
           >
             {item}
           </a>
