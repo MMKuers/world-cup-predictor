@@ -11,6 +11,7 @@ import {
   buildUsersById,
   calculatePlayerPoints,
   getCurrentPlayerKey,
+  getPlayerKeyFromName,
 } from "@/lib/predictionScoring"
 
 export default function PredictionsPage() {
@@ -137,6 +138,25 @@ console.log(
     points: number
   }[] = []
 
+  function predictionBelongsToCurrentPlayer(
+    prediction: any
+  ) {
+    if (prediction.user_id === userId) {
+      return true
+    }
+
+    const displayName =
+      usersById[prediction.user_id || ""] ||
+      prediction.username ||
+      ""
+
+    if (!displayName || !playerKey) {
+      return false
+    }
+
+    return getPlayerKeyFromName(displayName) === playerKey
+  }
+
   matches.forEach((match) => {
 
   
@@ -148,7 +168,7 @@ console.log(
   dbPredictions.find(
     (p) =>
       p.match_key === matchKey &&
-      p.user_id === userId
+      predictionBelongsToCurrentPlayer(p)
   )
 
 console.log("CURRENT USER ID:", userId)
@@ -156,7 +176,7 @@ console.log("CURRENT USER ID:", userId)
 console.log(
   "MATCHING PREDICTIONS:",
   dbPredictions.filter(
-    p => p.user_id === userId
+    p => predictionBelongsToCurrentPlayer(p)
   ).length
 )
 
@@ -165,7 +185,7 @@ console.log("CURRENT USER ID:", userId)
 console.log(
   "MATCHING PREDICTIONS:",
   dbPredictions.filter(
-    p => p.user_id === userId
+    p => predictionBelongsToCurrentPlayer(p)
   ).length
 )
 
