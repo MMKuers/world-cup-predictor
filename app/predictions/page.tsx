@@ -7,6 +7,7 @@ import {
   buildLeaderboard,
   buildUsersById,
   calculatePlayerPoints,
+  calculatePredictionPoints,
   getCurrentPlayerKey,
 } from "@/lib/predictionScoring"
 
@@ -121,6 +122,7 @@ console.log(
     home: string
     away: string
     prediction: string
+    scoreGuess: string
     kickoff: string
     locked: boolean
     status: string
@@ -181,11 +183,26 @@ const prediction =
         } else {
           upcomingPredictions++
         }
+
+        const points = calculatePredictionPoints(
+          predictionRow,
+          match
+        )
+
+        const hasScoreGuess =
+          predictionRow?.predicted_home_score !== null &&
+          predictionRow?.predicted_home_score !== undefined &&
+          predictionRow?.predicted_away_score !== null &&
+          predictionRow?.predicted_away_score !== undefined
+
         predictedMatches.push({
   id: match.id,
   home: match.homeTeam.name,
   away: match.awayTeam.name,
   prediction,
+  scoreGuess: hasScoreGuess
+    ? `${predictionRow.predicted_home_score}-${predictionRow.predicted_away_score}`
+    : "None",
   kickoff: match.utcDate,
           locked: isLocked,
 
@@ -194,30 +211,11 @@ const prediction =
     ? "Pending"
     : match.score.winner === null
     ? "Pending"
-    : (
-        (match.score.winner === "HOME_TEAM" &&
-          prediction === match.homeTeam.name) ||
-        (match.score.winner === "AWAY_TEAM" &&
-          prediction === match.awayTeam.name) ||
-        (match.score.winner === "DRAW" &&
-          prediction === "Draw")
-      )
+    : points > 0
     ? "Correct"
     : "Incorrect",
 
-points:
-  match.score.winner === null
-    ? 0
-    : (
-        (match.score.winner === "HOME_TEAM" &&
-          prediction === match.homeTeam.name) ||
-        (match.score.winner === "AWAY_TEAM" &&
-          prediction === match.awayTeam.name) ||
-        (match.score.winner === "DRAW" &&
-          prediction === "Draw")
-      )
-    ? 3
-    : 0,
+points,
         })
 
       }
@@ -431,6 +429,13 @@ const leaderboard =
                   Pick:
                   <span className="ml-1 font-semibold text-[#102348]">
                     {match.prediction}
+                  </span>
+                </div>
+
+                <div className="mt-1 text-xs text-[#6f7f9d]">
+                  Score guess:
+                  <span className="ml-1 font-semibold text-[#102348]">
+                    {match.scoreGuess}
                   </span>
                 </div>
 
