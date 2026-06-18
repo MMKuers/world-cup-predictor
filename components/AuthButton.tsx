@@ -46,6 +46,8 @@ export default function AuthButton() {
 
   const signOut = async () => {
     await supabase.auth.signOut()
+    localStorage.removeItem("wc-user")
+    localStorage.removeItem("user-id")
     setAuthUser(null)
   }
 
