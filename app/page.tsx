@@ -17,6 +17,37 @@ import {
   useRef,
 } from "react"
 
+function scoreValue(value: any) {
+  return typeof value === "number"
+    ? value
+    : null
+}
+
+function hasHalfTimeScore(match: any) {
+  return (
+    scoreValue(match.score?.halfTime?.home) !== null ||
+    scoreValue(match.score?.halfTime?.away) !== null ||
+    scoreValue(match.score?.halfTime?.homeTeam) !== null ||
+    scoreValue(match.score?.halfTime?.awayTeam) !== null
+  )
+}
+
+function getLivePhase(match: any) {
+  if (match.status === "PAUSED") {
+    return "HT"
+  }
+
+  if (typeof match.minute === "number") {
+    return match.minute > 45
+      ? "2nd Half"
+      : "1st Half"
+  }
+
+  return hasHalfTimeScore(match)
+    ? "2nd Half"
+    : "1st Half"
+}
+
 export default function HomePage() {
  const [username, setUsername] =
   useState("")
@@ -327,6 +358,7 @@ if (matches.length > 0) {
           homeScore={match.score?.fullTime?.home}
           awayScore={match.score?.fullTime?.away}
           minute={match.minute}
+          livePhase={getLivePhase(match)}
           onTeamClick={setSelectedTeam}
         />
 
@@ -400,6 +432,12 @@ if (matches.length > 0) {
   homeScore={match.score?.fullTime?.home}
 awayScore={match.score?.fullTime?.away}
 minute={match.minute}
+livePhase={
+  match.status === "IN_PLAY" ||
+  match.status === "PAUSED"
+    ? getLivePhase(match)
+    : undefined
+}
 onTeamClick={setSelectedTeam}
 />
                   ))}
