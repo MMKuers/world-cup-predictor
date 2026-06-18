@@ -16,6 +16,7 @@ type Props = {
   awayScore: number | null
 
   minute?: number
+  livePhase?: string
   onTeamClick?: (team: string) => void
 }
 
@@ -29,6 +30,7 @@ export default function MatchCard({
   homeScore,
   awayScore,
   minute,
+  livePhase,
   onTeamClick,
 }: Props) {
   const homeCode =
@@ -132,7 +134,7 @@ export default function MatchCard({
     status === "LIVE"
       ? minute
         ? `${minute}'`
-        : "LIVE"
+        : livePhase || "LIVE"
       : status === "HALFTIME"
       ? "HT"
       : status
