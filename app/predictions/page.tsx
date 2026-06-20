@@ -6,8 +6,8 @@ import { supabase } from "@/lib/supabase"
 import {
   buildLeaderboard,
   buildUsersById,
-  calculatePlayerPoints,
   getCurrentPlayerKey,
+  getPlayerKeyFromName,
 } from "@/lib/predictionScoring"
 
 export default function PredictionsPage() {
@@ -106,15 +106,24 @@ console.log(
       usersById
     )
 
+const leaderboard =
+  buildLeaderboard(
+    dbPredictions,
+    matches,
+    usersById,
+    userId,
+    username
+  )
+
+  const currentPlayer =
+    leaderboard.find(
+      (player) =>
+        player.you ||
+        player.id === playerKey
+    )
+
   const totalPoints =
-    calculatePlayerPoints({
-      predictions: dbPredictions,
-      matches,
-      usersById,
-      playerKey,
-      currentUserId: userId,
-      currentUsername: username,
-    })
+    currentPlayer?.points || 0
 
   const predictedMatches: {
     id: number
@@ -127,6 +136,25 @@ console.log(
     points: number
   }[] = []
 
+  function predictionBelongsToCurrentPlayer(
+    prediction: any
+  ) {
+    if (prediction.user_id === userId) {
+      return true
+    }
+
+    const displayName =
+      usersById[prediction.user_id || ""] ||
+      prediction.username ||
+      ""
+
+    if (!displayName || !playerKey) {
+      return false
+    }
+
+    return getPlayerKeyFromName(displayName) === playerKey
+  }
+
   matches.forEach((match) => {
 
   
@@ -138,7 +166,7 @@ console.log(
   dbPredictions.find(
     (p) =>
       p.match_key === matchKey &&
-      p.user_id === userId
+      predictionBelongsToCurrentPlayer(p)
   )
 
 console.log("CURRENT USER ID:", userId)
@@ -146,7 +174,7 @@ console.log("CURRENT USER ID:", userId)
 console.log(
   "MATCHING PREDICTIONS:",
   dbPredictions.filter(
-    p => p.user_id === userId
+    p => predictionBelongsToCurrentPlayer(p)
   ).length
 )
 
@@ -155,7 +183,7 @@ console.log("CURRENT USER ID:", userId)
 console.log(
   "MATCHING PREDICTIONS:",
   dbPredictions.filter(
-    p => p.user_id === userId
+    p => predictionBelongsToCurrentPlayer(p)
   ).length
 )
 
@@ -223,14 +251,6 @@ points:
       }
 
     }
-  )
-const leaderboard =
-  buildLeaderboard(
-    dbPredictions,
-    matches,
-    usersById,
-    userId,
-    username
   )
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-4 pb-20">
