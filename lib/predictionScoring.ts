@@ -27,6 +27,8 @@ type PlayerScoreInput = {
 }
 
 const leaderboardAliases: Record<string, string> = {
+  kuerslight: "Kuers Light",
+  michaelkuers: "Kuers Light",
   mileaminitemarv: "MileAMinuteMarv",
   mileaminutemarv: "MileAMinuteMarv",
   mileaminutemarvs: "MileAMinuteMarv",
