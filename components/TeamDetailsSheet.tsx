@@ -273,7 +273,7 @@ export default function TeamDetailsSheet({
               {stats.goalsFor}-{stats.goalsAgainst}
             </div>
             <div className="text-[10px] font-semibold uppercase text-[#6f7f9d]">
-              Goals
+              GF-GA
             </div>
           </div>
 
