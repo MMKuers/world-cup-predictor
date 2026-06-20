@@ -7,8 +7,8 @@ import { supabase } from "@/lib/supabase"
 import UsernameModal from "@/components/UsernameModal"
 import { calculateStandings } from "@/lib/calculateStandings"
 import {
+  buildLeaderboard,
   buildUsersById,
-  calculatePlayerPoints,
   getCurrentPlayerKey,
 } from "@/lib/predictionScoring"
 import {
@@ -112,15 +112,24 @@ if (userId || currentUsername) {
         usersById
       )
 
-    setTotalPoints(
-      calculatePlayerPoints({
-        predictions: predictions || [],
-        matches: data.matches,
+    const leaderboard =
+      buildLeaderboard(
+        predictions || [],
+        data.matches,
         usersById,
-        playerKey,
-        currentUserId: userId,
-        currentUsername,
-      })
+        userId,
+        currentUsername
+      )
+
+    const currentPlayer =
+      leaderboard.find(
+        (player) =>
+          player.you ||
+          player.id === playerKey
+      )
+
+    setTotalPoints(
+      currentPlayer?.points || 0
     )
   }
 
