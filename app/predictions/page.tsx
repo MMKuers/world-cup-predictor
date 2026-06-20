@@ -95,6 +95,9 @@ console.log(
   let totalPredictions = 0
   let lockedPredictions = 0
   let upcomingPredictions = 0
+  let correctPredictions = 0
+  let missedPredictions = 0
+  let pendingPredictions = 0
 
   const usersById =
     buildUsersById(dbUsers)
@@ -209,6 +212,40 @@ const prediction =
         } else {
           upcomingPredictions++
         }
+
+        const matchIsDecided =
+          match.status === "FINISHED" &&
+          match.score.winner !== null
+
+        const pickIsCorrect =
+          matchIsDecided &&
+          (
+            (match.score.winner === "HOME_TEAM" &&
+              prediction === match.homeTeam.name) ||
+            (match.score.winner === "AWAY_TEAM" &&
+              prediction === match.awayTeam.name) ||
+            (match.score.winner === "DRAW" &&
+              prediction === "Draw")
+          )
+
+        const pickStatus =
+          !matchIsDecided
+            ? "Pending"
+            : pickIsCorrect
+            ? "Correct"
+            : "Incorrect"
+
+        const pickPoints =
+          pickIsCorrect ? 3 : 0
+
+        if (pickStatus === "Correct") {
+          correctPredictions++
+        } else if (pickStatus === "Incorrect") {
+          missedPredictions++
+        } else {
+          pendingPredictions++
+        }
+
         predictedMatches.push({
   id: match.id,
   home: match.homeTeam.name,
@@ -216,42 +253,25 @@ const prediction =
   prediction,
   kickoff: match.utcDate,
           locked: isLocked,
-
-     status:
-  match.status !== "FINISHED"
-    ? "Pending"
-    : match.score.winner === null
-    ? "Pending"
-    : (
-        (match.score.winner === "HOME_TEAM" &&
-          prediction === match.homeTeam.name) ||
-        (match.score.winner === "AWAY_TEAM" &&
-          prediction === match.awayTeam.name) ||
-        (match.score.winner === "DRAW" &&
-          prediction === "Draw")
-      )
-    ? "Correct"
-    : "Incorrect",
-
-points:
-  match.score.winner === null
-    ? 0
-    : (
-        (match.score.winner === "HOME_TEAM" &&
-          prediction === match.homeTeam.name) ||
-        (match.score.winner === "AWAY_TEAM" &&
-          prediction === match.awayTeam.name) ||
-        (match.score.winner === "DRAW" &&
-          prediction === "Draw")
-      )
-    ? 3
-    : 0,
+          status: pickStatus,
+          points: pickPoints,
         })
 
       }
 
     }
   )
+
+  const decidedPredictions =
+    correctPredictions + missedPredictions
+
+  const accuracyRate =
+    decidedPredictions === 0
+      ? 0
+      : Math.round(
+          (correctPredictions / decidedPredictions) * 100
+        )
+
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-4 pb-20">
 
@@ -288,6 +308,79 @@ points:
 
   <div className="mt-1 text-3xl font-bold">
     {totalPoints} pts
+  </div>
+
+</div>
+
+<div className="mb-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-[#dbe5f6]">
+
+  <div className="flex items-start justify-between gap-4">
+
+    <div>
+
+      <div className="text-xs font-semibold uppercase text-[#6f7f9d]">
+        Pick Accuracy
+      </div>
+
+      <div className="mt-1 text-3xl font-bold text-[#102348]">
+        {accuracyRate}%
+      </div>
+
+    </div>
+
+    <div className="text-right text-xs font-semibold text-[#6f7f9d]">
+      {correctPredictions}/{decidedPredictions} decided
+    </div>
+
+  </div>
+
+  <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#edf3ff]">
+
+    <div
+      className="h-full rounded-full bg-[#102348]"
+      style={{ width: `${accuracyRate}%` }}
+    />
+
+  </div>
+
+  <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+
+    <div className="rounded-xl bg-[#f8fbff] px-2 py-2">
+
+      <div className="text-[11px] font-semibold uppercase text-[#6f7f9d]">
+        Correct
+      </div>
+
+      <div className="mt-1 text-lg font-bold text-[#102348]">
+        {correctPredictions}
+      </div>
+
+    </div>
+
+    <div className="rounded-xl bg-[#f8fbff] px-2 py-2">
+
+      <div className="text-[11px] font-semibold uppercase text-[#6f7f9d]">
+        Missed
+      </div>
+
+      <div className="mt-1 text-lg font-bold text-[#102348]">
+        {missedPredictions}
+      </div>
+
+    </div>
+
+    <div className="rounded-xl bg-[#f8fbff] px-2 py-2">
+
+      <div className="text-[11px] font-semibold uppercase text-[#6f7f9d]">
+        Pending
+      </div>
+
+      <div className="mt-1 text-lg font-bold text-[#102348]">
+        {pendingPredictions}
+      </div>
+
+    </div>
+
   </div>
 
 </div>
