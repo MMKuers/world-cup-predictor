@@ -331,11 +331,9 @@ if (matches.length > 0) {
     )}
     </div>
 
-    {allowPredictions && (
-      <div className="mt-1 flex-shrink-0 rounded-full bg-[#102348] px-3 py-2 text-xs font-bold text-white shadow-sm">
-        {totalPoints} pts
-      </div>
-    )}
+    <div className="mt-1 flex-shrink-0 rounded-full bg-[#102348] px-3 py-2 text-xs font-bold text-white shadow-sm">
+      {totalPoints} pts
+    </div>
   </div>
 
 <div className="mt-3">
@@ -551,7 +549,7 @@ onTeamClick={setSelectedTeam}
         />
       )}
 
-      <BottomNav />
+      <BottomNav hidePicks={!allowPredictions} />
 
     </main>
   )
