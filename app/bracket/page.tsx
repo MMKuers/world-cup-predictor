@@ -12,73 +12,6 @@ import {
 } from "@/lib/generateBracket"
 import { useEffect } from "react"
 import { buildMatchesFromApi } from "@/lib/buildMatchesFromApi"
-import {
-  getBracketStatuses,
-  getTeamStatus,
-} from "@/lib/getBracketStatuses"
-
-type Status = {
-  label: string
-  tone: "safe" | "watch" | "danger" | "neutral"
-}
-
-function getCompactStatusLabel(label: string) {
-  const normalizedLabel =
-    label.toLowerCase()
-
-  if (
-    normalizedLabel.includes("advanced") ||
-    normalizedLabel.includes("advancing") ||
-    normalizedLabel.includes("clinched")
-  ) {
-    return "IN"
-  }
-
-  if (normalizedLabel.includes("eliminated")) {
-    return "OUT"
-  }
-
-  if (normalizedLabel.includes("3rd")) {
-    return "3RD"
-  }
-
-  if (normalizedLabel.includes("chasing")) {
-    return "CHASE"
-  }
-
-  return label
-}
-
-function StatusBadge({
-  status,
-  compact = false,
-}: {
-  status: Status | null
-  compact?: boolean
-}) {
-  if (!status) return null
-
-  const label = compact
-    ? getCompactStatusLabel(status.label)
-    : status.label
-
-  return (
-    <div
-      title={status.label}
-      className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[9px] font-bold uppercase leading-none ${
-        status.tone === "safe"
-          ? "bg-[#dff7e8] text-[#15803d]"
-          : status.tone === "danger"
-          ? "bg-[#ffe4e6] text-[#be123c]"
-          : status.tone === "watch"
-          ? "bg-[#fff3d6] text-[#9a5b00]"
-          : "bg-[#edf3ff] text-[#4564a8]"
-      }`}
-    >
-      {label}
-    </div>
-  )
-}
 
 function TeamLine({
   team,
@@ -236,8 +169,6 @@ const apiMatches =
   buildMatchesFromApi(matches)
 const standings =
   calculateStandings(apiMatches)
-const statusByTeam =
-  getBracketStatuses(standings)
     
 
 
@@ -352,7 +283,7 @@ const statusByTeam =
 
                 <div
                   key={team.team}
-                  className="grid grid-cols-[minmax(0,1fr)_36px] items-center gap-2"
+                  className="grid grid-cols-[minmax(0,1fr)_24px] items-center gap-2"
                 >
 
                   <div className="flex min-w-0 items-center gap-2">
@@ -385,18 +316,8 @@ const statusByTeam =
 
                   </div>
 
-                  <div className="flex flex-shrink-0 flex-col items-end gap-1">
-                    <div className="text-sm font-bold leading-none text-[#102348]">
-                      {team.points}
-                    </div>
-
-                    <StatusBadge
-                      compact
-                      status={getTeamStatus(
-                        statusByTeam,
-                        team.team
-                      )}
-                    />
+                  <div className="text-right text-sm font-bold leading-none text-[#102348]">
+                    {team.points}
                   </div>
 
                 </div>
@@ -484,7 +405,6 @@ const statusByTeam =
 <GroupDrawer
   group={selectedGroup}
   standings={standings}
-  statusByTeam={statusByTeam}
   onClose={() =>
     setSelectedGroup(null)
   }
