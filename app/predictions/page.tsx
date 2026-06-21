@@ -10,6 +10,13 @@ import {
   getPlayerKeyFromName,
 } from "@/lib/predictionScoring"
 
+type PickFilter =
+  | "all"
+  | "upcoming"
+  | "locked"
+  | "correct"
+  | "missed"
+
 function getLatestDecidedMatch(matches: any[]) {
   return [...matches]
     .filter(
@@ -92,6 +99,8 @@ const [username, setUsername] =
 
 const [userId, setUserId] =
   useState("")
+const [pickFilter, setPickFilter] =
+  useState<PickFilter>("all")
 
 
 
@@ -359,6 +368,56 @@ const prediction =
           (correctPredictions / decidedPredictions) * 100
         )
 
+  const pickFilters: {
+    key: PickFilter
+    label: string
+  }[] = [
+    {
+      key: "all",
+      label: "All",
+    },
+    {
+      key: "upcoming",
+      label: "Upcoming",
+    },
+    {
+      key: "locked",
+      label: "Locked",
+    },
+    {
+      key: "correct",
+      label: "Correct",
+    },
+    {
+      key: "missed",
+      label: "Missed",
+    },
+  ]
+
+  const filteredPredictedMatches =
+    predictedMatches.filter((match) => {
+      if (pickFilter === "all") {
+        return true
+      }
+
+      if (pickFilter === "upcoming") {
+        return !match.locked
+      }
+
+      if (pickFilter === "locked") {
+        return (
+          match.locked &&
+          match.status === "Pending"
+        )
+      }
+
+      if (pickFilter === "correct") {
+        return match.status === "Correct"
+      }
+
+      return match.status === "Incorrect"
+    })
+
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-4 pb-20">
 
@@ -616,13 +675,49 @@ const prediction =
 
   <div className="mt-6">
 
-    <h2 className="mb-3 text-xl font-bold text-[#102348]">
-      Your Picks
-    </h2>
+    <div className="mb-3 flex items-end justify-between gap-3">
+
+      <div>
+        <h2 className="text-xl font-bold text-[#102348]">
+          Your Picks
+        </h2>
+
+        <p className="mt-0.5 text-xs font-semibold text-[#6f7f9d]">
+          Showing {filteredPredictedMatches.length} of {predictedMatches.length}
+        </p>
+      </div>
+
+    </div>
+
+    <div className="-mx-1 mb-3 overflow-x-auto px-1 pb-1 scrollbar-hide">
+
+      <div className="flex gap-2">
+
+        {pickFilters.map((filter) => (
+          <button
+            key={filter.key}
+            type="button"
+            onClick={() =>
+              setPickFilter(filter.key)
+            }
+            className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold transition active:scale-95 ${
+              pickFilter === filter.key
+                ? "bg-[#102348] text-white"
+                : "bg-white text-[#102348] ring-1 ring-[#dbe5f6]"
+            }`}
+          >
+            {filter.label}
+          </button>
+        ))}
+
+      </div>
+
+    </div>
 
     <div className="space-y-3">
 
-      {predictedMatches.map(
+      {filteredPredictedMatches.length > 0 ? (
+        filteredPredictedMatches.map(
         (match) => (
 
           <div
@@ -690,6 +785,11 @@ const prediction =
           </div>
 
         )
+      )
+      ) : (
+        <div className="rounded-2xl bg-white p-4 text-sm font-semibold text-[#6f7f9d] shadow-sm ring-1 ring-[#dbe5f6]">
+          No picks match this filter.
+        </div>
       )}
 
     </div>
