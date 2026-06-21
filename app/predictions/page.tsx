@@ -53,14 +53,14 @@ function getMovementLabel(movement: number | null) {
   }
 
   if (movement > 0) {
-    return `Up ${movement}`
+    return `↑${movement}`
   }
 
   if (movement < 0) {
-    return `Down ${Math.abs(movement)}`
+    return `↓${Math.abs(movement)}`
   }
 
-  return "No move"
+  return "-"
 }
 
 function getMovementClass(movement: number | null) {
@@ -69,14 +69,14 @@ function getMovementClass(movement: number | null) {
   }
 
   if (movement > 0) {
-    return "bg-[#dff7e8] text-[#15803d]"
+    return "text-[#15803d]"
   }
 
   if (movement < 0) {
-    return "bg-[#ffe4e6] text-[#be123c]"
+    return "text-[#be123c]"
   }
 
-  return "bg-[#f8fbff] text-[#7b8baa]"
+  return "text-[#7b8baa]"
 }
 
 export default function PredictionsPage() {
@@ -589,7 +589,7 @@ const prediction =
 
           <div className="text-right">
             <span
-              className={`inline-flex rounded-full px-2 py-1 text-[10px] font-bold uppercase ${getMovementClass(movement)}`}
+              className={`inline-flex min-w-6 justify-end text-sm font-bold ${getMovementClass(movement)}`}
             >
               {getMovementLabel(movement)}
             </span>
