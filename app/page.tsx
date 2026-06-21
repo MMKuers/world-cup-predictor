@@ -18,6 +18,21 @@ import {
   useRef,
 } from "react"
 
+const competitions = [
+  {
+    code: "WC",
+    label: "World Cup",
+  },
+  {
+    code: "PL",
+    label: "Premier League",
+  },
+  {
+    code: "CL",
+    label: "Champions League",
+  },
+]
+
 function scoreValue(value: any) {
   return typeof value === "number"
     ? value
@@ -60,8 +75,20 @@ const [selectedDate, setSelectedDate] =
   useState("")
 const [selectedTeam, setSelectedTeam] =
   useState("")
+const [selectedCompetition, setSelectedCompetition] =
+  useState("WC")
   const dateStripRef =
   useRef<HTMLDivElement>(null)
+
+const currentCompetition =
+  competitions.find(
+    (competition) =>
+      competition.code === selectedCompetition
+  ) || competitions[0]
+
+const allowPredictions =
+  selectedCompetition === "WC"
+
 useEffect(() => {
   setUsername(
     localStorage.getItem("wc-user") || ""
@@ -72,15 +99,21 @@ useEffect(() => {
   async function loadMatches() {
 
     const response =
-      await fetch("/api/football")
+      await fetch(
+        `/api/football?competition=${selectedCompetition}`
+      )
 
     const data =
       await response.json()
 
-    console.log("API STATUS:", data.matches[0]?.status)
-console.log("API SCORE:", data.matches[0]?.score)
+    const selectedMatches =
+      data.matches || []
 
-setMatches(data.matches)
+    console.log("API STATUS:", selectedMatches[0]?.status)
+console.log("API SCORE:", selectedMatches[0]?.score)
+
+setMatches(selectedMatches)
+setSelectedDate("")
 
 const userId =
   localStorage.getItem("user-id") || ""
@@ -113,10 +146,21 @@ if (userId || currentUsername) {
         usersById
       )
 
+    const scoreMatches =
+      selectedCompetition === "WC"
+        ? selectedMatches
+        : await fetch("/api/football?competition=WC")
+            .then((worldCupResponse) =>
+              worldCupResponse.json()
+            )
+            .then((worldCupData) =>
+              worldCupData.matches || []
+            )
+
     const leaderboard =
       buildLeaderboard(
         predictions || [],
-        data.matches,
+        scoreMatches,
         usersById,
         userId,
         currentUsername
@@ -135,7 +179,7 @@ if (userId || currentUsername) {
   }
 
 }
-const nullMatch = data.matches.find(
+const nullMatch = selectedMatches.find(
   (m: any) =>
     !m.homeTeam?.name ||
     !m.awayTeam?.name
@@ -157,7 +201,7 @@ console.log(
 
   loadMatches()
 
-}, [])
+}, [selectedCompetition])
 
 
   const groupedMatches: Record<string, any[]> =
@@ -293,6 +337,35 @@ if (matches.length > 0) {
   </div>
 
 <div className="mt-3">
+  <div className="overflow-x-auto pb-1 scrollbar-hide">
+    <div className="flex gap-2">
+      {competitions.map((competition) => (
+        <button
+          key={competition.code}
+          type="button"
+          onClick={() =>
+            setSelectedCompetition(competition.code)
+          }
+          className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold transition active:scale-95 ${
+            selectedCompetition === competition.code
+              ? "bg-[#102348] text-white"
+              : "bg-white text-[#102348] ring-1 ring-[#dbe5f6]"
+          }`}
+        >
+          {competition.label}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
+
+{!allowPredictions && (
+  <div className="mt-2 rounded-xl bg-white px-3 py-2 text-xs font-semibold text-[#6f7f9d] ring-1 ring-[#dbe5f6]">
+    Browse-only preview. Predictions stay World Cup only.
+  </div>
+)}
+
+<div className="mt-3">
 <div
   ref={dateStripRef}
   className="overflow-x-auto pb-1 scrollbar-hide"
@@ -358,7 +431,11 @@ if (matches.length > 0) {
           key={`live-${match.id}`}
           home={match.homeTeam?.name || ""}
           away={match.awayTeam?.name || ""}
-          group={match.group}
+          group={
+            selectedCompetition === "WC"
+              ? match.group
+              : currentCompetition.label
+          }
           stadium={match.stadium}
           status={
             match.status === "PAUSED"
@@ -370,6 +447,7 @@ if (matches.length > 0) {
           awayScore={match.score?.fullTime?.away}
           minute={match.minute}
           livePhase={getLivePhase(match)}
+          allowPredictions={allowPredictions}
           onTeamClick={setSelectedTeam}
         />
 
@@ -425,7 +503,11 @@ if (matches.length > 0) {
   key={match.id}
   home={match.homeTeam?.name || ""}
   away={match.awayTeam?.name || ""}
-  group={match.group}
+  group={
+    selectedCompetition === "WC"
+      ? match.group
+      : currentCompetition.label
+  }
   stadium={match.stadium}
 
   status={
@@ -449,6 +531,7 @@ livePhase={
     ? getLivePhase(match)
     : undefined
 }
+allowPredictions={allowPredictions}
 onTeamClick={setSelectedTeam}
 />
                   ))}
