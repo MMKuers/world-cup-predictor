@@ -20,6 +20,7 @@ type Props = {
   allowPredictions?: boolean
   homeLogo?: string
   awayLogo?: string
+  isFollowedMatch?: boolean
   onTeamClick?: (team: string) => void
 }
 
@@ -37,6 +38,7 @@ export default function MatchCard({
   allowPredictions = true,
   homeLogo,
   awayLogo,
+  isFollowedMatch = false,
   onTeamClick,
 }: Props) {
   const homeCode =
@@ -211,7 +213,11 @@ export default function MatchCard({
           setExpanded(!expanded)
         }
       }}
-      className={`w-full rounded-2xl bg-white px-4 py-3 text-left shadow-sm ring-1 ring-[#dbe5f6] transition duration-200 hover:-translate-y-[1px] hover:shadow-md active:scale-[0.995] ${
+      className={`w-full rounded-2xl bg-white px-4 py-3 text-left shadow-sm ring-1 transition duration-200 hover:-translate-y-[1px] hover:shadow-md active:scale-[0.995] ${
+        isFollowedMatch
+          ? "ring-[#93c5fd] border-l-4 border-l-[#93c5fd]"
+          : "ring-[#dbe5f6]"
+      } ${
         allowPredictions
           ? "cursor-pointer"
           : "cursor-default"
@@ -226,6 +232,12 @@ export default function MatchCard({
               <span className="rounded-full bg-[#edf3ff] px-2.5 py-1 text-[11px] font-semibold text-[#4f6ea8]">
                 {contextLabel}
               </span>
+
+              {isFollowedMatch && (
+                <span className="rounded-full bg-[#e0f2fe] px-2.5 py-1 text-[11px] font-bold text-[#1d4ed8]">
+                  Following
+                </span>
+              )}
             </div>
           )}
 
