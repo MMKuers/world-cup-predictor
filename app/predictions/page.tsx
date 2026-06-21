@@ -10,6 +10,75 @@ import {
   getPlayerKeyFromName,
 } from "@/lib/predictionScoring"
 
+function getLatestDecidedMatch(matches: any[]) {
+  return [...matches]
+    .filter(
+      (match) =>
+        match.status === "FINISHED" &&
+        match.score?.winner
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.utcDate).getTime() -
+        new Date(a.utcDate).getTime()
+    )[0]
+}
+
+function getMatchesBeforeLatestResult(matches: any[]) {
+  const latestDecidedMatch =
+    getLatestDecidedMatch(matches)
+
+  if (!latestDecidedMatch) {
+    return matches
+  }
+
+  return matches.map((match) => {
+    if (match.id !== latestDecidedMatch.id) {
+      return match
+    }
+
+    return {
+      ...match,
+      score: {
+        ...match.score,
+        winner: null,
+      },
+    }
+  })
+}
+
+function getMovementLabel(movement: number | null) {
+  if (movement === null) {
+    return "New"
+  }
+
+  if (movement > 0) {
+    return `↑${movement}`
+  }
+
+  if (movement < 0) {
+    return `↓${Math.abs(movement)}`
+  }
+
+  return "-"
+}
+
+function getMovementClass(movement: number | null) {
+  if (movement === null) {
+    return "bg-[#edf3ff] text-[#4564a8]"
+  }
+
+  if (movement > 0) {
+    return "text-[#15803d]"
+  }
+
+  if (movement < 0) {
+    return "text-[#be123c]"
+  }
+
+  return "text-[#7b8baa]"
+}
+
 export default function PredictionsPage() {
 
   const [dbPredictions, setDbPredictions] =
@@ -116,6 +185,24 @@ const leaderboard =
     usersById,
     userId,
     username
+  )
+
+const previousLeaderboard =
+  buildLeaderboard(
+    dbPredictions,
+    getMatchesBeforeLatestResult(matches),
+    usersById,
+    userId,
+    username
+  )
+
+const previousRanksByPlayer =
+  previousLeaderboard.reduce(
+    (rankMap, player) => {
+      rankMap[player.id] = player.rank
+      return rankMap
+    },
+    {} as Record<string, number>
   )
 
   const currentPlayer =
@@ -429,17 +516,27 @@ const prediction =
 
   <div className="mt-6">
 
-    <h2 className="mb-3 text-xl font-bold text-[#102348]">
-      Leaderboard
-    </h2>
+    <div className="mb-3">
+      <h2 className="text-xl font-bold text-[#102348]">
+        Leaderboard
+      </h2>
+
+      <p className="mt-0.5 text-xs font-semibold text-[#6f7f9d]">
+        Movement since the latest result
+      </p>
+    </div>
 
     <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-[#dbe5f6]">
 
-      <div className="grid grid-cols-3 border-b border-[#edf3ff] px-4 py-3 text-[11px] font-semibold uppercase text-[#6f7f9d]">
+      <div className="grid grid-cols-[56px_1fr_72px_72px] border-b border-[#edf3ff] px-4 py-3 text-[11px] font-semibold uppercase text-[#6f7f9d]">
 
         <div>Rank</div>
 
         <div>Player</div>
+
+        <div className="text-right">
+          Move
+        </div>
 
         <div className="text-right">
           Points
@@ -447,11 +544,19 @@ const prediction =
 
       </div>
 
-      {leaderboard.map((player) => (
+      {leaderboard.map((player) => {
+        const previousRank =
+          previousRanksByPlayer[player.id]
+        const movement =
+          previousRank === undefined
+            ? null
+            : previousRank - player.rank
+
+        return (
 
         <div
           key={player.id}
-          className={`grid grid-cols-3 items-center border-b border-[#edf3ff] px-4 py-3 last:border-b-0 ${
+          className={`grid grid-cols-[56px_1fr_72px_72px] items-center border-b border-[#edf3ff] px-4 py-3 last:border-b-0 ${
             player.you
               ? "bg-[#edf3ff]"
               : "bg-white"
@@ -482,13 +587,22 @@ const prediction =
 
           </div>
 
+          <div className="text-right">
+            <span
+              className={`inline-flex min-w-6 justify-end text-sm font-bold ${getMovementClass(movement)}`}
+            >
+              {getMovementLabel(movement)}
+            </span>
+          </div>
+
           <div className="text-right text-base font-bold text-[#102348]">
             {player.points}
           </div>
 
         </div>
 
-      ))}
+        )
+      })}
 
       <button
         className="w-full border-t border-[#edf3ff] bg-white px-4 py-3 text-xs font-semibold text-[#102348] transition hover:bg-[#f8fbff]"
