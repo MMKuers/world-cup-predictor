@@ -434,3 +434,99 @@ export default function MatchCard({
                           className="mb-3"
                         >
                           <div className="mb-1 flex justify-between text-xs">
+                            <span className="font-medium text-[#102348]">
+                              {option}
+                            </span>
+
+                            <span className="text-[#4564a8]">
+                              {picks.length} picks
+                            </span>
+                          </div>
+
+                          <div className="h-1.5 overflow-hidden rounded-full bg-[#edf3ff]">
+                            <div
+                              className="h-full rounded-full bg-[#102348]"
+                              style={{
+                                width: `${percentage}%`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )
+                    })}
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setShowCommunityDetails(
+                          !showCommunityDetails
+                        )
+                      }}
+                      className="mt-1 text-xs font-semibold text-[#4564a8]"
+                    >
+                      {showCommunityDetails
+                        ? "Hide Individual Picks"
+                        : "View Individual Picks"}
+                    </button>
+
+                    {showCommunityDetails && (
+                      <div className="mt-3 border-t border-[#edf3ff] pt-3">
+                        {[
+                          home,
+                          "Draw",
+                          away,
+                        ].map((option) => {
+                          const picks =
+                            allPredictions.filter(
+                              (p) =>
+                                p.prediction === option
+                            )
+
+                          if (
+                            picks.length === 0
+                          ) {
+                            return null
+                          }
+
+                          return (
+                            <div
+                              key={option}
+                              className="mb-3"
+                            >
+                              <div className="mb-1 text-sm font-semibold text-[#102348]">
+                                {option}
+                              </div>
+
+                              <div className="space-y-1">
+                                {picks.map(
+                                  (pick) => (
+                                    <div
+                                      key={pick.id}
+                                      className="text-xs text-[#4564a8]"
+                                    >
+                                      - {pick.username}
+                                    </div>
+                                  )
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </>
+          )}
+
+          {isLocked && (
+            <div className="mt-2 text-xs font-medium text-red-500">
+              Predictions locked
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
