@@ -45,12 +45,31 @@ function getFollowKey(competitionCode: CompetitionCode) {
   return `followed-team-${competitionCode}`
 }
 
-function matchIncludesTeam(match: any, team: string) {
-  return (
-    !!team &&
-    (match.homeTeam?.name === team ||
-      match.awayTeam?.name === team)
+function getStoredFollowedTeams(competitionCode: CompetitionCode) {
+  if (typeof window === "undefined") {
+    return []
+  }
+
+  const value = localStorage.getItem(
+    getFollowKey(competitionCode)
   )
+
+  if (!value) {
+    return []
+  }
+
+  try {
+    const teams = JSON.parse(value)
+    return Array.isArray(teams)
+      ? teams.filter(
+          (team) =>
+            typeof team === "string" &&
+            team.trim()
+        )
+      : []
+  } catch {
+    return [value]
+  }
 }
 
 type Props = {
@@ -79,10 +98,8 @@ export default function CompetitionMatchView({
     useState("")
   const [selectedTeam, setSelectedTeam] =
     useState<SelectedTeam | null>(null)
-  const [followedTeam, setFollowedTeam] =
-    useState("")
-  const [showFollowedOnly, setShowFollowedOnly] =
-    useState(false)
+  const [followedTeams, setFollowedTeams] =
+    useState<string[]>([])
   const [isLoadingMatches, setIsLoadingMatches] =
     useState(false)
   const [matchLoadMessage, setMatchLoadMessage] =
@@ -91,22 +108,16 @@ export default function CompetitionMatchView({
     useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return
-    }
-
-    setFollowedTeam(
-      localStorage.getItem(
-        getFollowKey(competitionCode)
-      ) || ""
+    setFollowedTeams(
+      getStoredFollowedTeams(competitionCode)
     )
-    setShowFollowedOnly(false)
 
     function handleFollowChange(event: Event) {
       const customEvent =
         event as CustomEvent<{
           competitionCode: CompetitionCode
-          team: string
+          teams?: string[]
+          team?: string
         }>
 
       if (
@@ -116,13 +127,12 @@ export default function CompetitionMatchView({
         return
       }
 
-      const nextTeam =
-        customEvent.detail.team || ""
-      setFollowedTeam(nextTeam)
-
-      if (!nextTeam) {
-        setShowFollowedOnly(false)
-      }
+      setFollowedTeams(
+        customEvent.detail.teams ||
+          (customEvent.detail.team
+            ? [customEvent.detail.team]
+            : [])
+      )
     }
 
     window.addEventListener(
@@ -215,18 +225,8 @@ export default function CompetitionMatchView({
     onMatchesLoaded,
   ])
 
-  const visibleMatches =
-    showFollowedOnly && followedTeam
-      ? matches.filter((match) =>
-          matchIncludesTeam(
-            match,
-            followedTeam
-          )
-        )
-      : matches
-
   const groupedMatches: Record<string, any[]> =
-    visibleMatches
+    matches
       .filter(
         (match) =>
           match.status !== "IN_PLAY" &&
@@ -249,7 +249,7 @@ export default function CompetitionMatchView({
       }, {} as Record<string, any[]>)
 
   const liveMatches =
-    visibleMatches.filter(
+    matches.filter(
       (match) =>
         match.status === "IN_PLAY" ||
         match.status === "PAUSED"
@@ -375,9 +375,11 @@ export default function CompetitionMatchView({
       allowPredictions={allowPredictions}
       homeLogo={match.homeTeam?.crest}
       awayLogo={match.awayTeam?.crest}
-      isFollowedMatch={matchIncludesTeam(
-        match,
-        followedTeam
+      isHomeFollowed={followedTeams.includes(
+        match.homeTeam?.name
+      )}
+      isAwayFollowed={followedTeams.includes(
+        match.awayTeam?.name
       )}
       onTeamClick={(team) =>
         openTeamDetails(
@@ -394,37 +396,6 @@ export default function CompetitionMatchView({
     <>
       {showUsaCelebration && (
         <UsaWinCelebration matches={matches} />
-      )}
-
-      {competitionCode === "PL" && followedTeam && (
-        <div className="mb-3 flex items-center justify-between rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-[#dbe5f6]">
-          <div className="min-w-0">
-            <div className="truncate text-sm font-bold text-[#102348]">
-              Following {followedTeam}
-            </div>
-            <div className="text-xs font-semibold text-[#6f7f9d]">
-              Highlighting this club across Premier League.
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() =>
-              setShowFollowedOnly(
-                !showFollowedOnly
-              )
-            }
-            className={`ml-3 flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-bold transition ${
-              showFollowedOnly
-                ? "bg-[#102348] text-white"
-                : "bg-[#edf3ff] text-[#102348]"
-            }`}
-          >
-            {showFollowedOnly
-              ? "All matches"
-              : "Following"}
-          </button>
-        </div>
       )}
 
       <div className="sticky top-[116px] z-30 -mx-4 mb-4 bg-[#f3f7ff]/95 px-4 pb-3 backdrop-blur">
@@ -484,20 +455,6 @@ export default function CompetitionMatchView({
             </div>
           </div>
         )}
-
-        {!isLoadingMatches &&
-          matches.length > 0 &&
-          visibleMatches.length === 0 && (
-            <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-[#dbe5f6]">
-              <div className="text-sm font-bold text-[#102348]">
-                No followed matches showing
-              </div>
-
-              <div className="mt-1 text-xs font-semibold text-[#6f7f9d]">
-                {followedTeam} does not have matches in this current list.
-              </div>
-            </div>
-          )}
 
         {!isLoadingMatches && liveMatches.length > 0 && (
           <div>
