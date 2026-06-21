@@ -31,11 +31,11 @@ function getDisplayPosition(index: number) {
 
 function positionAccent(position: number) {
   if (position <= 5) {
-    return "border-l-[#93c5fd]"
+    return "border-l-[#60a5fa]"
   }
 
   if (position >= 18) {
-    return "border-l-[#ef4444]"
+    return "border-l-[#e11d48]"
   }
 
   return "border-l-transparent"
@@ -172,7 +172,7 @@ export default function PremierLeagueStandings() {
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl bg-white p-4 text-sm font-semibold text-[#6f7f9d] shadow-sm ring-1 ring-[#dbe5f6]">
+      <div className="rounded-xl bg-white/95 p-4 text-sm font-bold text-[#6f7f9d] shadow-sm ring-1 ring-[#dbe5f6]">
         Loading Premier League standings...
       </div>
     )
@@ -180,8 +180,8 @@ export default function PremierLeagueStandings() {
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-[#dbe5f6]">
-        <div className="text-sm font-bold text-[#102348]">
+      <div className="rounded-xl bg-white/95 p-4 shadow-sm ring-1 ring-[#dbe5f6]">
+        <div className="text-sm font-black text-[#102348]">
           No standings showing
         </div>
 
@@ -195,36 +195,42 @@ export default function PremierLeagueStandings() {
 
   return (
     <section>
-      <h2 className="mb-3 text-lg font-bold text-[#102348]">
-        Premier League Standings
-      </h2>
+      <div className="mb-2 flex items-end justify-between border-b border-[#dbe5f6] pb-2">
+        <h2 className="text-sm font-black uppercase text-[#102348]">
+          Premier League Standings
+        </h2>
 
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-[#dbe5f6]">
+        <span className="text-[10px] font-black uppercase text-[#71809a]">
+          Table
+        </span>
+      </div>
+
+      <div className="overflow-hidden rounded-xl border border-[#dbe5f6] bg-white/95 shadow-[0_8px_22px_rgba(16,35,72,0.08)]">
         <table className="w-full border-collapse text-sm">
-          <thead>
-            <tr className="border-b border-[#edf3ff] text-[11px] uppercase text-[#6f7f9d]">
-              <th className="w-10 px-3 py-3 text-left font-bold">
+          <thead className="bg-[#09162f]">
+            <tr className="text-[10px] uppercase text-[#b8c6df]">
+              <th className="w-10 px-3 py-2.5 text-left font-black">
                 #
               </th>
-              <th className="px-2 py-3 text-left font-bold">
+              <th className="px-2 py-2.5 text-left font-black">
                 Club
               </th>
-              <th className="px-1 py-3 text-center font-bold">
+              <th className="px-1 py-2.5 text-center font-black">
                 P
               </th>
-              <th className="hidden px-2 py-3 text-center font-bold sm:table-cell">
+              <th className="hidden px-2 py-2.5 text-center font-black sm:table-cell">
                 W
               </th>
-              <th className="hidden px-2 py-3 text-center font-bold sm:table-cell">
+              <th className="hidden px-2 py-2.5 text-center font-black sm:table-cell">
                 D
               </th>
-              <th className="hidden px-2 py-3 text-center font-bold sm:table-cell">
+              <th className="hidden px-2 py-2.5 text-center font-black sm:table-cell">
                 L
               </th>
-              <th className="px-1 py-3 text-center font-bold">
+              <th className="px-1 py-2.5 text-center font-black">
                 GD
               </th>
-              <th className="px-3 py-3 text-right font-bold">
+              <th className="px-3 py-2.5 text-right font-black">
                 Pts
               </th>
             </tr>
@@ -242,13 +248,17 @@ export default function PremierLeagueStandings() {
               return (
                 <tr
                   key={row.team.name}
-                  className={`border-l-4 border-b border-[#edf3ff] last:border-b-0 ${positionAccent(displayPosition)}`}
+                  className={`border-l-4 border-b border-[#edf3ff] last:border-b-0 ${positionAccent(displayPosition)} ${
+                    isFollowed
+                      ? "bg-[#fff8e8]"
+                      : "bg-white"
+                  }`}
                 >
-                  <td className="px-3 py-3 text-xs font-bold text-[#6f7f9d]">
+                  <td className="px-3 py-2.5 text-xs font-black text-[#71809a]">
                     {displayPosition}
                   </td>
 
-                  <td className="min-w-0 px-2 py-3">
+                  <td className="min-w-0 px-2 py-2.5">
                     <div className="flex min-w-0 items-center gap-2">
                       {row.team.crest && (
                         <img
@@ -258,7 +268,7 @@ export default function PremierLeagueStandings() {
                         />
                       )}
 
-                      <span className="truncate font-bold text-[#102348]">
+                      <span className="truncate font-black text-[#102348]">
                         {row.team.name}
                       </span>
 
@@ -270,22 +280,22 @@ export default function PremierLeagueStandings() {
                     </div>
                   </td>
 
-                  <td className="px-1 py-3 text-center font-semibold text-[#102348]">
+                  <td className="px-1 py-2.5 text-center font-bold text-[#102348]">
                     {row.playedGames}
                   </td>
-                  <td className="hidden px-2 py-3 text-center font-semibold text-[#6f7f9d] sm:table-cell">
+                  <td className="hidden px-2 py-2.5 text-center font-bold text-[#6f7f9d] sm:table-cell">
                     {row.won}
                   </td>
-                  <td className="hidden px-2 py-3 text-center font-semibold text-[#6f7f9d] sm:table-cell">
+                  <td className="hidden px-2 py-2.5 text-center font-bold text-[#6f7f9d] sm:table-cell">
                     {row.draw}
                   </td>
-                  <td className="hidden px-2 py-3 text-center font-semibold text-[#6f7f9d] sm:table-cell">
+                  <td className="hidden px-2 py-2.5 text-center font-bold text-[#6f7f9d] sm:table-cell">
                     {row.lost}
                   </td>
-                  <td className="px-1 py-3 text-center font-semibold text-[#102348]">
+                  <td className="px-1 py-2.5 text-center font-bold text-[#102348]">
                     {formatGoalDifference(row.goalDifference)}
                   </td>
-                  <td className="px-3 py-3 text-right text-base font-black text-[#102348]">
+                  <td className="px-3 py-2.5 text-right text-base font-black text-[#102348]">
                     {row.points}
                   </td>
                 </tr>
@@ -294,20 +304,20 @@ export default function PremierLeagueStandings() {
           </tbody>
         </table>
 
-        <div className="border-t border-[#edf3ff] px-4 py-3">
-          <div className="flex flex-wrap gap-x-4 gap-y-2 text-[11px] font-semibold text-[#6f7f9d]">
+        <div className="border-t border-[#edf3ff] bg-[#f8fbff] px-4 py-3">
+          <div className="flex flex-wrap gap-x-4 gap-y-2 text-[11px] font-bold text-[#6f7f9d]">
             <div className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#93c5fd]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#60a5fa]" />
               <span>Top 5: Champions League</span>
             </div>
 
             <div className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#ef4444]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#e11d48]" />
               <span>Bottom 3: Relegation</span>
             </div>
           </div>
 
-          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] font-semibold text-[#9aa8c0]">
+          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] font-bold text-[#9aa8c0]">
             <span>P: Played</span>
             <span>GD: Goal Difference</span>
             <span>Pts: Points</span>
