@@ -41,12 +41,29 @@ function getLivePhase(match: any) {
     : "1st Half"
 }
 
+function getFollowKey(competitionCode: CompetitionCode) {
+  return `followed-team-${competitionCode}`
+}
+
+function matchIncludesTeam(match: any, team: string) {
+  return (
+    !!team &&
+    (match.homeTeam?.name === team ||
+      match.awayTeam?.name === team)
+  )
+}
+
 type Props = {
   competitionCode: CompetitionCode
   competitionLabel: string
   allowPredictions: boolean
   showUsaCelebration?: boolean
   onMatchesLoaded?: (matches: any[]) => void
+}
+
+type SelectedTeam = {
+  name: string
+  logo?: string
 }
 
 export default function CompetitionMatchView({
@@ -61,13 +78,65 @@ export default function CompetitionMatchView({
   const [selectedDate, setSelectedDate] =
     useState("")
   const [selectedTeam, setSelectedTeam] =
+    useState<SelectedTeam | null>(null)
+  const [followedTeam, setFollowedTeam] =
     useState("")
+  const [showFollowedOnly, setShowFollowedOnly] =
+    useState(false)
   const [isLoadingMatches, setIsLoadingMatches] =
     useState(false)
   const [matchLoadMessage, setMatchLoadMessage] =
     useState("")
   const dateStripRef =
     useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    setFollowedTeam(
+      localStorage.getItem(
+        getFollowKey(competitionCode)
+      ) || ""
+    )
+    setShowFollowedOnly(false)
+
+    function handleFollowChange(event: Event) {
+      const customEvent =
+        event as CustomEvent<{
+          competitionCode: CompetitionCode
+          team: string
+        }>
+
+      if (
+        customEvent.detail?.competitionCode !==
+        competitionCode
+      ) {
+        return
+      }
+
+      const nextTeam =
+        customEvent.detail.team || ""
+      setFollowedTeam(nextTeam)
+
+      if (!nextTeam) {
+        setShowFollowedOnly(false)
+      }
+    }
+
+    window.addEventListener(
+      "followed-team-change",
+      handleFollowChange
+    )
+
+    return () => {
+      window.removeEventListener(
+        "followed-team-change",
+        handleFollowChange
+      )
+    }
+  }, [competitionCode])
 
   useEffect(() => {
 
@@ -146,8 +215,18 @@ export default function CompetitionMatchView({
     onMatchesLoaded,
   ])
 
+  const visibleMatches =
+    showFollowedOnly && followedTeam
+      ? matches.filter((match) =>
+          matchIncludesTeam(
+            match,
+            followedTeam
+          )
+        )
+      : matches
+
   const groupedMatches: Record<string, any[]> =
-    matches
+    visibleMatches
       .filter(
         (match) =>
           match.status !== "IN_PLAY" &&
@@ -170,7 +249,7 @@ export default function CompetitionMatchView({
       }, {} as Record<string, any[]>)
 
   const liveMatches =
-    matches.filter(
+    visibleMatches.filter(
       (match) =>
         match.status === "IN_PLAY" ||
         match.status === "PAUSED"
@@ -202,6 +281,14 @@ export default function CompetitionMatchView({
           availableDates[0]
         )
       }
+    }
+
+    if (
+      selectedDate &&
+      availableDates.length > 0 &&
+      !availableDates.includes(selectedDate)
+    ) {
+      setSelectedDate(availableDates[0])
     }
 
   }, [
@@ -245,10 +332,99 @@ export default function CompetitionMatchView({
     )
   }
 
+  const openTeamDetails = (
+    name: string,
+    logo?: string
+  ) => {
+    setSelectedTeam({ name, logo })
+  }
+
+  const renderMatchCard = (
+    match: any,
+    key: string
+  ) => (
+    <MatchCard
+      key={key}
+      home={match.homeTeam?.name || ""}
+      away={match.awayTeam?.name || ""}
+      group={
+        competitionCode === "WC"
+          ? match.group
+          : competitionLabel
+      }
+      stadium={match.stadium}
+      status={
+        match.status === "FINISHED"
+          ? "FINAL"
+          : match.status === "IN_PLAY"
+          ? "LIVE"
+          : match.status === "PAUSED"
+          ? "HALFTIME"
+          : "UPCOMING"
+      }
+      kickoff={match.utcDate}
+      homeScore={match.score?.fullTime?.home}
+      awayScore={match.score?.fullTime?.away}
+      minute={match.minute}
+      livePhase={
+        match.status === "IN_PLAY" ||
+        match.status === "PAUSED"
+          ? getLivePhase(match)
+          : undefined
+      }
+      allowPredictions={allowPredictions}
+      homeLogo={match.homeTeam?.crest}
+      awayLogo={match.awayTeam?.crest}
+      isFollowedMatch={matchIncludesTeam(
+        match,
+        followedTeam
+      )}
+      onTeamClick={(team) =>
+        openTeamDetails(
+          team,
+          team === match.homeTeam?.name
+            ? match.homeTeam?.crest
+            : match.awayTeam?.crest
+        )
+      }
+    />
+  )
+
   return (
     <>
       {showUsaCelebration && (
         <UsaWinCelebration matches={matches} />
+      )}
+
+      {competitionCode === "PL" && followedTeam && (
+        <div className="mb-3 flex items-center justify-between rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-[#dbe5f6]">
+          <div className="min-w-0">
+            <div className="truncate text-sm font-bold text-[#102348]">
+              Following {followedTeam}
+            </div>
+            <div className="text-xs font-semibold text-[#6f7f9d]">
+              Highlighting this club across Premier League.
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              setShowFollowedOnly(
+                !showFollowedOnly
+              )
+            }
+            className={`ml-3 flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-bold transition ${
+              showFollowedOnly
+                ? "bg-[#102348] text-white"
+                : "bg-[#edf3ff] text-[#102348]"
+            }`}
+          >
+            {showFollowedOnly
+              ? "All matches"
+              : "Following"}
+          </button>
+        </div>
       )}
 
       <div className="sticky top-[116px] z-30 -mx-4 mb-4 bg-[#f3f7ff]/95 px-4 pb-3 backdrop-blur">
@@ -309,6 +485,20 @@ export default function CompetitionMatchView({
           </div>
         )}
 
+        {!isLoadingMatches &&
+          matches.length > 0 &&
+          visibleMatches.length === 0 && (
+            <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-[#dbe5f6]">
+              <div className="text-sm font-bold text-[#102348]">
+                No followed matches showing
+              </div>
+
+              <div className="mt-1 text-xs font-semibold text-[#6f7f9d]">
+                {followedTeam} does not have matches in this current list.
+              </div>
+            </div>
+          )}
+
         {!isLoadingMatches && liveMatches.length > 0 && (
           <div>
             <h2 className="mb-3 text-lg font-bold text-red-600">
@@ -316,33 +506,12 @@ export default function CompetitionMatchView({
             </h2>
 
             <div className="space-y-3">
-              {liveMatches.map((match) => (
-                <MatchCard
-                  key={`live-${match.id}`}
-                  home={match.homeTeam?.name || ""}
-                  away={match.awayTeam?.name || ""}
-                  group={
-                    competitionCode === "WC"
-                      ? match.group
-                      : competitionLabel
-                  }
-                  stadium={match.stadium}
-                  status={
-                    match.status === "PAUSED"
-                      ? "HALFTIME"
-                      : "LIVE"
-                  }
-                  kickoff={match.utcDate}
-                  homeScore={match.score?.fullTime?.home}
-                  awayScore={match.score?.fullTime?.away}
-                  minute={match.minute}
-                  livePhase={getLivePhase(match)}
-                  allowPredictions={allowPredictions}
-                  homeLogo={match.homeTeam?.crest}
-                  awayLogo={match.awayTeam?.crest}
-                  onTeamClick={setSelectedTeam}
-                />
-              ))}
+              {liveMatches.map((match) =>
+                renderMatchCard(
+                  match,
+                  `live-${match.id}`
+                )
+              )}
             </div>
           </div>
         )}
@@ -373,42 +542,12 @@ export default function CompetitionMatchView({
                 </div>
 
                 <div className="space-y-3">
-                  {dateMatches.map((match) => (
-                    <MatchCard
-                      key={match.id}
-                      home={match.homeTeam?.name || ""}
-                      away={match.awayTeam?.name || ""}
-                      group={
-                        competitionCode === "WC"
-                          ? match.group
-                          : competitionLabel
-                      }
-                      stadium={match.stadium}
-                      status={
-                        match.status === "FINISHED"
-                          ? "FINAL"
-                          : match.status === "IN_PLAY"
-                          ? "LIVE"
-                          : match.status === "PAUSED"
-                          ? "HALFTIME"
-                          : "UPCOMING"
-                      }
-                      kickoff={match.utcDate}
-                      homeScore={match.score?.fullTime?.home}
-                      awayScore={match.score?.fullTime?.away}
-                      minute={match.minute}
-                      livePhase={
-                        match.status === "IN_PLAY" ||
-                        match.status === "PAUSED"
-                          ? getLivePhase(match)
-                          : undefined
-                      }
-                      allowPredictions={allowPredictions}
-                      homeLogo={match.homeTeam?.crest}
-                      awayLogo={match.awayTeam?.crest}
-                      onTeamClick={setSelectedTeam}
-                    />
-                  ))}
+                  {dateMatches.map((match) =>
+                    renderMatchCard(
+                      match,
+                      String(match.id)
+                    )
+                  )}
                 </div>
               </div>
             )
@@ -417,10 +556,13 @@ export default function CompetitionMatchView({
 
       {selectedTeam && (
         <TeamDetailsSheet
-          team={selectedTeam}
+          team={selectedTeam.name}
+          teamLogo={selectedTeam.logo}
           matches={matches}
+          competitionCode={competitionCode}
+          competitionLabel={competitionLabel}
           onClose={() =>
-            setSelectedTeam("")
+            setSelectedTeam(null)
           }
         />
       )}
