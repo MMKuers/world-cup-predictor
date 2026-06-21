@@ -166,8 +166,8 @@ export default function PremierLeagueStandings() {
               const displayPosition =
                 getDisplayPosition(index)
               const teamLogo =
-                getPremierLeagueLogo(row.team.name) ||
-                row.team.crest
+                row.team.crest ||
+                getPremierLeagueLogo(row.team.name)
 
               return (
                 <tr
