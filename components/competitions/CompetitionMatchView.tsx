@@ -44,11 +44,14 @@ function getLivePhase(match: any) {
 
 function getTeamLogo(
   competitionCode: CompetitionCode,
-  teamName: string
+  teamName: string,
+  apiCrest?: string
 ) {
-  return competitionCode === "PL"
-    ? getPremierLeagueLogo(teamName)
-    : undefined
+  return apiCrest || (
+    competitionCode === "PL"
+      ? getPremierLeagueLogo(teamName)
+      : undefined
+  )
 }
 
 type Props = {
@@ -350,11 +353,13 @@ export default function CompetitionMatchView({
                   allowPredictions={allowPredictions}
                   homeLogo={getTeamLogo(
                     competitionCode,
-                    match.homeTeam?.name || ""
+                    match.homeTeam?.name || "",
+                    match.homeTeam?.crest
                   )}
                   awayLogo={getTeamLogo(
                     competitionCode,
-                    match.awayTeam?.name || ""
+                    match.awayTeam?.name || "",
+                    match.awayTeam?.crest
                   )}
                   onTeamClick={setSelectedTeam}
                 />
@@ -422,11 +427,13 @@ export default function CompetitionMatchView({
                       allowPredictions={allowPredictions}
                       homeLogo={getTeamLogo(
                         competitionCode,
-                        match.homeTeam?.name || ""
+                        match.homeTeam?.name || "",
+                        match.homeTeam?.crest
                       )}
                       awayLogo={getTeamLogo(
                         competitionCode,
-                        match.awayTeam?.name || ""
+                        match.awayTeam?.name || "",
+                        match.awayTeam?.crest
                       )}
                       onTeamClick={setSelectedTeam}
                     />
