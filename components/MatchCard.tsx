@@ -190,9 +190,9 @@ export default function MatchCard({
 
   const scoreClass =
     status === "LIVE"
-      ? "text-red-600"
+      ? "text-[#e11d48]"
       : status === "HALFTIME"
-      ? "text-orange-600"
+      ? "text-[#c2410c]"
       : "text-[#102348]"
 
   const openTeamDetails = (
@@ -215,155 +215,146 @@ export default function MatchCard({
           setExpanded(!expanded)
         }
       }}
-      className={`w-full rounded-2xl bg-white px-4 py-3 text-left shadow-sm ring-1 ring-[#dbe5f6] transition duration-200 hover:-translate-y-[1px] hover:shadow-md active:scale-[0.995] ${
+      className={`w-full overflow-hidden rounded-xl border border-[#dbe5f6] bg-white/95 text-left shadow-[0_8px_22px_rgba(16,35,72,0.08)] transition duration-200 hover:-translate-y-[1px] hover:shadow-[0_14px_30px_rgba(16,35,72,0.12)] active:scale-[0.995] ${
         allowPredictions
           ? "cursor-pointer"
           : "cursor-default"
       }`}
     >
-      <div className="flex items-start justify-between gap-3">
-
-        <div className="min-w-0 flex-1">
-
+      <div className="flex items-center justify-between gap-2 border-b border-[#edf3ff] bg-gradient-to-r from-[#f8fbff] to-white px-3 py-2">
+        <div className="flex min-w-0 items-center gap-2">
           {contextLabel && (
-            <div className="mb-3 flex items-center gap-2">
-              <span className="rounded-full bg-[#edf3ff] px-2.5 py-1 text-[11px] font-semibold text-[#4f6ea8]">
-                {contextLabel}
-              </span>
-            </div>
+            <span className="truncate rounded-full bg-[#102348] px-2 py-0.5 text-[10px] font-black uppercase text-white">
+              {contextLabel}
+            </span>
           )}
-
-          <div className="space-y-3">
-
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#f3f7ff]">
-                {homeLogo ? (
-                  <img
-                    src={homeLogo}
-                    alt={home}
-                    className="h-6 w-6 object-contain"
-                  />
-                ) : homeCode && (
-                  <img
-                    src={`https://flagcdn.com/w40/${homeCode}.png`}
-                    alt={home}
-                    className="h-6 w-6 rounded-full object-cover"
-                  />
-                )}
-              </div>
-
-              <div className="flex min-w-0 flex-1 items-center justify-between">
-                <button
-                  type="button"
-                  onClick={(event) =>
-                    openTeamDetails(home, event)
-                  }
-                  className="flex w-fit max-w-full items-center gap-1.5 truncate text-left text-base font-semibold text-[#102348] underline-offset-4 hover:underline focus:outline-none focus:underline"
-                >
-                  <span className="truncate">{home}</span>
-                  {isHomeFollowed && (
-                    <span className="flex-shrink-0 text-xs text-[#f59e0b]">
-                      ★
-                    </span>
-                  )}
-                </button>
-
-                {showScore && (
-                  <div
-                    className={`ml-2 w-8 flex-shrink-0 text-right text-xl font-bold ${scoreClass}`}
-                  >
-                    {homeScore}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#f3f7ff]">
-                {awayLogo ? (
-                  <img
-                    src={awayLogo}
-                    alt={away}
-                    className="h-6 w-6 object-contain"
-                  />
-                ) : awayCode && (
-                  <img
-                    src={`https://flagcdn.com/w40/${awayCode}.png`}
-                    alt={away}
-                    className="h-6 w-6 rounded-full object-cover"
-                  />
-                )}
-              </div>
-
-              <div className="flex min-w-0 flex-1 items-center justify-between">
-                <button
-                  type="button"
-                  onClick={(event) =>
-                    openTeamDetails(away, event)
-                  }
-                  className="flex w-fit max-w-full items-center gap-1.5 truncate text-left text-base font-semibold text-[#102348] underline-offset-4 hover:underline focus:outline-none focus:underline"
-                >
-                  <span className="truncate">{away}</span>
-                  {isAwayFollowed && (
-                    <span className="flex-shrink-0 text-xs text-[#f59e0b]">
-                      ★
-                    </span>
-                  )}
-                </button>
-
-                {showScore && (
-                  <div
-                    className={`ml-2 w-8 flex-shrink-0 text-right text-xl font-bold ${scoreClass}`}
-                  >
-                    {awayScore}
-                  </div>
-                )}
-              </div>
-            </div>
-
-          </div>
-
         </div>
 
-        <div className="w-[76px] flex-shrink-0 text-right">
-          <div className="whitespace-nowrap text-base font-bold leading-none text-[#102348]">
-            {formattedTime}
-          </div>
-
-          <div className="mt-1.5 truncate text-[11px] text-[#6f7f9d]">
-            {stadium}
-          </div>
-
-          <div
-            className={`mt-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+        <div className="flex flex-shrink-0 items-center gap-1.5 text-[10px] font-black uppercase text-[#71809a]">
+          <span>{formattedTime}</span>
+          <span className="text-[#c5d1e4]">/</span>
+          <span
+            className={`rounded-full px-2 py-0.5 ${
               status === "LIVE"
-                ? "bg-red-100 text-red-600"
+                ? "bg-[#ffe4e6] text-[#e11d48]"
                 : status === "HALFTIME"
-                ? "bg-orange-100 text-orange-600"
+                ? "bg-orange-100 text-orange-700"
                 : status === "FINAL"
-                ? "bg-green-100 text-green-600"
+                ? "bg-green-100 text-green-700"
                 : "bg-[#edf3ff] text-[#4564a8]"
             }`}
           >
-            {status === "LIVE" && (
-              <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500" />
-            )}
-
+            {status === "LIVE" && "● "}
             {statusLabel}
+          </span>
+        </div>
+      </div>
+
+      <div className="px-3 py-2.5">
+        <div className="space-y-2.5">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[#f3f7ff] ring-1 ring-[#e6edf8]">
+              {homeLogo ? (
+                <img
+                  src={homeLogo}
+                  alt={home}
+                  className="h-5 w-5 object-contain"
+                />
+              ) : homeCode && (
+                <img
+                  src={`https://flagcdn.com/w40/${homeCode}.png`}
+                  alt={home}
+                  className="h-5 w-5 rounded-full object-cover"
+                />
+              )}
+            </div>
+
+            <div className="flex min-w-0 flex-1 items-center justify-between">
+              <button
+                type="button"
+                onClick={(event) =>
+                  openTeamDetails(home, event)
+                }
+                className="flex w-fit max-w-full items-center gap-1.5 truncate text-left text-sm font-black text-[#102348] underline-offset-4 hover:underline focus:outline-none focus:underline"
+              >
+                <span className="truncate">{home}</span>
+                {isHomeFollowed && (
+                  <span className="flex-shrink-0 text-xs text-[#f59e0b]">
+                    ★
+                  </span>
+                )}
+              </button>
+
+              {showScore && (
+                <div
+                  className={`ml-2 flex h-7 min-w-7 flex-shrink-0 items-center justify-center rounded-lg bg-[#f5f8fe] px-2 text-lg font-black ${scoreClass}`}
+                >
+                  {homeScore}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[#f3f7ff] ring-1 ring-[#e6edf8]">
+              {awayLogo ? (
+                <img
+                  src={awayLogo}
+                  alt={away}
+                  className="h-5 w-5 object-contain"
+                />
+              ) : awayCode && (
+                <img
+                  src={`https://flagcdn.com/w40/${awayCode}.png`}
+                  alt={away}
+                  className="h-5 w-5 rounded-full object-cover"
+                />
+              )}
+            </div>
+
+            <div className="flex min-w-0 flex-1 items-center justify-between">
+              <button
+                type="button"
+                onClick={(event) =>
+                  openTeamDetails(away, event)
+                }
+                className="flex w-fit max-w-full items-center gap-1.5 truncate text-left text-sm font-black text-[#102348] underline-offset-4 hover:underline focus:outline-none focus:underline"
+              >
+                <span className="truncate">{away}</span>
+                {isAwayFollowed && (
+                  <span className="flex-shrink-0 text-xs text-[#f59e0b]">
+                    ★
+                  </span>
+                )}
+              </button>
+
+              {showScore && (
+                <div
+                  className={`ml-2 flex h-7 min-w-7 flex-shrink-0 items-center justify-center rounded-lg bg-[#f5f8fe] px-2 text-lg font-black ${scoreClass}`}
+                >
+                  {awayScore}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
+        {stadium && (
+          <div className="mt-2 truncate text-[11px] font-semibold text-[#71809a]">
+            {stadium}
+          </div>
+        )}
       </div>
 
       {allowPredictions && expanded && (
-        <div className="mt-4 border-t border-[#edf3ff] pt-4 animate-in fade-in duration-300">
+        <div className="border-t border-[#edf3ff] bg-[#f8fbff] px-3 py-3 animate-in fade-in duration-300">
           <div className="mb-3 flex items-center justify-between">
-            <div className="text-xs font-semibold uppercase text-[#6f7f9d]">
+            <div className="text-[11px] font-black uppercase text-[#71809a]">
               Predict Winner
             </div>
 
             {prediction && (
-              <div className="rounded-full bg-[#edf3ff] px-2.5 py-1 text-[11px] font-semibold text-[#102348]">
+              <div className="rounded-full bg-white px-2.5 py-1 text-[11px] font-black text-[#102348] ring-1 ring-[#dbe5f6]">
                 Picked: {prediction}
               </div>
             )}
@@ -386,7 +377,7 @@ export default function MatchCard({
                     e.stopPropagation()
                     await savePrediction(option)
                   }}
-                  className={`rounded-xl px-3 py-2 text-xs font-semibold transition ${
+                  className={`rounded-lg px-3 py-2 text-xs font-black transition ${
                     isLocked && !isSelected
                       ? "cursor-not-allowed opacity-40 grayscale"
                       : ""
@@ -395,7 +386,7 @@ export default function MatchCard({
                       ? isLocked
                         ? "bg-[#4b5563] text-white"
                         : "bg-[#102348] text-white"
-                      : "bg-[#edf3ff] text-[#102348]"
+                      : "bg-white text-[#102348] ring-1 ring-[#dbe5f6]"
                   }`}
                 >
                   {option}
@@ -406,15 +397,15 @@ export default function MatchCard({
 
           {prediction && (
             <>
-              <div className="mt-3 text-xs text-[#4564a8]">
+              <div className="mt-3 text-xs font-semibold text-[#4564a8]">
                 Your prediction:{" "}
-                <span className="font-semibold">
+                <span className="font-black">
                   {prediction}
                 </span>
               </div>
 
-              <div className="mt-4 rounded-xl bg-[#f8fbff] p-3 ring-1 ring-[#edf3ff]">
-                <div className="mb-3 text-xs font-bold uppercase text-[#102348]">
+              <div className="mt-4 rounded-xl bg-white p-3 ring-1 ring-[#edf3ff]">
+                <div className="mb-3 text-[11px] font-black uppercase text-[#102348]">
                   Community Picks
                 </div>
 
@@ -448,18 +439,18 @@ export default function MatchCard({
                           className="mb-3"
                         >
                           <div className="mb-1 flex justify-between text-xs">
-                            <span className="font-medium text-[#102348]">
+                            <span className="font-bold text-[#102348]">
                               {option}
                             </span>
 
-                            <span className="text-[#4564a8]">
+                            <span className="font-semibold text-[#4564a8]">
                               {picks.length} picks
                             </span>
                           </div>
 
                           <div className="h-1.5 overflow-hidden rounded-full bg-[#edf3ff]">
                             <div
-                              className="h-full rounded-full bg-[#102348]"
+                              className="h-full rounded-full bg-gradient-to-r from-[#102348] to-[#e11d48]"
                               style={{
                                 width: `${percentage}%`,
                               }}
@@ -476,7 +467,7 @@ export default function MatchCard({
                           !showCommunityDetails
                         )
                       }}
-                      className="mt-1 text-xs font-semibold text-[#4564a8]"
+                      className="mt-1 text-xs font-black text-[#4564a8]"
                     >
                       {showCommunityDetails
                         ? "Hide Individual Picks"
@@ -507,7 +498,7 @@ export default function MatchCard({
                               key={option}
                               className="mb-3"
                             >
-                              <div className="mb-1 text-sm font-semibold text-[#102348]">
+                              <div className="mb-1 text-sm font-black text-[#102348]">
                                 {option}
                               </div>
 
@@ -535,7 +526,7 @@ export default function MatchCard({
           )}
 
           {isLocked && (
-            <div className="mt-2 text-xs font-medium text-red-500">
+            <div className="mt-2 text-xs font-bold text-[#e11d48]">
               Predictions locked
             </div>
           )}
