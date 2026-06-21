@@ -26,10 +26,21 @@ const navItems = [
   },
 ]
 
-export default function BottomNav() {
+export default function BottomNav({
+  hidePicks = false,
+}: {
+  hidePicks?: boolean
+}) {
 
   const pathname =
     usePathname()
+
+  const visibleNavItems =
+    hidePicks
+      ? navItems.filter(
+          (item) => item.label !== "Picks"
+        )
+      : navItems
 
   return (
 
@@ -37,7 +48,7 @@ export default function BottomNav() {
 
       <nav className="mx-auto flex max-w-sm items-center justify-between gap-2 rounded-full bg-white/95 p-2 shadow-[0_12px_40px_rgba(16,35,72,0.18)] ring-1 ring-[#dbe5f6] backdrop-blur">
 
-        {navItems.map(({ href, label, Icon }) => {
+        {visibleNavItems.map(({ href, label, Icon }) => {
           const isActive =
             pathname === href
 
