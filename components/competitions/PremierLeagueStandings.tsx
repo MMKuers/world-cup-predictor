@@ -213,6 +213,26 @@ export default function PremierLeagueStandings() {
             })}
           </tbody>
         </table>
+
+        <div className="border-t border-[#edf3ff] px-4 py-3">
+          <div className="flex flex-wrap gap-x-4 gap-y-2 text-[11px] font-semibold text-[#6f7f9d]">
+            <div className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#93c5fd]" />
+              <span>Top 5: Champions League</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#ef4444]" />
+              <span>Bottom 3: Relegation</span>
+            </div>
+          </div>
+
+          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] font-semibold text-[#9aa8c0]">
+            <span>P: Played</span>
+            <span>GD: Goal Difference</span>
+            <span>Pts: Points</span>
+          </div>
+        </div>
       </div>
     </section>
   )
