@@ -12,6 +12,39 @@ import {
 } from "@/lib/generateBracket"
 import { useEffect } from "react"
 import { buildMatchesFromApi } from "@/lib/buildMatchesFromApi"
+import {
+  getBracketStatuses,
+  getTeamStatus,
+} from "@/lib/getBracketStatuses"
+
+type Status = {
+  label: string
+  tone: "safe" | "watch" | "danger" | "neutral"
+}
+
+function StatusBadge({
+  status,
+}: {
+  status: Status | null
+}) {
+  if (!status) return null
+
+  return (
+    <div
+      className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[9px] font-bold uppercase ${
+        status.tone === "safe"
+          ? "bg-[#dff7e8] text-[#15803d]"
+          : status.tone === "danger"
+          ? "bg-[#ffe4e6] text-[#be123c]"
+          : status.tone === "watch"
+          ? "bg-[#fff3d6] text-[#9a5b00]"
+          : "bg-[#edf3ff] text-[#4564a8]"
+      }`}
+    >
+      {status.label}
+    </div>
+  )
+}
 
 function TeamLine({
   team,
@@ -169,6 +202,8 @@ const apiMatches =
   buildMatchesFromApi(matches)
 const standings =
   calculateStandings(apiMatches)
+const statusByTeam =
+  getBracketStatuses(standings)
     
 
 
@@ -316,8 +351,17 @@ const standings =
 
                   </div>
 
-                  <div className="text-sm font-bold text-[#102348]">
-                    {team.points}
+                  <div className="flex flex-shrink-0 items-center gap-1.5">
+                    <StatusBadge
+                      status={getTeamStatus(
+                        statusByTeam,
+                        team.team
+                      )}
+                    />
+
+                    <div className="text-sm font-bold text-[#102348]">
+                      {team.points}
+                    </div>
                   </div>
 
                 </div>
@@ -405,6 +449,7 @@ const standings =
 <GroupDrawer
   group={selectedGroup}
   standings={standings}
+  statusByTeam={statusByTeam}
   onClose={() =>
     setSelectedGroup(null)
   }
