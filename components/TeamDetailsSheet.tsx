@@ -91,6 +91,43 @@ function getFollowKey(competitionCode?: CompetitionCode) {
   return `followed-team-${competitionCode || "WC"}`
 }
 
+function getStoredFollowedTeams(competitionCode?: CompetitionCode) {
+  if (typeof window === "undefined") {
+    return []
+  }
+
+  const value = localStorage.getItem(
+    getFollowKey(competitionCode)
+  )
+
+  if (!value) {
+    return []
+  }
+
+  try {
+    const teams = JSON.parse(value)
+    return Array.isArray(teams)
+      ? teams.filter(
+          (teamName) =>
+            typeof teamName === "string" &&
+            teamName.trim()
+        )
+      : []
+  } catch {
+    return [value]
+  }
+}
+
+function setStoredFollowedTeams(
+  competitionCode: CompetitionCode | undefined,
+  teams: string[]
+) {
+  localStorage.setItem(
+    getFollowKey(competitionCode),
+    JSON.stringify(teams)
+  )
+}
+
 function calculateTeamStats(
   team: string,
   matches: any[]
@@ -254,18 +291,12 @@ export default function TeamDetailsSheet({
 }: Props) {
   const [standingDetails, setStandingDetails] =
     useState<StandingDetails | null>(null)
-  const [followedTeam, setFollowedTeam] =
-    useState("")
+  const [followedTeams, setFollowedTeams] =
+    useState<string[]>([])
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return
-    }
-
-    setFollowedTeam(
-      localStorage.getItem(
-        getFollowKey(competitionCode)
-      ) || ""
+    setFollowedTeams(
+      getStoredFollowedTeams(competitionCode)
     )
   }, [competitionCode])
 
@@ -404,7 +435,7 @@ export default function TeamDetailsSheet({
     ? tableStats.goalDifference
     : displayStats.goalsFor -
       displayStats.goalsAgainst
-  const isFollowed = followedTeam === team
+  const isFollowed = followedTeams.includes(team)
   const canFollow = competitionCode === "PL"
 
   const toggleFollow = () => {
@@ -415,17 +446,22 @@ export default function TeamDetailsSheet({
       return
     }
 
-    const nextTeam = isFollowed ? "" : team
-    localStorage.setItem(
-      getFollowKey(competitionCode),
-      nextTeam
+    const nextTeams = isFollowed
+      ? followedTeams.filter(
+          (teamName) => teamName !== team
+        )
+      : [...followedTeams, team]
+
+    setStoredFollowedTeams(
+      competitionCode,
+      nextTeams
     )
-    setFollowedTeam(nextTeam)
+    setFollowedTeams(nextTeams)
     window.dispatchEvent(
       new CustomEvent("followed-team-change", {
         detail: {
           competitionCode,
-          team: nextTeam,
+          teams: nextTeams,
         },
       })
     )
@@ -460,8 +496,13 @@ export default function TeamDetailsSheet({
             </div>
 
             <div className="min-w-0">
-              <h2 className="truncate text-xl font-bold text-[#102348]">
-                {team}
+              <h2 className="flex items-center gap-1.5 truncate text-xl font-bold text-[#102348]">
+                <span className="truncate">{team}</span>
+                {isFollowed && (
+                  <span className="flex-shrink-0 text-sm text-[#f59e0b]">
+                    ★
+                  </span>
+                )}
               </h2>
 
               <p className="text-xs font-semibold text-[#6f7f9d]">
