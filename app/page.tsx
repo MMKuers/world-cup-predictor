@@ -331,9 +331,11 @@ if (matches.length > 0) {
     )}
     </div>
 
-    <div className="mt-1 flex-shrink-0 rounded-full bg-[#102348] px-3 py-2 text-xs font-bold text-white shadow-sm">
-      {totalPoints} pts
-    </div>
+    {allowPredictions && (
+      <div className="mt-1 flex-shrink-0 rounded-full bg-[#102348] px-3 py-2 text-xs font-bold text-white shadow-sm">
+        {totalPoints} pts
+      </div>
+    )}
   </div>
 
 <div className="mt-3">
@@ -358,12 +360,6 @@ if (matches.length > 0) {
     </div>
   </div>
 </div>
-
-{!allowPredictions && (
-  <div className="mt-2 rounded-xl bg-white px-3 py-2 text-xs font-semibold text-[#6f7f9d] ring-1 ring-[#dbe5f6]">
-    Browse-only preview. Predictions stay World Cup only.
-  </div>
-)}
 
 <div className="mt-3">
 <div
