@@ -41,6 +41,33 @@ function positionAccent(position: number) {
   return "border-l-transparent"
 }
 
+function getStoredFollowedTeams() {
+  if (typeof window === "undefined") {
+    return []
+  }
+
+  const value = localStorage.getItem(
+    "followed-team-PL"
+  )
+
+  if (!value) {
+    return []
+  }
+
+  try {
+    const teams = JSON.parse(value)
+    return Array.isArray(teams)
+      ? teams.filter(
+          (team) =>
+            typeof team === "string" &&
+            team.trim()
+        )
+      : []
+  } catch {
+    return [value]
+  }
+}
+
 export default function PremierLeagueStandings() {
   const [rows, setRows] =
     useState<StandingRow[]>([])
@@ -48,25 +75,20 @@ export default function PremierLeagueStandings() {
     useState(true)
   const [message, setMessage] =
     useState("")
-  const [followedTeam, setFollowedTeam] =
-    useState("")
+  const [followedTeams, setFollowedTeams] =
+    useState<string[]>([])
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return
-    }
-
-    setFollowedTeam(
-      localStorage.getItem(
-        "followed-team-PL"
-      ) || ""
+    setFollowedTeams(
+      getStoredFollowedTeams()
     )
 
     function handleFollowChange(event: Event) {
       const customEvent =
         event as CustomEvent<{
           competitionCode: string
-          team: string
+          teams?: string[]
+          team?: string
         }>
 
       if (
@@ -76,8 +98,11 @@ export default function PremierLeagueStandings() {
         return
       }
 
-      setFollowedTeam(
-        customEvent.detail.team || ""
+      setFollowedTeams(
+        customEvent.detail.teams ||
+          (customEvent.detail.team
+            ? [customEvent.detail.team]
+            : [])
       )
     }
 
@@ -210,16 +235,14 @@ export default function PremierLeagueStandings() {
               const displayPosition =
                 getDisplayPosition(index)
               const isFollowed =
-                followedTeam === row.team.name
+                followedTeams.includes(
+                  row.team.name
+                )
 
               return (
                 <tr
                   key={row.team.name}
-                  className={`border-l-4 border-b border-[#edf3ff] last:border-b-0 ${
-                    isFollowed
-                      ? "bg-[#f0f7ff] border-l-[#1d4ed8]"
-                      : positionAccent(displayPosition)
-                  }`}
+                  className={`border-l-4 border-b border-[#edf3ff] last:border-b-0 ${positionAccent(displayPosition)}`}
                 >
                   <td className="px-3 py-3 text-xs font-bold text-[#6f7f9d]">
                     {displayPosition}
@@ -240,8 +263,8 @@ export default function PremierLeagueStandings() {
                       </span>
 
                       {isFollowed && (
-                        <span className="hidden rounded-full bg-[#e0f2fe] px-2 py-0.5 text-[10px] font-bold text-[#1d4ed8] sm:inline-flex">
-                          Following
+                        <span className="flex-shrink-0 text-xs text-[#f59e0b]">
+                          ★
                         </span>
                       )}
                     </div>
