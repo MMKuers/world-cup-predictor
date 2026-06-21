@@ -17,6 +17,7 @@ type Props = {
 
   minute?: number
   livePhase?: string
+  allowPredictions?: boolean
   onTeamClick?: (team: string) => void
 }
 
@@ -31,6 +32,7 @@ export default function MatchCard({
   awayScore,
   minute,
   livePhase,
+  allowPredictions = true,
   onTeamClick,
 }: Props) {
   const homeCode =
@@ -67,6 +69,11 @@ export default function MatchCard({
     useState<any[]>([])
 
   useEffect(() => {
+
+    if (!allowPredictions) {
+      setAllPredictions([])
+      return
+    }
 
     async function loadPredictions() {
 
@@ -107,7 +114,7 @@ export default function MatchCard({
 
     loadPredictions()
 
-  }, [storageKey])
+  }, [storageKey, allowPredictions])
 
   const kickoffDate =
     new Date(kickoff)
@@ -125,6 +132,10 @@ export default function MatchCard({
   const savePrediction = async (
     value: string
   ) => {
+    if (!allowPredictions) {
+      return
+    }
+
     setPrediction(value)
 
     localStorage.setItem(
@@ -159,6 +170,23 @@ export default function MatchCard({
       ? "HT"
       : status
 
+  const contextLabel =
+    group?.startsWith("GROUP_")
+      ? `Group ${group.replace("GROUP_", "")}`
+      : group
+
+  const showScore =
+    status === "FINAL" ||
+    status === "LIVE" ||
+    status === "HALFTIME"
+
+  const scoreClass =
+    status === "LIVE"
+      ? "text-red-600"
+      : status === "HALFTIME"
+      ? "text-orange-600"
+      : "text-[#102348]"
+
   const openTeamDetails = (
     team: string,
     event: React.MouseEvent
@@ -175,19 +203,27 @@ export default function MatchCard({
   return (
     <div
       onClick={() => {
-        setExpanded(!expanded)
+        if (allowPredictions) {
+          setExpanded(!expanded)
+        }
       }}
-      className="w-full cursor-pointer rounded-2xl bg-white px-4 py-3 text-left shadow-sm ring-1 ring-[#dbe5f6] transition duration-200 hover:-translate-y-[1px] hover:shadow-md active:scale-[0.995]"
+      className={`w-full rounded-2xl bg-white px-4 py-3 text-left shadow-sm ring-1 ring-[#dbe5f6] transition duration-200 hover:-translate-y-[1px] hover:shadow-md active:scale-[0.995] ${
+        allowPredictions
+          ? "cursor-pointer"
+          : "cursor-default"
+      }`}
     >
       <div className="flex items-start justify-between gap-3">
 
         <div className="min-w-0 flex-1">
 
-          <div className="mb-3 flex items-center gap-2">
-            <span className="rounded-full bg-[#edf3ff] px-2.5 py-1 text-[11px] font-semibold text-[#4f6ea8]">
-              Group {group?.replace("GROUP_", "") ?? ""}
-            </span>
-          </div>
+          {contextLabel && (
+            <div className="mb-3 flex items-center gap-2">
+              <span className="rounded-full bg-[#edf3ff] px-2.5 py-1 text-[11px] font-semibold text-[#4f6ea8]">
+                {contextLabel}
+              </span>
+            </div>
+          )}
 
           <div className="space-y-3">
 
@@ -213,14 +249,9 @@ export default function MatchCard({
                   {home}
                 </button>
 
-                {(status === "FINAL" ||
-                  status === "LIVE") && (
+                {showScore && (
                   <div
-                    className={`ml-2 w-8 flex-shrink-0 text-right text-xl font-bold ${
-                      status === "LIVE"
-                        ? "text-red-600"
-                        : "text-[#102348]"
-                    }`}
+                    className={`ml-2 w-8 flex-shrink-0 text-right text-xl font-bold ${scoreClass}`}
                   >
                     {homeScore}
                   </div>
@@ -250,14 +281,9 @@ export default function MatchCard({
                   {away}
                 </button>
 
-                {(status === "FINAL" ||
-                  status === "LIVE") && (
+                {showScore && (
                   <div
-                    className={`ml-2 w-8 flex-shrink-0 text-right text-xl font-bold ${
-                      status === "LIVE"
-                        ? "text-red-600"
-                        : "text-[#102348]"
-                    }`}
+                    className={`ml-2 w-8 flex-shrink-0 text-right text-xl font-bold ${scoreClass}`}
                   >
                     {awayScore}
                   </div>
@@ -299,7 +325,7 @@ export default function MatchCard({
 
       </div>
 
-      {expanded && (
+      {allowPredictions && expanded && (
         <div className="mt-4 border-t border-[#edf3ff] pt-4 animate-in fade-in duration-300">
           <div className="mb-3 flex items-center justify-between">
             <div className="text-xs font-semibold uppercase text-[#6f7f9d]">
