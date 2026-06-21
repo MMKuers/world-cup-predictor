@@ -1,6 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import {
+  CalendarDays,
+  Table2,
+} from "lucide-react"
 import BottomNav from "@/components/BottomNav"
 import ChampionsLeagueView from "@/components/competitions/ChampionsLeagueView"
 import CompetitionSwitcher from "@/components/CompetitionSwitcher"
@@ -19,6 +23,8 @@ export default function HomePage() {
     useState(0)
   const [selectedCompetition, setSelectedCompetition] =
     useState<CompetitionCode>("WC")
+  const [premierLeagueView, setPremierLeagueView] =
+    useState<"matches" | "standings">("matches")
 
   const currentCompetition =
     getCompetition(selectedCompetition)
@@ -32,13 +38,40 @@ export default function HomePage() {
     )
   }, [])
 
+  useEffect(() => {
+    if (selectedCompetition !== "PL") {
+      setPremierLeagueView("matches")
+    }
+  }, [selectedCompetition])
+
   const subtitle = username
     ? allowPredictions
       ? `${username}'s predictions and match picks`
+      : selectedCompetition === "PL" && premierLeagueView === "standings"
+      ? "Premier League standings"
       : `${currentCompetition.label} matches and updates`
     : allowPredictions
     ? "Make your predictions for every match"
+    : selectedCompetition === "PL" && premierLeagueView === "standings"
+    ? "Premier League standings"
     : `${currentCompetition.label} matches and updates`
+
+  const premierLeagueNavItems = [
+    {
+      label: "Matches",
+      Icon: CalendarDays,
+      isActive: premierLeagueView === "matches",
+      onClick: () =>
+        setPremierLeagueView("matches"),
+    },
+    {
+      label: "Standings",
+      Icon: Table2,
+      isActive: premierLeagueView === "standings",
+      onClick: () =>
+        setPremierLeagueView("standings"),
+    },
+  ]
 
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-4 pb-20">
@@ -76,14 +109,23 @@ export default function HomePage() {
       )}
 
       {selectedCompetition === "PL" && (
-        <PremierLeagueView />
+        <PremierLeagueView
+          view={premierLeagueView}
+        />
       )}
 
       {selectedCompetition === "CL" && (
         <ChampionsLeagueView />
       )}
 
-      <BottomNav hidePicks={!allowPredictions} />
+      <BottomNav
+        hidePicks={!allowPredictions}
+        items={
+          selectedCompetition === "PL"
+            ? premierLeagueNavItems
+            : undefined
+        }
+      />
     </main>
   )
 }
