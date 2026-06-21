@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react"
 
 type StandingRow = {
-  position: number
+  position?: number
+  rank?: number
   playedGames: number
   won: number
   draw: number
@@ -24,13 +25,16 @@ function formatGoalDifference(value: number) {
     : String(value)
 }
 
-function positionAccent(position: number) {
-  if (position <= 4) {
-    return "border-l-[#22c55e]"
-  }
+function getDisplayPosition(
+  row: StandingRow,
+  index: number
+) {
+  return row.position || row.rank || index + 1
+}
 
-  if (position <= 6) {
-    return "border-l-[#3b82f6]"
+function positionAccent(position: number) {
+  if (position <= 5) {
+    return "border-l-[#93c5fd]"
   }
 
   if (position >= 18) {
@@ -161,51 +165,56 @@ export default function PremierLeagueStandings() {
             </thead>
 
             <tbody>
-              {rows.map((row) => (
-                <tr
-                  key={row.team.name}
-                  className={`border-l-4 border-b border-[#edf3ff] last:border-b-0 ${positionAccent(row.position)}`}
-                >
-                  <td className="px-3 py-3 text-xs font-bold text-[#6f7f9d]">
-                    {row.position}
-                  </td>
+              {rows.map((row, index) => {
+                const displayPosition =
+                  getDisplayPosition(row, index)
 
-                  <td className="px-2 py-3">
-                    <div className="flex min-w-0 items-center gap-2">
-                      {row.team.crest && (
-                        <img
-                          src={row.team.crest}
-                          alt=""
-                          className="h-6 w-6 flex-shrink-0 object-contain"
-                        />
-                      )}
+                return (
+                  <tr
+                    key={row.team.name}
+                    className={`border-l-4 border-b border-[#edf3ff] last:border-b-0 ${positionAccent(displayPosition)}`}
+                  >
+                    <td className="px-3 py-3 text-xs font-bold text-[#6f7f9d]">
+                      {displayPosition}
+                    </td>
 
-                      <span className="truncate font-bold text-[#102348]">
-                        {row.team.name}
-                      </span>
-                    </div>
-                  </td>
+                    <td className="px-2 py-3">
+                      <div className="flex min-w-0 items-center gap-2">
+                        {row.team.crest && (
+                          <img
+                            src={row.team.crest}
+                            alt=""
+                            className="h-6 w-6 flex-shrink-0 object-contain"
+                          />
+                        )}
 
-                  <td className="px-2 py-3 text-center font-semibold text-[#102348]">
-                    {row.playedGames}
-                  </td>
-                  <td className="hidden px-2 py-3 text-center font-semibold text-[#6f7f9d] sm:table-cell">
-                    {row.won}
-                  </td>
-                  <td className="hidden px-2 py-3 text-center font-semibold text-[#6f7f9d] sm:table-cell">
-                    {row.draw}
-                  </td>
-                  <td className="hidden px-2 py-3 text-center font-semibold text-[#6f7f9d] sm:table-cell">
-                    {row.lost}
-                  </td>
-                  <td className="px-2 py-3 text-center font-semibold text-[#102348]">
-                    {formatGoalDifference(row.goalDifference)}
-                  </td>
-                  <td className="px-3 py-3 text-right text-base font-black text-[#102348]">
-                    {row.points}
-                  </td>
-                </tr>
-              ))}
+                        <span className="truncate font-bold text-[#102348]">
+                          {row.team.name}
+                        </span>
+                      </div>
+                    </td>
+
+                    <td className="px-2 py-3 text-center font-semibold text-[#102348]">
+                      {row.playedGames}
+                    </td>
+                    <td className="hidden px-2 py-3 text-center font-semibold text-[#6f7f9d] sm:table-cell">
+                      {row.won}
+                    </td>
+                    <td className="hidden px-2 py-3 text-center font-semibold text-[#6f7f9d] sm:table-cell">
+                      {row.draw}
+                    </td>
+                    <td className="hidden px-2 py-3 text-center font-semibold text-[#6f7f9d] sm:table-cell">
+                      {row.lost}
+                    </td>
+                    <td className="px-2 py-3 text-center font-semibold text-[#102348]">
+                      {formatGoalDifference(row.goalDifference)}
+                    </td>
+                    <td className="px-3 py-3 text-right text-base font-black text-[#102348]">
+                      {row.points}
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
