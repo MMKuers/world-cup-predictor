@@ -1,8 +1,19 @@
 "use client"
 
 import CompetitionMatchView from "@/components/competitions/CompetitionMatchView"
+import PremierLeagueStandings from "@/components/competitions/PremierLeagueStandings"
 
-export default function PremierLeagueView() {
+type Props = {
+  view: "matches" | "standings"
+}
+
+export default function PremierLeagueView({
+  view,
+}: Props) {
+  if (view === "standings") {
+    return <PremierLeagueStandings />
+  }
+
   return (
     <CompetitionMatchView
       competitionCode="PL"
