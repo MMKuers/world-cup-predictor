@@ -77,6 +77,10 @@ const [selectedTeam, setSelectedTeam] =
   useState("")
 const [selectedCompetition, setSelectedCompetition] =
   useState("WC")
+const [isLoadingMatches, setIsLoadingMatches] =
+  useState(false)
+const [matchLoadMessage, setMatchLoadMessage] =
+  useState("")
   const dateStripRef =
   useRef<HTMLDivElement>(null)
 
@@ -98,18 +102,33 @@ useEffect(() => {
 
   async function loadMatches() {
 
-    const response =
-      await fetch(
-        `/api/football?competition=${selectedCompetition}`
-      )
+    setIsLoadingMatches(true)
+    setMatchLoadMessage("")
 
-    const data =
-      await response.json()
+    try {
+      const response =
+        await fetch(
+          `/api/football?competition=${selectedCompetition}`
+        )
 
-    const selectedMatches =
-      data.matches || []
+      const data =
+        await response.json()
 
-    console.log("API STATUS:", selectedMatches[0]?.status)
+      const selectedMatches =
+        Array.isArray(data.matches)
+          ? data.matches
+          : []
+
+      if (selectedMatches.length === 0) {
+        setMatchLoadMessage(
+          data.message ||
+          data.error ||
+          `No ${currentCompetition.label} matches returned.`
+        )
+      }
+
+      console.log("API RESPONSE:", data)
+      console.log("API STATUS:", selectedMatches[0]?.status)
 console.log("API SCORE:", selectedMatches[0]?.score)
 
 setMatches(selectedMatches)
@@ -197,11 +216,21 @@ console.log(
     status: nullMatch?.status
   }
 )
+    } catch (error) {
+      console.error(error)
+      setMatches([])
+      setSelectedDate("")
+      setMatchLoadMessage(
+        `Could not load ${currentCompetition.label} matches.`
+      )
+    } finally {
+      setIsLoadingMatches(false)
+    }
   }
 
   loadMatches()
 
-}, [selectedCompetition])
+}, [selectedCompetition, currentCompetition.label])
 
 
   const groupedMatches: Record<string, any[]> =
@@ -408,8 +437,27 @@ if (matches.length > 0) {
       
 
       <div className="space-y-6">
+
+        {isLoadingMatches && (
+          <div className="rounded-2xl bg-white p-4 text-sm font-semibold text-[#6f7f9d] shadow-sm ring-1 ring-[#dbe5f6]">
+            Loading {currentCompetition.label} matches...
+          </div>
+        )}
+
+        {!isLoadingMatches && matches.length === 0 && (
+          <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-[#dbe5f6]">
+            <div className="text-sm font-bold text-[#102348]">
+              No matches showing
+            </div>
+
+            <div className="mt-1 text-xs font-semibold text-[#6f7f9d]">
+              {matchLoadMessage ||
+                `No ${currentCompetition.label} matches are available right now.`}
+            </div>
+          </div>
+        )}
        
-        {liveMatches.length > 0 && (
+        {!isLoadingMatches && liveMatches.length > 0 && (
 
   <div>
 
@@ -453,7 +501,7 @@ if (matches.length > 0) {
 
 )}
 
-        {Object.entries(groupedMatches)
+        {!isLoadingMatches && Object.entries(groupedMatches)
   .filter(
     ([date]) =>
       date === selectedDate
