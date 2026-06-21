@@ -48,6 +48,51 @@ export default function PremierLeagueStandings() {
     useState(true)
   const [message, setMessage] =
     useState("")
+  const [followedTeam, setFollowedTeam] =
+    useState("")
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    setFollowedTeam(
+      localStorage.getItem(
+        "followed-team-PL"
+      ) || ""
+    )
+
+    function handleFollowChange(event: Event) {
+      const customEvent =
+        event as CustomEvent<{
+          competitionCode: string
+          team: string
+        }>
+
+      if (
+        customEvent.detail?.competitionCode !==
+        "PL"
+      ) {
+        return
+      }
+
+      setFollowedTeam(
+        customEvent.detail.team || ""
+      )
+    }
+
+    window.addEventListener(
+      "followed-team-change",
+      handleFollowChange
+    )
+
+    return () => {
+      window.removeEventListener(
+        "followed-team-change",
+        handleFollowChange
+      )
+    }
+  }, [])
 
   useEffect(() => {
 
@@ -164,11 +209,17 @@ export default function PremierLeagueStandings() {
             {rows.map((row, index) => {
               const displayPosition =
                 getDisplayPosition(index)
+              const isFollowed =
+                followedTeam === row.team.name
 
               return (
                 <tr
                   key={row.team.name}
-                  className={`border-l-4 border-b border-[#edf3ff] last:border-b-0 ${positionAccent(displayPosition)}`}
+                  className={`border-l-4 border-b border-[#edf3ff] last:border-b-0 ${
+                    isFollowed
+                      ? "bg-[#f0f7ff] border-l-[#1d4ed8]"
+                      : positionAccent(displayPosition)
+                  }`}
                 >
                   <td className="px-3 py-3 text-xs font-bold text-[#6f7f9d]">
                     {displayPosition}
@@ -187,6 +238,12 @@ export default function PremierLeagueStandings() {
                       <span className="truncate font-bold text-[#102348]">
                         {row.team.name}
                       </span>
+
+                      {isFollowed && (
+                        <span className="hidden rounded-full bg-[#e0f2fe] px-2 py-0.5 text-[10px] font-bold text-[#1d4ed8] sm:inline-flex">
+                          Following
+                        </span>
+                      )}
                     </div>
                   </td>
 
