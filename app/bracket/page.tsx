@@ -22,16 +22,50 @@ type Status = {
   tone: "safe" | "watch" | "danger" | "neutral"
 }
 
+function getCompactStatusLabel(label: string) {
+  const normalizedLabel =
+    label.toLowerCase()
+
+  if (
+    normalizedLabel.includes("advanced") ||
+    normalizedLabel.includes("advancing") ||
+    normalizedLabel.includes("clinched")
+  ) {
+    return "IN"
+  }
+
+  if (normalizedLabel.includes("eliminated")) {
+    return "OUT"
+  }
+
+  if (normalizedLabel.includes("3rd")) {
+    return "3RD"
+  }
+
+  if (normalizedLabel.includes("chasing")) {
+    return "CHASE"
+  }
+
+  return label
+}
+
 function StatusBadge({
   status,
+  compact = false,
 }: {
   status: Status | null
+  compact?: boolean
 }) {
   if (!status) return null
 
+  const label = compact
+    ? getCompactStatusLabel(status.label)
+    : status.label
+
   return (
     <div
-      className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[9px] font-bold uppercase ${
+      title={status.label}
+      className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[9px] font-bold uppercase leading-none ${
         status.tone === "safe"
           ? "bg-[#dff7e8] text-[#15803d]"
           : status.tone === "danger"
@@ -41,7 +75,7 @@ function StatusBadge({
           : "bg-[#edf3ff] text-[#4564a8]"
       }`}
     >
-      {status.label}
+      {label}
     </div>
   )
 }
@@ -318,12 +352,12 @@ const statusByTeam =
 
                 <div
                   key={team.team}
-                  className="flex items-center justify-between gap-2"
+                  className="grid grid-cols-[minmax(0,1fr)_36px] items-center gap-2"
                 >
 
                   <div className="flex min-w-0 items-center gap-2">
 
-                    <div className="w-4 text-xs font-bold text-[#7b8baa]">
+                    <div className="w-4 flex-shrink-0 text-xs font-bold text-[#7b8baa]">
                       {index + 1}
                     </div>
 
@@ -331,7 +365,7 @@ const statusByTeam =
                       <img
                         src={`https://flagcdn.com/w40/${countryCodes[team.team]}.png`}
                         alt={team.team}
-                        className="h-5 w-5 rounded-full object-cover"
+                        className="h-5 w-5 flex-shrink-0 rounded-full object-cover"
                       />
                     )}
 
@@ -341,7 +375,7 @@ const statusByTeam =
                         {team.team}
                       </div>
 
-                      <div className="text-[10px] text-[#7b8baa]">
+                      <div className="truncate text-[10px] text-[#7b8baa]">
 
                         {team.played}P • {team.wins}W • {team.draws}D • {team.losses}L • {team.goalDifference}GD
 
@@ -351,17 +385,18 @@ const statusByTeam =
 
                   </div>
 
-                  <div className="flex flex-shrink-0 items-center gap-1.5">
+                  <div className="flex flex-shrink-0 flex-col items-end gap-1">
+                    <div className="text-sm font-bold leading-none text-[#102348]">
+                      {team.points}
+                    </div>
+
                     <StatusBadge
+                      compact
                       status={getTeamStatus(
                         statusByTeam,
                         team.team
                       )}
                     />
-
-                    <div className="text-sm font-bold text-[#102348]">
-                      {team.points}
-                    </div>
                   </div>
 
                 </div>
