@@ -1,42 +1,11 @@
 "use client"
 
 import { countryCodes } from "@/data/countryCodes"
-import { getTeamStatus } from "@/lib/getBracketStatuses"
-
-type Status = {
-  label: string
-  tone: "safe" | "watch" | "danger" | "neutral"
-}
 
 type Props = {
   group: string | null
   standings: Record<string, any[]>
-  statusByTeam: Record<string, Status>
   onClose: () => void
-}
-
-function StatusBadge({
-  status,
-}: {
-  status: Status | null
-}) {
-  if (!status) return null
-
-  return (
-    <div
-      className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
-        status.tone === "safe"
-          ? "bg-[#dff7e8] text-[#15803d]"
-          : status.tone === "danger"
-          ? "bg-[#ffe4e6] text-[#be123c]"
-          : status.tone === "watch"
-          ? "bg-[#fff3d6] text-[#9a5b00]"
-          : "bg-[#edf3ff] text-[#4564a8]"
-      }`}
-    >
-      {status.label}
-    </div>
-  )
 }
 
 function StatChip({
@@ -62,7 +31,6 @@ function StatChip({
 export default function GroupDrawer({
   group,
   standings,
-  statusByTeam,
   onClose,
 }: Props) {
 
@@ -92,7 +60,7 @@ export default function GroupDrawer({
             </h2>
 
             <p className="mt-1 text-xs font-semibold text-[#6f7f9d]">
-              Standings, form, and bracket status
+              Standings and form
             </p>
           </div>
 
@@ -143,13 +111,6 @@ export default function GroupDrawer({
                     <div className="text-xs text-[#7b8baa]">
                       {team.played} played
                     </div>
-
-                    <StatusBadge
-                      status={getTeamStatus(
-                        statusByTeam,
-                        team.team
-                      )}
-                    />
 
                   </div>
 
