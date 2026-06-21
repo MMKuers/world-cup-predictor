@@ -9,6 +9,7 @@ import MatchCard from "@/components/MatchCard"
 import TeamDetailsSheet from "@/components/TeamDetailsSheet"
 import UsaWinCelebration from "@/components/UsaWinCelebration"
 import { CompetitionCode } from "@/components/competitions/config"
+import { getPremierLeagueLogo } from "@/data/premierLeagueLogos"
 
 function scoreValue(value: any) {
   return typeof value === "number"
@@ -39,6 +40,15 @@ function getLivePhase(match: any) {
   return hasHalfTimeScore(match)
     ? "2nd Half"
     : "1st Half"
+}
+
+function getTeamLogo(
+  competitionCode: CompetitionCode,
+  teamName: string
+) {
+  return competitionCode === "PL"
+    ? getPremierLeagueLogo(teamName)
+    : undefined
 }
 
 type Props = {
@@ -338,6 +348,14 @@ export default function CompetitionMatchView({
                   minute={match.minute}
                   livePhase={getLivePhase(match)}
                   allowPredictions={allowPredictions}
+                  homeLogo={getTeamLogo(
+                    competitionCode,
+                    match.homeTeam?.name || ""
+                  )}
+                  awayLogo={getTeamLogo(
+                    competitionCode,
+                    match.awayTeam?.name || ""
+                  )}
                   onTeamClick={setSelectedTeam}
                 />
               ))}
@@ -402,6 +420,14 @@ export default function CompetitionMatchView({
                           : undefined
                       }
                       allowPredictions={allowPredictions}
+                      homeLogo={getTeamLogo(
+                        competitionCode,
+                        match.homeTeam?.name || ""
+                      )}
+                      awayLogo={getTeamLogo(
+                        competitionCode,
+                        match.awayTeam?.name || ""
+                      )}
                       onTeamClick={setSelectedTeam}
                     />
                   ))}
