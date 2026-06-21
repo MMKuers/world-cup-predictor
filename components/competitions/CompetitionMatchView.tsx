@@ -398,12 +398,12 @@ export default function CompetitionMatchView({
         <UsaWinCelebration matches={matches} />
       )}
 
-      <div className="sticky top-[116px] z-30 -mx-4 mb-4 bg-[#f3f7ff]/95 px-4 pb-3 backdrop-blur">
+      <div className="sticky top-[150px] z-30 -mx-3 mb-4 bg-[#eef3fb]/90 px-3 pb-3 pt-1 backdrop-blur">
         <div
           ref={dateStripRef}
-          className="overflow-x-auto pb-1 scrollbar-hide"
+          className="overflow-x-auto pb-0.5 scrollbar-hide"
         >
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             {availableDates.map(
               (date) => (
                 <button
@@ -414,10 +414,10 @@ export default function CompetitionMatchView({
                   onClick={() =>
                     setSelectedDate(date)
                   }
-                  className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                  className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-[11px] font-black transition ${
                     selectedDate === date
-                      ? "bg-[#102348] text-white"
-                      : "bg-white text-[#102348] ring-1 ring-[#dbe5f6]"
+                      ? "bg-[#102348] text-white shadow-sm"
+                      : "bg-white/90 text-[#102348] ring-1 ring-[#dbe5f6]"
                   }`}
                 >
                   {new Date(
@@ -436,16 +436,16 @@ export default function CompetitionMatchView({
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         {isLoadingMatches && (
-          <div className="rounded-2xl bg-white p-4 text-sm font-semibold text-[#6f7f9d] shadow-sm ring-1 ring-[#dbe5f6]">
+          <div className="rounded-xl bg-white/95 p-4 text-sm font-bold text-[#6f7f9d] shadow-sm ring-1 ring-[#dbe5f6]">
             Loading {competitionLabel} matches...
           </div>
         )}
 
         {!isLoadingMatches && matches.length === 0 && (
-          <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-[#dbe5f6]">
-            <div className="text-sm font-bold text-[#102348]">
+          <div className="rounded-xl bg-white/95 p-4 shadow-sm ring-1 ring-[#dbe5f6]">
+            <div className="text-sm font-black text-[#102348]">
               No matches showing
             </div>
 
@@ -458,11 +458,14 @@ export default function CompetitionMatchView({
 
         {!isLoadingMatches && liveMatches.length > 0 && (
           <div>
-            <h2 className="mb-3 text-lg font-bold text-red-600">
-              Live Now
-            </h2>
+            <div className="mb-2 flex items-center gap-2">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-[#e11d48]" />
+              <h2 className="text-sm font-black uppercase text-[#e11d48]">
+                Live Now
+              </h2>
+            </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {liveMatches.map((match) =>
                 renderMatchCard(
                   match,
@@ -492,13 +495,17 @@ export default function CompetitionMatchView({
 
             return (
               <div key={date}>
-                <div className="mb-3">
-                  <h2 className="text-lg font-bold text-[#102348]">
+                <div className="mb-2 flex items-end justify-between border-b border-[#dbe5f6] pb-2">
+                  <h2 className="text-sm font-black uppercase text-[#102348]">
                     {formattedDate}
                   </h2>
+
+                  <span className="text-[10px] font-black uppercase text-[#71809a]">
+                    {dateMatches.length} matches
+                  </span>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {dateMatches.map((match) =>
                     renderMatchCard(
                       match,
