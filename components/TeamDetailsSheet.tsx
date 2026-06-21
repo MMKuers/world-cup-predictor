@@ -227,13 +227,13 @@ function MatchRow({
     score.away !== null
 
   return (
-    <div className="flex items-center justify-between gap-3 border-t border-[#edf3ff] py-2.5 first:border-t-0 first:pt-0 last:pb-0">
+    <div className="flex items-center justify-between gap-3 border-t border-[#edf3ff] py-2 first:border-t-0 first:pt-0 last:pb-0">
       <div className="min-w-0">
-        <div className="truncate text-sm font-semibold text-[#102348]">
+        <div className="truncate text-sm font-black text-[#102348]">
           {isHome ? "vs" : "at"} {opponent}
         </div>
 
-        <div className="mt-0.5 truncate text-xs text-[#6f7f9d]">
+        <div className="mt-0.5 truncate text-[11px] font-semibold text-[#71809a]">
           {formatDate(match.utcDate)} at {formatTime(match.utcDate)}
           {match.stadium ? ` - ${match.stadium}` : ""}
         </div>
@@ -241,13 +241,13 @@ function MatchRow({
 
       <div className="flex-shrink-0 text-right">
         {hasScore ? (
-          <div className="text-sm font-bold text-[#102348]">
+          <div className="rounded-lg bg-[#f5f8fe] px-2 py-1 text-sm font-black text-[#102348]">
             {isHome
               ? `${score.home}-${score.away}`
               : `${score.away}-${score.home}`}
           </div>
         ) : (
-          <div className="rounded-full bg-[#edf3ff] px-2 py-1 text-[11px] font-semibold text-[#4564a8]">
+          <div className="rounded-full bg-[#edf3ff] px-2 py-1 text-[10px] font-black uppercase text-[#4564a8]">
             {match.status === "IN_PLAY"
               ? "Live"
               : "Upcoming"}
@@ -270,11 +270,11 @@ function MiniRecord({
   }
 
   return (
-    <div className="flex items-center justify-between rounded-xl bg-[#f8fbff] px-3 py-2 ring-1 ring-[#edf3ff]">
-      <span className="text-xs font-bold uppercase text-[#6f7f9d]">
+    <div className="flex items-center justify-between rounded-lg bg-white px-3 py-2 ring-1 ring-[#edf3ff]">
+      <span className="text-[10px] font-black uppercase text-[#71809a]">
         {label}
       </span>
-      <span className="text-sm font-bold text-[#102348]">
+      <span className="text-sm font-black text-[#102348]">
         {row.won}-{row.draw}-{row.lost}
       </span>
     </div>
@@ -468,7 +468,7 @@ export default function TeamDetailsSheet({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end bg-[#102348]/35 px-3 pb-3 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-end bg-[#09162f]/55 px-3 pb-3 backdrop-blur-sm">
       <button
         type="button"
         aria-label="Close team details"
@@ -476,201 +476,205 @@ export default function TeamDetailsSheet({
         className="absolute inset-0 cursor-default"
       />
 
-      <section className="relative mx-auto max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-4 shadow-xl ring-1 ring-[#dbe5f6] animate-in slide-in-from-bottom-4 duration-200">
-        <div className="mb-3 flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[#f3f7ff] ring-1 ring-[#dbe5f6]">
-              {teamLogo ? (
-                <img
-                  src={teamLogo}
-                  alt={team}
-                  className="h-8 w-8 object-contain"
-                />
-              ) : code && (
-                <img
-                  src={`https://flagcdn.com/w80/${code}.png`}
-                  alt={team}
-                  className="h-8 w-8 rounded-full object-cover"
-                />
-              )}
-            </div>
-
-            <div className="min-w-0">
-              <h2 className="flex items-center gap-1.5 truncate text-xl font-bold text-[#102348]">
-                <span className="truncate">{team}</span>
-                {isFollowed && (
-                  <span className="flex-shrink-0 text-sm text-[#f59e0b]">
-                    ★
-                  </span>
+      <section className="relative mx-auto max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-white/10 bg-white shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
+        <div className="bg-gradient-to-br from-[#09162f] via-[#102348] to-[#172f63] px-4 py-4 text-white">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-white ring-1 ring-white/20">
+                {teamLogo ? (
+                  <img
+                    src={teamLogo}
+                    alt={team}
+                    className="h-9 w-9 object-contain"
+                  />
+                ) : code && (
+                  <img
+                    src={`https://flagcdn.com/w80/${code}.png`}
+                    alt={team}
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
                 )}
-              </h2>
+              </div>
 
-              <p className="text-xs font-semibold text-[#6f7f9d]">
-                {competitionCode === "WC"
-                  ? `Group ${group}`
-                  : competitionLabel}
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#edf3ff] text-sm font-bold text-[#102348]"
-            aria-label="Close"
-          >
-            X
-          </button>
-        </div>
-
-        {canFollow && (
-          <button
-            type="button"
-            onClick={toggleFollow}
-            className={`mb-3 w-full rounded-xl px-3 py-2 text-sm font-bold transition ${
-              isFollowed
-                ? "bg-[#102348] text-white"
-                : "bg-[#edf3ff] text-[#102348]"
-            }`}
-          >
-            {isFollowed
-              ? "Following"
-              : `Follow ${team}`}
-          </button>
-        )}
-
-        {standingDetails && (
-          <div className="mb-3 flex items-center justify-between rounded-xl bg-[#f8fbff] px-3 py-2 ring-1 ring-[#edf3ff]">
-            <span className="text-xs font-bold uppercase text-[#6f7f9d]">
-              Table Position
-            </span>
-            <span className="text-sm font-black text-[#102348]">
-              #{standingDetails.position}
-            </span>
-          </div>
-        )}
-
-        <div className="grid grid-cols-4 gap-2">
-          <div className="rounded-xl bg-[#f8fbff] px-2 py-2 text-center ring-1 ring-[#edf3ff]">
-            <div className="text-base font-bold text-[#102348]">
-              {displayStats.points}
-            </div>
-            <div className="text-[10px] font-semibold uppercase text-[#6f7f9d]">
-              Pts
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-[#f8fbff] px-2 py-2 text-center ring-1 ring-[#edf3ff]">
-            <div className="text-base font-bold text-[#102348]">
-              {displayStats.wins}-{displayStats.draws}-{displayStats.losses}
-            </div>
-            <div className="text-[10px] font-semibold uppercase text-[#6f7f9d]">
-              W-D-L
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-[#f8fbff] px-2 py-2 text-center ring-1 ring-[#edf3ff]">
-            <div className="text-base font-bold text-[#102348]">
-              {displayStats.goalsFor}-{displayStats.goalsAgainst}
-            </div>
-            <div className="text-[10px] font-semibold uppercase text-[#6f7f9d]">
-              GF-GA
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-[#f8fbff] px-2 py-2 text-center ring-1 ring-[#edf3ff]">
-            <div className="text-base font-bold text-[#102348]">
-              {formatGoalDifference(goalDifference)}
-            </div>
-            <div className="text-[10px] font-semibold uppercase text-[#6f7f9d]">
-              GD
-            </div>
-          </div>
-        </div>
-
-        {(form.length > 0 || standingDetails) && (
-          <div className="mt-3 grid gap-2">
-            {form.length > 0 && (
-              <div className="flex items-center justify-between rounded-xl bg-[#f8fbff] px-3 py-2 ring-1 ring-[#edf3ff]">
-                <span className="text-xs font-bold uppercase text-[#6f7f9d]">
-                  Form
-                </span>
-                <div className="flex gap-1.5">
-                  {form.map((result, index) => (
-                    <span
-                      key={`${result}-${index}`}
-                      className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-black ${
-                        result === "W"
-                          ? "bg-green-100 text-green-700"
-                          : result === "D"
-                          ? "bg-[#edf3ff] text-[#4564a8]"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {result}
+              <div className="min-w-0">
+                <h2 className="flex items-center gap-1.5 truncate text-xl font-black text-white">
+                  <span className="truncate">{team}</span>
+                  {isFollowed && (
+                    <span className="flex-shrink-0 text-sm text-[#fbbf24]">
+                      ★
                     </span>
-                  ))}
-                </div>
-              </div>
-            )}
+                  )}
+                </h2>
 
-            {standingDetails && (
-              <div className="grid grid-cols-2 gap-2">
-                <MiniRecord
-                  label="Home"
-                  row={standingDetails.home}
-                />
-                <MiniRecord
-                  label="Away"
-                  row={standingDetails.away}
-                />
+                <p className="text-xs font-bold text-[#b8c6df]">
+                  {competitionCode === "WC"
+                    ? `Group ${group}`
+                    : competitionLabel}
+                </p>
               </div>
-            )}
-          </div>
-        )}
-
-        <div className="mt-4 grid gap-4">
-          <div>
-            <div className="mb-2 text-xs font-bold uppercase text-[#6f7f9d]">
-              Next Matches
             </div>
 
-            <div className="rounded-xl bg-[#f8fbff] p-3 ring-1 ring-[#edf3ff]">
-              {upcomingMatches.length > 0 ? (
-                upcomingMatches.map((match) => (
-                  <MatchRow
-                    key={`upcoming-${match.id}`}
-                    match={match}
-                    team={team}
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-white/10 text-sm font-black text-white"
+              aria-label="Close"
+            >
+              X
+            </button>
+          </div>
+
+          {canFollow && (
+            <button
+              type="button"
+              onClick={toggleFollow}
+              className={`mt-3 w-full rounded-xl px-3 py-2 text-sm font-black transition ${
+                isFollowed
+                  ? "bg-white text-[#102348]"
+                  : "bg-white/10 text-white ring-1 ring-white/15"
+              }`}
+            >
+              {isFollowed
+                ? "Following"
+                : `Follow ${team}`}
+            </button>
+          )}
+        </div>
+
+        <div className="p-4">
+          {standingDetails && (
+            <div className="mb-3 flex items-center justify-between rounded-xl bg-[#f8fbff] px-3 py-2 ring-1 ring-[#edf3ff]">
+              <span className="text-[10px] font-black uppercase text-[#71809a]">
+                Table Position
+              </span>
+              <span className="text-sm font-black text-[#102348]">
+                #{standingDetails.position}
+              </span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-4 gap-2">
+            <div className="rounded-lg bg-[#f8fbff] px-2 py-2 text-center ring-1 ring-[#edf3ff]">
+              <div className="text-base font-black text-[#102348]">
+                {displayStats.points}
+              </div>
+              <div className="text-[10px] font-black uppercase text-[#71809a]">
+                Pts
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-[#f8fbff] px-2 py-2 text-center ring-1 ring-[#edf3ff]">
+              <div className="text-base font-black text-[#102348]">
+                {displayStats.wins}-{displayStats.draws}-{displayStats.losses}
+              </div>
+              <div className="text-[10px] font-black uppercase text-[#71809a]">
+                W-D-L
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-[#f8fbff] px-2 py-2 text-center ring-1 ring-[#edf3ff]">
+              <div className="text-base font-black text-[#102348]">
+                {displayStats.goalsFor}-{displayStats.goalsAgainst}
+              </div>
+              <div className="text-[10px] font-black uppercase text-[#71809a]">
+                GF-GA
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-[#f8fbff] px-2 py-2 text-center ring-1 ring-[#edf3ff]">
+              <div className="text-base font-black text-[#102348]">
+                {formatGoalDifference(goalDifference)}
+              </div>
+              <div className="text-[10px] font-black uppercase text-[#71809a]">
+                GD
+              </div>
+            </div>
+          </div>
+
+          {(form.length > 0 || standingDetails) && (
+            <div className="mt-3 grid gap-2">
+              {form.length > 0 && (
+                <div className="flex items-center justify-between rounded-lg bg-[#f8fbff] px-3 py-2 ring-1 ring-[#edf3ff]">
+                  <span className="text-[10px] font-black uppercase text-[#71809a]">
+                    Form
+                  </span>
+                  <div className="flex gap-1.5">
+                    {form.map((result, index) => (
+                      <span
+                        key={`${result}-${index}`}
+                        className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-black ${
+                          result === "W"
+                            ? "bg-green-100 text-green-700"
+                            : result === "D"
+                            ? "bg-[#edf3ff] text-[#4564a8]"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {result}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {standingDetails && (
+                <div className="grid grid-cols-2 gap-2">
+                  <MiniRecord
+                    label="Home"
+                    row={standingDetails.home}
                   />
-                ))
-              ) : (
-                <div className="text-sm text-[#6f7f9d]">
-                  No upcoming matches listed.
+                  <MiniRecord
+                    label="Away"
+                    row={standingDetails.away}
+                  />
                 </div>
               )}
             </div>
-          </div>
+          )}
 
-          <div>
-            <div className="mb-2 text-xs font-bold uppercase text-[#6f7f9d]">
-              Recent Results
+          <div className="mt-4 grid gap-4">
+            <div>
+              <div className="mb-2 text-[11px] font-black uppercase text-[#71809a]">
+                Next Matches
+              </div>
+
+              <div className="rounded-xl bg-[#f8fbff] p-3 ring-1 ring-[#edf3ff]">
+                {upcomingMatches.length > 0 ? (
+                  upcomingMatches.map((match) => (
+                    <MatchRow
+                      key={`upcoming-${match.id}`}
+                      match={match}
+                      team={team}
+                    />
+                  ))
+                ) : (
+                  <div className="text-sm text-[#6f7f9d]">
+                    No upcoming matches listed.
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="rounded-xl bg-[#f8fbff] p-3 ring-1 ring-[#edf3ff]">
-              {recentResults.length > 0 ? (
-                recentResults.slice(0, 3).map((match) => (
-                  <MatchRow
-                    key={`result-${match.id}`}
-                    match={match}
-                    team={team}
-                  />
-                ))
-              ) : (
-                <div className="text-sm text-[#6f7f9d]">
-                  Results will show here once matches finish.
-                </div>
-              )}
+            <div>
+              <div className="mb-2 text-[11px] font-black uppercase text-[#71809a]">
+                Recent Results
+              </div>
+
+              <div className="rounded-xl bg-[#f8fbff] p-3 ring-1 ring-[#edf3ff]">
+                {recentResults.length > 0 ? (
+                  recentResults.slice(0, 3).map((match) => (
+                    <MatchRow
+                      key={`result-${match.id}`}
+                      match={match}
+                      team={team}
+                    />
+                  ))
+                ) : (
+                  <div className="text-sm text-[#6f7f9d]">
+                    Results will show here once matches finish.
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
