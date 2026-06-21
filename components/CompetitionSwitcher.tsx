@@ -18,8 +18,8 @@ export default function CompetitionSwitcher({
 }: Props) {
   return (
     <div className="mt-3">
-      <div className="overflow-x-auto pb-1 scrollbar-hide">
-        <div className="flex gap-2">
+      <div className="overflow-x-auto pb-0.5 scrollbar-hide">
+        <div className="flex gap-1.5 rounded-full bg-[#071227]/55 p-1 ring-1 ring-white/10">
           {competitions.map((competition) => (
             <button
               key={competition.code}
@@ -27,10 +27,10 @@ export default function CompetitionSwitcher({
               onClick={() =>
                 onSelectCompetition(competition.code)
               }
-              className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold transition active:scale-95 ${
+              className={`whitespace-nowrap rounded-full px-3 py-1.5 text-[11px] font-black transition active:scale-95 ${
                 selectedCompetition === competition.code
-                  ? "bg-[#102348] text-white"
-                  : "bg-white text-[#102348] ring-1 ring-[#dbe5f6]"
+                  ? "bg-white text-[#102348] shadow-sm"
+                  : "text-[#b8c6df] hover:bg-white/10 hover:text-white"
               }`}
             >
               {competition.label}
