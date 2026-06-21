@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { getPremierLeagueLogo } from "@/data/premierLeagueLogos"
 
 type StandingRow = {
   position?: number
@@ -164,6 +165,9 @@ export default function PremierLeagueStandings() {
             {rows.map((row, index) => {
               const displayPosition =
                 getDisplayPosition(index)
+              const teamLogo =
+                getPremierLeagueLogo(row.team.name) ||
+                row.team.crest
 
               return (
                 <tr
@@ -176,9 +180,9 @@ export default function PremierLeagueStandings() {
 
                   <td className="min-w-0 px-2 py-3">
                     <div className="flex min-w-0 items-center gap-2">
-                      {row.team.crest && (
+                      {teamLogo && (
                         <img
-                          src={row.team.crest}
+                          src={teamLogo}
                           alt=""
                           className="h-6 w-6 flex-shrink-0 object-contain"
                         />
