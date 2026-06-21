@@ -108,7 +108,8 @@ useEffect(() => {
     try {
       const response =
         await fetch(
-          `/api/football?competition=${selectedCompetition}`
+          `/api/football?competition=${selectedCompetition}`,
+          { cache: "no-store" }
         )
 
       const data =
@@ -168,7 +169,10 @@ if (userId || currentUsername) {
     const scoreMatches =
       selectedCompetition === "WC"
         ? selectedMatches
-        : await fetch("/api/football?competition=WC")
+        : await fetch(
+            "/api/football?competition=WC",
+            { cache: "no-store" }
+          )
             .then((worldCupResponse) =>
               worldCupResponse.json()
             )
