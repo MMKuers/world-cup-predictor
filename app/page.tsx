@@ -3,6 +3,7 @@
 import MatchCard from "@/components/MatchCard"
 import TeamDetailsSheet from "@/components/TeamDetailsSheet"
 import BottomNav from "@/components/BottomNav"
+import UsaWinCelebration from "@/components/UsaWinCelebration"
 import { supabase } from "@/lib/supabase"
 import UsernameModal from "@/components/UsernameModal"
 import { calculateStandings } from "@/lib/calculateStandings"
@@ -262,6 +263,7 @@ if (matches.length > 0) {
   return (
     <main className="min-h-screen bg-[#f3f7ff] p-4 pb-20">
 <UsernameModal />
+<UsaWinCelebration matches={matches} />
       <div className="sticky top-0 z-40 -mx-4 mb-4 bg-[#f3f7ff]/95 px-4 pt-3 pb-3 backdrop-blur">
 
   <div className="flex items-start justify-between gap-3">
