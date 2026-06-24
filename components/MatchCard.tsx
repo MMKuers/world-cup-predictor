@@ -159,6 +159,18 @@ export default function MatchCard({
       ? "HT"
       : status
 
+  const showScore =
+    status === "FINAL" ||
+    status === "LIVE" ||
+    status === "HALFTIME"
+
+  const scoreClass =
+    status === "LIVE"
+      ? "text-red-600"
+      : status === "HALFTIME"
+      ? "text-orange-600"
+      : "text-[#102348]"
+
   const openTeamDetails = (
     team: string,
     event: React.MouseEvent
@@ -213,14 +225,9 @@ export default function MatchCard({
                   {home}
                 </button>
 
-                {(status === "FINAL" ||
-                  status === "LIVE") && (
+                {showScore && (
                   <div
-                    className={`ml-2 w-8 flex-shrink-0 text-right text-xl font-bold ${
-                      status === "LIVE"
-                        ? "text-red-600"
-                        : "text-[#102348]"
-                    }`}
+                    className={`ml-2 w-8 flex-shrink-0 text-right text-xl font-bold ${scoreClass}`}
                   >
                     {homeScore}
                   </div>
@@ -250,14 +257,9 @@ export default function MatchCard({
                   {away}
                 </button>
 
-                {(status === "FINAL" ||
-                  status === "LIVE") && (
+                {showScore && (
                   <div
-                    className={`ml-2 w-8 flex-shrink-0 text-right text-xl font-bold ${
-                      status === "LIVE"
-                        ? "text-red-600"
-                        : "text-[#102348]"
-                    }`}
+                    className={`ml-2 w-8 flex-shrink-0 text-right text-xl font-bold ${scoreClass}`}
                   >
                     {awayScore}
                   </div>
